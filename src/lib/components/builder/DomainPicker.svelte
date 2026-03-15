@@ -82,7 +82,7 @@
 		</div>
 	{:else}
 		<button
-			class="mb-6 flex w-full items-center gap-3 rounded-xl border-2 border-dashed px-4 py-4 text-left transition-colors hover:border-primary/30 hover:bg-accent/30"
+			class="mb-6 flex w-full items-center gap-3 rounded-xl border-2 border-dashed px-4 py-4 text-left hover:border-primary/30 hover:bg-accent/30"
 			onclick={() => (showCustom = true)}
 		>
 			<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">

@@ -121,7 +121,9 @@
     font-family: 'Geist', system-ui, sans-serif;
   }
   button, a, [role="button"], summary {
-    transition: transform 0.1s ease;
+    transition-property: transform, color, background-color, border-color, opacity, box-shadow;
+    transition-duration: 0.1s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease;
   }
   button:active:not(:disabled), a:active, [role="button"]:active, summary:active {
     transform: scale(0.97);
