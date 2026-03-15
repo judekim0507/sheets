@@ -1,0 +1,2548 @@
+{
+  "meta": {
+    "title": "Universal Math Curriculum Skill Tree",
+    "version": "0.1.0",
+    "description": "A detailed, curriculum-agnostic taxonomy of K-12 math skills organized by domain, unit, and sub-skill. Each skill includes a typical grade range, prerequisites, and difficulty scaling notes. Designed to power a universal math worksheet/question generator.",
+    "schema": {
+      "domain": "Top-level math strand (e.g., Number & Operations, Algebra)",
+      "unit": "A coherent topic within a domain (e.g., Fraction Operations)",
+      "skill": "A specific, assessable ability (e.g., Add fractions with unlike denominators)",
+      "grade_range": "[min, max] — typical grades where this skill is taught",
+      "prerequisites": "List of skill IDs that should be mastered first",
+      "difficulty_levels": {
+        "1": "Introductory — single-step, small/friendly numbers",
+        "2": "Developing — small numbers, may require 2 steps",
+        "3": "Proficient — moderate numbers, multi-step, some reasoning",
+        "4": "Advanced — larger numbers, multi-step, applied/word problems",
+        "5": "Challenge — complex scenarios, non-routine, proof-like or competition-style"
+      },
+      "question_types": "Suggested formats: computation, word_problem, visual, multiple_choice, true_false, fill_in_blank, matching, error_analysis, open_response"
+    }
+  },
+
+  "domains": [
+    {
+      "domain_id": "NUM",
+      "domain_name": "Number & Operations",
+      "description": "Understanding of number systems, place value, and arithmetic operations across all number types.",
+      "units": [
+        {
+          "unit_id": "NUM-COUNT",
+          "unit_name": "Counting & Cardinality",
+          "skills": [
+            {
+              "skill_id": "NUM-COUNT-001",
+              "skill_name": "Rote counting (1–10)",
+              "grade_range": [0, 0],
+              "prerequisites": [],
+              "difficulty_notes": "L1: count to 5, L2: count to 10, L3: count to 20, L4: count to 50, L5: count to 100",
+              "question_types": ["fill_in_blank", "visual"]
+            },
+            {
+              "skill_id": "NUM-COUNT-002",
+              "skill_name": "Rote counting (1–100)",
+              "grade_range": [0, 1],
+              "prerequisites": ["NUM-COUNT-001"],
+              "difficulty_notes": "L1: count by 1s to 30, L2: to 50, L3: to 100, L4: count by 1s from any starting number, L5: count by 1s across century boundaries (98, 99, 100, 101)",
+              "question_types": ["fill_in_blank", "visual"]
+            },
+            {
+              "skill_id": "NUM-COUNT-003",
+              "skill_name": "Count objects (1–10)",
+              "grade_range": [0, 0],
+              "prerequisites": ["NUM-COUNT-001"],
+              "difficulty_notes": "L1: count up to 3 objects, L2: up to 5, L3: up to 10, L4: scattered arrangement, L5: objects in different sizes/overlapping",
+              "question_types": ["visual", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-COUNT-004",
+              "skill_name": "Count objects (1–20)",
+              "grade_range": [0, 1],
+              "prerequisites": ["NUM-COUNT-003"],
+              "difficulty_notes": "L1: organized rows up to 12, L2: up to 15, L3: up to 20, L4: scattered arrangement, L5: grouped and scattered mixed",
+              "question_types": ["visual", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-COUNT-005",
+              "skill_name": "One-to-one correspondence",
+              "grade_range": [0, 0],
+              "prerequisites": ["NUM-COUNT-003"],
+              "difficulty_notes": "L1: match 1-3 objects to numerals, L2: 4-5 objects, L3: 6-10, L4: identify errors in counting, L5: abstract representations",
+              "question_types": ["visual", "matching"]
+            },
+            {
+              "skill_id": "NUM-COUNT-006",
+              "skill_name": "Count forward from a given number",
+              "grade_range": [0, 1],
+              "prerequisites": ["NUM-COUNT-002"],
+              "difficulty_notes": "L1: start from single digit, L2: start from teens, L3: start from any two-digit, L4: count across decade boundary, L5: count across century boundary",
+              "question_types": ["fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-COUNT-007",
+              "skill_name": "Count backward from a given number",
+              "grade_range": [0, 1],
+              "prerequisites": ["NUM-COUNT-006"],
+              "difficulty_notes": "L1: from 5, L2: from 10, L3: from 20, L4: across decade boundary, L5: from any two-digit number",
+              "question_types": ["fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-COUNT-008",
+              "skill_name": "Skip counting by 2s",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-COUNT-002"],
+              "difficulty_notes": "L1: from 0 to 20, L2: from 0 to 50, L3: from any even number, L4: from any odd number, L5: backward skip counting by 2s",
+              "question_types": ["fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "NUM-COUNT-009",
+              "skill_name": "Skip counting by 5s",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-COUNT-002"],
+              "difficulty_notes": "L1: from 0 to 50, L2: from 0 to 100, L3: from any multiple of 5, L4: from any number, L5: backward skip counting by 5s",
+              "question_types": ["fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "NUM-COUNT-010",
+              "skill_name": "Skip counting by 10s",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-COUNT-002"],
+              "difficulty_notes": "L1: from 0 to 100, L2: from any multiple of 10, L3: from any number, L4: past 100, L5: backward skip counting by 10s",
+              "question_types": ["fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "NUM-COUNT-011",
+              "skill_name": "Skip counting by 3s, 4s, 6s, 7s, 8s, 9s",
+              "grade_range": [2, 3],
+              "prerequisites": ["NUM-COUNT-008"],
+              "difficulty_notes": "L1: by 3s from 0, L2: by 4s from 0, L3: mixed skip counts, L4: from non-zero starting points, L5: backward and identifying patterns",
+              "question_types": ["fill_in_blank", "computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-COMP",
+          "unit_name": "Comparing & Ordering Numbers",
+          "skills": [
+            {
+              "skill_id": "NUM-COMP-001",
+              "skill_name": "Compare two numbers (0–10) using more/less/equal",
+              "grade_range": [0, 1],
+              "prerequisites": ["NUM-COUNT-003"],
+              "difficulty_notes": "L1: with visual supports, L2: numerals only adjacent numbers, L3: any two numbers 0-10, L4: three-way comparison, L5: comparing quantities in word problems",
+              "question_types": ["visual", "multiple_choice", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-COMP-002",
+              "skill_name": "Compare two numbers using >, <, = symbols",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-COMP-001"],
+              "difficulty_notes": "L1: single-digit numbers, L2: two-digit numbers, L3: three-digit numbers, L4: numbers with different digit counts, L5: word problems requiring comparison",
+              "question_types": ["fill_in_blank", "multiple_choice"]
+            },
+            {
+              "skill_id": "NUM-COMP-003",
+              "skill_name": "Order numbers from least to greatest / greatest to least",
+              "grade_range": [1, 3],
+              "prerequisites": ["NUM-COMP-002"],
+              "difficulty_notes": "L1: 3 single-digit numbers, L2: 4 two-digit numbers, L3: 5 three-digit numbers, L4: mixed digit counts, L5: ordering with negative numbers or decimals",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-COMP-004",
+              "skill_name": "Compare and order fractions",
+              "grade_range": [3, 5],
+              "prerequisites": ["NUM-FRAC-002", "NUM-FRAC-003"],
+              "difficulty_notes": "L1: same denominator, L2: same numerator, L3: benchmark fractions (1/2), L4: unlike denominators requiring common denominator, L5: mixed numbers and improper fractions",
+              "question_types": ["computation", "visual", "multiple_choice"]
+            },
+            {
+              "skill_id": "NUM-COMP-005",
+              "skill_name": "Compare and order decimals",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-DEC-001", "NUM-DEC-002"],
+              "difficulty_notes": "L1: tenths only, L2: tenths and hundredths, L3: mixed decimal places, L4: decimals with trailing zeros, L5: ordering fractions and decimals together",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-COMP-006",
+              "skill_name": "Compare and order integers (positive and negative)",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-INT-001"],
+              "difficulty_notes": "L1: single-digit integers on number line, L2: two-digit integers, L3: without number line, L4: absolute value comparisons, L5: ordering rational numbers including negatives",
+              "question_types": ["computation", "visual", "fill_in_blank"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-PV",
+          "unit_name": "Place Value",
+          "skills": [
+            {
+              "skill_id": "NUM-PV-001",
+              "skill_name": "Understand tens and ones",
+              "grade_range": [1, 1],
+              "prerequisites": ["NUM-COUNT-002"],
+              "difficulty_notes": "L1: represent with base-10 blocks, L2: identify tens/ones digit, L3: write in expanded form, L4: compose/decompose two-digit numbers, L5: explain why 32 ≠ 23",
+              "question_types": ["visual", "fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "NUM-PV-002",
+              "skill_name": "Understand hundreds, tens, and ones",
+              "grade_range": [2, 2],
+              "prerequisites": ["NUM-PV-001"],
+              "difficulty_notes": "L1: identify digit values, L2: expanded form, L3: compose/decompose, L4: compare using place value, L5: word problems involving place value reasoning",
+              "question_types": ["visual", "fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "NUM-PV-003",
+              "skill_name": "Understand thousands, ten-thousands, hundred-thousands",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-PV-002"],
+              "difficulty_notes": "L1: identify digit values up to thousands, L2: expanded form, L3: up to hundred-thousands, L4: compare multi-digit numbers using place value, L5: rounding and estimating",
+              "question_types": ["fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "NUM-PV-004",
+              "skill_name": "Understand millions and beyond",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-PV-003"],
+              "difficulty_notes": "L1: read/write to millions, L2: expanded form, L3: to billions, L4: compare and order large numbers, L5: real-world context (population, distance)",
+              "question_types": ["fill_in_blank", "computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-PV-005",
+              "skill_name": "Decimal place value (tenths, hundredths, thousandths)",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-PV-003", "NUM-DEC-001"],
+              "difficulty_notes": "L1: identify tenths, L2: identify hundredths, L3: thousandths, L4: expanded form with decimals, L5: place value relationships (0.1 = 10 × 0.01)",
+              "question_types": ["fill_in_blank", "computation", "visual"]
+            },
+            {
+              "skill_id": "NUM-PV-006",
+              "skill_name": "Rounding whole numbers",
+              "grade_range": [3, 5],
+              "prerequisites": ["NUM-PV-002"],
+              "difficulty_notes": "L1: round to nearest 10, L2: round to nearest 100, L3: round to nearest 1000, L4: round to any place, L5: use rounding for estimation in multi-step problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-PV-007",
+              "skill_name": "Rounding decimals",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-PV-005", "NUM-PV-006"],
+              "difficulty_notes": "L1: round to nearest whole, L2: round to nearest tenth, L3: round to nearest hundredth, L4: round to any decimal place, L5: estimation with decimal operations",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-PV-008",
+              "skill_name": "Powers of 10 and place value patterns",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-PV-004", "NUM-PV-005"],
+              "difficulty_notes": "L1: multiply by 10, 100, 1000, L2: divide by 10, 100, 1000, L3: explain digit shifts, L4: multiply/divide decimals by powers of 10, L5: scientific notation intro",
+              "question_types": ["computation", "fill_in_blank"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-ADD",
+          "unit_name": "Addition",
+          "skills": [
+            {
+              "skill_id": "NUM-ADD-001",
+              "skill_name": "Addition facts within 5",
+              "grade_range": [0, 0],
+              "prerequisites": ["NUM-COUNT-003"],
+              "difficulty_notes": "L1: with objects/pictures, L2: with number line, L3: symbolic only, L4: find missing addend, L5: word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-ADD-002",
+              "skill_name": "Addition facts within 10",
+              "grade_range": [0, 1],
+              "prerequisites": ["NUM-ADD-001"],
+              "difficulty_notes": "L1: with visual supports, L2: symbolic, L3: fluency (timed), L4: missing addend, L5: word problems with distractors",
+              "question_types": ["computation", "word_problem", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-ADD-003",
+              "skill_name": "Addition facts within 20",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-ADD-002"],
+              "difficulty_notes": "L1: no regrouping (e.g., 11+4), L2: with regrouping/making 10, L3: fluency, L4: three addends, L5: word problems multi-step",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-ADD-004",
+              "skill_name": "Add two-digit numbers without regrouping",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-ADD-003", "NUM-PV-001"],
+              "difficulty_notes": "L1: multiples of 10, L2: two-digit + one-digit, L3: two-digit + two-digit, L4: three addends, L5: word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-ADD-005",
+              "skill_name": "Add two-digit numbers with regrouping",
+              "grade_range": [2, 2],
+              "prerequisites": ["NUM-ADD-004"],
+              "difficulty_notes": "L1: regroup ones only, L2: any two-digit + two-digit, L3: three addends, L4: estimate then calculate, L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-ADD-006",
+              "skill_name": "Add three-digit numbers",
+              "grade_range": [2, 3],
+              "prerequisites": ["NUM-ADD-005", "NUM-PV-002"],
+              "difficulty_notes": "L1: no regrouping, L2: regroup ones, L3: regroup ones and tens, L4: multiple addends, L5: estimate and verify",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-ADD-007",
+              "skill_name": "Add multi-digit whole numbers (up to millions)",
+              "grade_range": [3, 5],
+              "prerequisites": ["NUM-ADD-006", "NUM-PV-003"],
+              "difficulty_notes": "L1: four-digit no regrouping, L2: four-digit with regrouping, L3: five+ digits, L4: multiple addends, L5: real-world multi-step",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-ADD-008",
+              "skill_name": "Addition properties (commutative, associative, identity)",
+              "grade_range": [1, 3],
+              "prerequisites": ["NUM-ADD-002"],
+              "difficulty_notes": "L1: demonstrate commutative with small numbers, L2: use associative to make 10, L3: identify properties by name, L4: apply properties to simplify, L5: justify using properties",
+              "question_types": ["multiple_choice", "true_false", "open_response"]
+            },
+            {
+              "skill_id": "NUM-ADD-009",
+              "skill_name": "Mental math addition strategies",
+              "grade_range": [1, 4],
+              "prerequisites": ["NUM-ADD-003", "NUM-ADD-008"],
+              "difficulty_notes": "L1: doubles, L2: near doubles, L3: make a 10, L4: compensation (add 99 = add 100 - 1), L5: break apart and combine multiple strategies",
+              "question_types": ["computation", "open_response"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-SUB",
+          "unit_name": "Subtraction",
+          "skills": [
+            {
+              "skill_id": "NUM-SUB-001",
+              "skill_name": "Subtraction facts within 5",
+              "grade_range": [0, 0],
+              "prerequisites": ["NUM-ADD-001"],
+              "difficulty_notes": "L1: with objects, L2: with number line, L3: symbolic, L4: missing subtrahend, L5: related addition/subtraction fact families",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-SUB-002",
+              "skill_name": "Subtraction facts within 10",
+              "grade_range": [0, 1],
+              "prerequisites": ["NUM-SUB-001"],
+              "difficulty_notes": "L1: with visual, L2: symbolic, L3: fluency, L4: missing numbers, L5: comparison word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-SUB-003",
+              "skill_name": "Subtraction facts within 20",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-SUB-002"],
+              "difficulty_notes": "L1: no regrouping, L2: with regrouping, L3: fluency, L4: fact families, L5: multi-step comparison word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-SUB-004",
+              "skill_name": "Subtract two-digit numbers without regrouping",
+              "grade_range": [1, 2],
+              "prerequisites": ["NUM-SUB-003", "NUM-PV-001"],
+              "difficulty_notes": "L1: subtract multiples of 10, L2: two-digit minus one-digit, L3: two-digit minus two-digit, L4: word problems, L5: estimate then subtract",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-SUB-005",
+              "skill_name": "Subtract two-digit numbers with regrouping",
+              "grade_range": [2, 2],
+              "prerequisites": ["NUM-SUB-004"],
+              "difficulty_notes": "L1: basic regrouping, L2: regrouping with zero in ones, L3: word problems, L4: check with addition, L5: error analysis",
+              "question_types": ["computation", "word_problem", "error_analysis"]
+            },
+            {
+              "skill_id": "NUM-SUB-006",
+              "skill_name": "Subtract three-digit numbers",
+              "grade_range": [2, 3],
+              "prerequisites": ["NUM-SUB-005", "NUM-PV-002"],
+              "difficulty_notes": "L1: no regrouping, L2: regroup ones, L3: regroup tens, L4: regroup across zeros (e.g., 400-167), L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-SUB-007",
+              "skill_name": "Subtract multi-digit whole numbers",
+              "grade_range": [3, 5],
+              "prerequisites": ["NUM-SUB-006", "NUM-PV-003"],
+              "difficulty_notes": "L1: four-digit simple, L2: with multiple regroupings, L3: across zeros, L4: five+ digits, L5: real-world multi-step",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-SUB-008",
+              "skill_name": "Relationship between addition and subtraction",
+              "grade_range": [1, 3],
+              "prerequisites": ["NUM-ADD-002", "NUM-SUB-002"],
+              "difficulty_notes": "L1: complete fact families within 10, L2: within 20, L3: use addition to check subtraction, L4: missing number equations, L5: write own fact families and explain",
+              "question_types": ["fill_in_blank", "computation", "open_response"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-MUL",
+          "unit_name": "Multiplication",
+          "skills": [
+            {
+              "skill_id": "NUM-MUL-001",
+              "skill_name": "Understand multiplication as repeated addition / equal groups",
+              "grade_range": [2, 3],
+              "prerequisites": ["NUM-ADD-003"],
+              "difficulty_notes": "L1: model with pictures (2 groups of 3), L2: write as repeated addition, L3: write as multiplication, L4: word problems, L5: arrays and area models",
+              "question_types": ["visual", "computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-MUL-002",
+              "skill_name": "Multiplication facts: ×0 and ×1",
+              "grade_range": [2, 3],
+              "prerequisites": ["NUM-MUL-001"],
+              "difficulty_notes": "L1: identity property, L2: zero property, L3: mixed, L4: explain why, L5: apply in larger expressions",
+              "question_types": ["computation", "true_false", "open_response"]
+            },
+            {
+              "skill_id": "NUM-MUL-003",
+              "skill_name": "Multiplication facts: ×2, ×5, ×10",
+              "grade_range": [2, 3],
+              "prerequisites": ["NUM-MUL-001", "NUM-COUNT-008", "NUM-COUNT-009", "NUM-COUNT-010"],
+              "difficulty_notes": "L1: ×2 facts, L2: ×5 facts, L3: ×10 facts, L4: mixed fluency, L5: applied word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-MUL-004",
+              "skill_name": "Multiplication facts: ×3, ×4, ×6",
+              "grade_range": [3, 3],
+              "prerequisites": ["NUM-MUL-003"],
+              "difficulty_notes": "L1: ×3 facts, L2: ×4 facts, L3: ×6 facts, L4: mixed fluency, L5: word problems and patterns",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-MUL-005",
+              "skill_name": "Multiplication facts: ×7, ×8, ×9",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-MUL-004"],
+              "difficulty_notes": "L1: ×7 facts, L2: ×8 facts, L3: ×9 facts, L4: mixed all facts 0-9, L5: timed fluency and missing factors",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-MUL-006",
+              "skill_name": "Multiplication facts: ×11, ×12",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-MUL-005"],
+              "difficulty_notes": "L1: ×11 facts, L2: ×12 facts, L3: mixed, L4: patterns in ×11, L5: fluency all facts 0-12",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "NUM-MUL-007",
+              "skill_name": "Multiply by multiples of 10, 100, 1000",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-MUL-003", "NUM-PV-003"],
+              "difficulty_notes": "L1: single-digit × 10, L2: single-digit × 100, L3: single-digit × multiples of 10, L4: two-digit × multiples of 10, L5: explain place value pattern",
+              "question_types": ["computation", "open_response"]
+            },
+            {
+              "skill_id": "NUM-MUL-008",
+              "skill_name": "Multiply two-digit by one-digit (with regrouping)",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-MUL-005", "NUM-PV-001"],
+              "difficulty_notes": "L1: no regrouping (12×3), L2: regrouping ones, L3: regrouping tens, L4: word problems, L5: estimate then multiply",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-MUL-009",
+              "skill_name": "Multiply two-digit by two-digit",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-MUL-008"],
+              "difficulty_notes": "L1: area model, L2: partial products, L3: standard algorithm, L4: word problems, L5: estimate and verify",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-MUL-010",
+              "skill_name": "Multiply multi-digit numbers (3+ digits × 2+ digits)",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-MUL-009"],
+              "difficulty_notes": "L1: three-digit × one-digit, L2: three-digit × two-digit, L3: four-digit × two-digit, L4: multi-step word problems, L5: real-world applications with estimation",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-MUL-011",
+              "skill_name": "Multiplication properties (commutative, associative, distributive)",
+              "grade_range": [3, 5],
+              "prerequisites": ["NUM-MUL-003"],
+              "difficulty_notes": "L1: commutative with small numbers, L2: associative, L3: distributive with area model, L4: use distributive to break apart, L5: apply to simplify computation",
+              "question_types": ["multiple_choice", "computation", "open_response"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-DIV",
+          "unit_name": "Division",
+          "skills": [
+            {
+              "skill_id": "NUM-DIV-001",
+              "skill_name": "Understand division as equal sharing / equal groups",
+              "grade_range": [2, 3],
+              "prerequisites": ["NUM-MUL-001"],
+              "difficulty_notes": "L1: share with pictures, L2: write as division, L3: relate to multiplication, L4: word problems (partitive), L5: word problems (quotitive/measurement)",
+              "question_types": ["visual", "computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DIV-002",
+              "skill_name": "Division facts within 100 (related to multiplication tables)",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-MUL-005", "NUM-DIV-001"],
+              "difficulty_notes": "L1: ÷1, ÷2, ÷5, ÷10, L2: ÷3, ÷4, ÷6, L3: ÷7, ÷8, ÷9, L4: fluency all facts, L5: missing dividend/divisor",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-DIV-003",
+              "skill_name": "Division with remainders",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-DIV-002"],
+              "difficulty_notes": "L1: small numbers with remainder, L2: interpret remainder (leftover), L3: interpret remainder (round up), L4: interpret remainder (as fraction/decimal), L5: word problems requiring remainder interpretation",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DIV-004",
+              "skill_name": "Long division: two/three-digit ÷ one-digit",
+              "grade_range": [4, 4],
+              "prerequisites": ["NUM-DIV-002", "NUM-PV-002"],
+              "difficulty_notes": "L1: no remainder (84÷4), L2: with remainder, L3: zero in quotient, L4: three-digit dividends, L5: word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DIV-005",
+              "skill_name": "Long division: multi-digit ÷ two-digit",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-DIV-004"],
+              "difficulty_notes": "L1: two-digit ÷ two-digit, L2: three-digit ÷ two-digit, L3: four-digit ÷ two-digit, L4: with decimal quotients, L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DIV-006",
+              "skill_name": "Relationship between multiplication and division",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-MUL-003", "NUM-DIV-001"],
+              "difficulty_notes": "L1: fact families, L2: use multiplication to check division, L3: missing factor as division, L4: inverse operations in equations, L5: explain the relationship",
+              "question_types": ["fill_in_blank", "computation", "open_response"]
+            },
+            {
+              "skill_id": "NUM-DIV-007",
+              "skill_name": "Divisibility rules (2, 3, 4, 5, 6, 9, 10)",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-DIV-002"],
+              "difficulty_notes": "L1: divisible by 2, 5, 10, L2: divisible by 3, 9, L3: divisible by 4, 6, L4: apply multiple rules, L5: explain why rules work",
+              "question_types": ["true_false", "multiple_choice", "open_response"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-FRAC",
+          "unit_name": "Fractions",
+          "skills": [
+            {
+              "skill_id": "NUM-FRAC-001",
+              "skill_name": "Understand fractions as parts of a whole",
+              "grade_range": [1, 3],
+              "prerequisites": ["NUM-DIV-001"],
+              "difficulty_notes": "L1: halves and fourths with shapes, L2: thirds, L3: identify numerator/denominator, L4: fraction of a set, L5: fractions on a number line",
+              "question_types": ["visual", "fill_in_blank", "multiple_choice"]
+            },
+            {
+              "skill_id": "NUM-FRAC-002",
+              "skill_name": "Equivalent fractions",
+              "grade_range": [3, 5],
+              "prerequisites": ["NUM-FRAC-001", "NUM-MUL-003"],
+              "difficulty_notes": "L1: visual models (1/2 = 2/4), L2: multiply to find equivalents, L3: simplify fractions, L4: find common denominators, L5: explain equivalence and generate multiple equivalents",
+              "question_types": ["visual", "computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-FRAC-003",
+              "skill_name": "Simplify / reduce fractions to lowest terms",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-FRAC-002", "NUM-FACT-001"],
+              "difficulty_notes": "L1: simple (2/4, 3/6), L2: using GCF, L3: larger numerators/denominators, L4: improper fractions, L5: simplify within operations",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "NUM-FRAC-004",
+              "skill_name": "Mixed numbers and improper fractions",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-FRAC-001"],
+              "difficulty_notes": "L1: identify mixed vs improper, L2: convert improper to mixed, L3: convert mixed to improper, L4: place on number line, L5: compare mixed numbers",
+              "question_types": ["computation", "visual", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-FRAC-005",
+              "skill_name": "Add fractions with like denominators",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-FRAC-001"],
+              "difficulty_notes": "L1: unit fractions, L2: non-unit proper fractions, L3: results > 1, L4: mixed numbers with like denominators, L5: word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-006",
+              "skill_name": "Subtract fractions with like denominators",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-FRAC-005"],
+              "difficulty_notes": "L1: simple proper fractions, L2: results require simplifying, L3: mixed numbers, L4: word problems, L5: multi-step add/subtract",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-007",
+              "skill_name": "Add fractions with unlike denominators",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-FRAC-002", "NUM-FRAC-005"],
+              "difficulty_notes": "L1: one denominator is a multiple of the other, L2: find LCD, L3: simplify result, L4: mixed numbers unlike denominators, L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-008",
+              "skill_name": "Subtract fractions with unlike denominators",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-FRAC-006", "NUM-FRAC-007"],
+              "difficulty_notes": "L1: one denominator multiple of other, L2: find LCD, L3: mixed numbers, L4: borrowing with mixed numbers, L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-009",
+              "skill_name": "Multiply fractions by whole numbers",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-FRAC-001", "NUM-MUL-005"],
+              "difficulty_notes": "L1: unit fraction × whole (1/3 × 6), L2: non-unit × whole, L3: simplify results, L4: mixed number × whole, L5: word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-010",
+              "skill_name": "Multiply fractions by fractions",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-FRAC-009"],
+              "difficulty_notes": "L1: unit × unit (1/2 × 1/3), L2: non-unit × non-unit, L3: simplify/cross-cancel, L4: mixed numbers, L5: multi-step word problems (area, scaling)",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-011",
+              "skill_name": "Divide fractions by whole numbers",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-FRAC-010"],
+              "difficulty_notes": "L1: visual model, L2: multiply by reciprocal, L3: simplify, L4: mixed numbers, L5: word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-012",
+              "skill_name": "Divide fractions by fractions",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-FRAC-011"],
+              "difficulty_notes": "L1: unit ÷ unit, L2: non-unit ÷ non-unit, L3: mixed numbers, L4: complex fractions, L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FRAC-013",
+              "skill_name": "Fraction of a quantity",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-FRAC-009"],
+              "difficulty_notes": "L1: unit fraction of whole (1/4 of 20), L2: non-unit (3/4 of 20), L3: two-step, L4: word problems, L5: multi-step with comparison",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-DEC",
+          "unit_name": "Decimals",
+          "skills": [
+            {
+              "skill_id": "NUM-DEC-001",
+              "skill_name": "Understand decimal notation (tenths)",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-FRAC-001", "NUM-PV-002"],
+              "difficulty_notes": "L1: read decimals with visual, L2: write as fraction and decimal, L3: place on number line, L4: compare tenths, L5: relate to money",
+              "question_types": ["visual", "fill_in_blank", "multiple_choice"]
+            },
+            {
+              "skill_id": "NUM-DEC-002",
+              "skill_name": "Understand decimal notation (hundredths, thousandths)",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-DEC-001"],
+              "difficulty_notes": "L1: hundredths with grids, L2: thousandths, L3: expanded form, L4: convert fractions to decimals, L5: relate to percent",
+              "question_types": ["visual", "fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "NUM-DEC-003",
+              "skill_name": "Add decimals",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-DEC-001", "NUM-ADD-007"],
+              "difficulty_notes": "L1: tenths + tenths, L2: different decimal places, L3: with whole numbers, L4: multiple addends, L5: multi-step word problems (money, measurement)",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DEC-004",
+              "skill_name": "Subtract decimals",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-DEC-003", "NUM-SUB-007"],
+              "difficulty_notes": "L1: same decimal places, L2: different decimal places, L3: subtract from whole number, L4: word problems, L5: multi-step with addition",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DEC-005",
+              "skill_name": "Multiply decimals",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-DEC-002", "NUM-MUL-009"],
+              "difficulty_notes": "L1: decimal × whole number, L2: decimal × decimal (tenths), L3: hundredths, L4: estimate to place decimal point, L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DEC-006",
+              "skill_name": "Divide decimals",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-DEC-005", "NUM-DIV-005"],
+              "difficulty_notes": "L1: decimal ÷ whole number, L2: whole ÷ decimal, L3: decimal ÷ decimal, L4: repeating decimals, L5: multi-step word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-DEC-007",
+              "skill_name": "Convert between fractions and decimals",
+              "grade_range": [4, 7],
+              "prerequisites": ["NUM-FRAC-002", "NUM-DEC-002"],
+              "difficulty_notes": "L1: common fractions (1/2, 1/4), L2: tenths and hundredths, L3: division to convert, L4: repeating decimals, L5: order mixed fractions and decimals",
+              "question_types": ["computation", "fill_in_blank"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-INT",
+          "unit_name": "Integers & Rational Numbers",
+          "skills": [
+            {
+              "skill_id": "NUM-INT-001",
+              "skill_name": "Understand negative numbers and the number line",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-COMP-003"],
+              "difficulty_notes": "L1: identify negatives on number line, L2: real-world contexts (temperature, elevation), L3: opposites, L4: absolute value intro, L5: compare and order integers",
+              "question_types": ["visual", "fill_in_blank", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-INT-002",
+              "skill_name": "Add integers",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-INT-001", "NUM-ADD-007"],
+              "difficulty_notes": "L1: positive + positive (review), L2: negative + negative, L3: positive + negative (number line), L4: rules without number line, L5: multi-step and word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-INT-003",
+              "skill_name": "Subtract integers",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-INT-002"],
+              "difficulty_notes": "L1: subtract positive from positive giving negative, L2: subtract negative (add opposite), L3: mixed, L4: word problems, L5: multi-step expressions",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-INT-004",
+              "skill_name": "Multiply integers",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-INT-003", "NUM-MUL-009"],
+              "difficulty_notes": "L1: positive × positive (review), L2: positive × negative, L3: negative × negative, L4: sign rules with multiple factors, L5: word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-INT-005",
+              "skill_name": "Divide integers",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-INT-004", "NUM-DIV-005"],
+              "difficulty_notes": "L1: positive ÷ positive, L2: negative ÷ positive, L3: positive ÷ negative, L4: negative ÷ negative, L5: mixed operations with integers",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-INT-006",
+              "skill_name": "Absolute value",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-INT-001"],
+              "difficulty_notes": "L1: find absolute value, L2: compare absolute values, L3: absolute value in expressions, L4: distance between integers, L5: absolute value equations (intro)",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-INT-007",
+              "skill_name": "Operations with rational numbers (fractions, decimals, integers combined)",
+              "grade_range": [7, 8],
+              "prerequisites": ["NUM-INT-005", "NUM-FRAC-012", "NUM-DEC-006"],
+              "difficulty_notes": "L1: two operations same type, L2: mixed types, L3: order of operations with rationals, L4: complex expressions, L5: word problems requiring conversion",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-FACT",
+          "unit_name": "Factors, Multiples & Primes",
+          "skills": [
+            {
+              "skill_id": "NUM-FACT-001",
+              "skill_name": "Find factors of a number",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-DIV-002"],
+              "difficulty_notes": "L1: factors of small numbers (<20), L2: factors of numbers <50, L3: factors of numbers <100, L4: common factors of two numbers, L5: systematic factor listing strategy",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-FACT-002",
+              "skill_name": "Find multiples of a number",
+              "grade_range": [4, 5],
+              "prerequisites": ["NUM-MUL-005"],
+              "difficulty_notes": "L1: first 5 multiples, L2: first 10 multiples, L3: common multiples of two numbers, L4: LCM, L5: word problems involving multiples",
+              "question_types": ["computation", "fill_in_blank", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FACT-003",
+              "skill_name": "Prime and composite numbers",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-FACT-001"],
+              "difficulty_notes": "L1: identify prime/composite <20, L2: <50, L3: <100, L4: sieve of Eratosthenes, L5: explain why 1 is neither prime nor composite",
+              "question_types": ["multiple_choice", "true_false", "computation"]
+            },
+            {
+              "skill_id": "NUM-FACT-004",
+              "skill_name": "Prime factorization",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-FACT-003"],
+              "difficulty_notes": "L1: factor trees for small numbers, L2: for two-digit numbers, L3: for three-digit numbers, L4: express with exponents, L5: use prime factorization to find GCF/LCM",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "NUM-FACT-005",
+              "skill_name": "Greatest Common Factor (GCF)",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-FACT-001", "NUM-FACT-004"],
+              "difficulty_notes": "L1: GCF by listing factors, L2: GCF using prime factorization, L3: GCF of three numbers, L4: apply to simplify fractions, L5: word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FACT-006",
+              "skill_name": "Least Common Multiple (LCM)",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-FACT-002", "NUM-FACT-004"],
+              "difficulty_notes": "L1: LCM by listing multiples, L2: LCM using prime factorization, L3: LCM of three numbers, L4: apply to find common denominators, L5: word problems",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-EXP",
+          "unit_name": "Exponents & Roots",
+          "skills": [
+            {
+              "skill_id": "NUM-EXP-001",
+              "skill_name": "Understand exponents (whole number bases and exponents)",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-MUL-005"],
+              "difficulty_notes": "L1: squares (2², 3²), L2: cubes, L3: any whole number exponent, L4: evaluate expressions with exponents, L5: compare exponential expressions",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-EXP-002",
+              "skill_name": "Square roots (perfect squares)",
+              "grade_range": [6, 8],
+              "prerequisites": ["NUM-EXP-001"],
+              "difficulty_notes": "L1: √ of small perfect squares (1-25), L2: up to √144, L3: estimate non-perfect squares, L4: simplify radicals, L5: apply Pythagorean theorem",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-EXP-003",
+              "skill_name": "Cube roots",
+              "grade_range": [7, 8],
+              "prerequisites": ["NUM-EXP-002"],
+              "difficulty_notes": "L1: perfect cubes (1-125), L2: larger perfect cubes, L3: estimate non-perfect cubes, L4: solve x³ = n, L5: volume applications",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-EXP-004",
+              "skill_name": "Exponent rules (product, quotient, power rule)",
+              "grade_range": [7, 9],
+              "prerequisites": ["NUM-EXP-001"],
+              "difficulty_notes": "L1: product rule same base, L2: quotient rule, L3: power of a power, L4: combined rules, L5: algebraic expressions with exponent rules",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "NUM-EXP-005",
+              "skill_name": "Zero and negative exponents",
+              "grade_range": [8, 9],
+              "prerequisites": ["NUM-EXP-004"],
+              "difficulty_notes": "L1: zero exponent, L2: negative integer exponents, L3: simplify expressions, L4: scientific notation connection, L5: prove why a⁰ = 1",
+              "question_types": ["computation", "open_response"]
+            },
+            {
+              "skill_id": "NUM-EXP-006",
+              "skill_name": "Scientific notation",
+              "grade_range": [7, 9],
+              "prerequisites": ["NUM-EXP-005", "NUM-PV-008"],
+              "difficulty_notes": "L1: convert large numbers to scientific notation, L2: convert small numbers, L3: operations with scientific notation, L4: compare numbers in scientific notation, L5: real-world applications (astronomy, chemistry)",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-EXP-007",
+              "skill_name": "Rational exponents",
+              "grade_range": [9, 11],
+              "prerequisites": ["NUM-EXP-004", "NUM-EXP-002"],
+              "difficulty_notes": "L1: a^(1/2) = √a, L2: a^(1/n), L3: a^(m/n), L4: simplify expressions, L5: solve equations with rational exponents",
+              "question_types": ["computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-PCT",
+          "unit_name": "Percents",
+          "skills": [
+            {
+              "skill_id": "NUM-PCT-001",
+              "skill_name": "Understand percent as 'per hundred'",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-FRAC-002", "NUM-DEC-002"],
+              "difficulty_notes": "L1: shade grids to show percent, L2: convert fraction to percent (denominator 100), L3: benchmark percents (25%, 50%, 75%), L4: relate to fractions and decimals, L5: real-world contexts",
+              "question_types": ["visual", "fill_in_blank", "multiple_choice"]
+            },
+            {
+              "skill_id": "NUM-PCT-002",
+              "skill_name": "Convert between fractions, decimals, and percents",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-PCT-001", "NUM-DEC-007"],
+              "difficulty_notes": "L1: common equivalents (1/2 = 0.5 = 50%), L2: any fraction to percent, L3: percent to fraction (simplify), L4: repeating decimals as percents, L5: order mixed representations",
+              "question_types": ["computation", "fill_in_blank", "matching"]
+            },
+            {
+              "skill_id": "NUM-PCT-003",
+              "skill_name": "Find a percent of a number",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-PCT-002"],
+              "difficulty_notes": "L1: 10%, 25%, 50% of whole numbers, L2: any percent of whole number, L3: percent of a decimal, L4: multi-step (find 15% tip), L5: percent of a percent",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-PCT-004",
+              "skill_name": "Find what percent one number is of another",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-PCT-003"],
+              "difficulty_notes": "L1: simple (what % is 3 of 12), L2: non-whole result, L3: word problems, L4: comparing percentages, L5: multi-step analysis",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-PCT-005",
+              "skill_name": "Find the whole given a part and percent",
+              "grade_range": [6, 8],
+              "prerequisites": ["NUM-PCT-004"],
+              "difficulty_notes": "L1: simple (30 is 50% of what?), L2: non-benchmark percents, L3: word problems, L4: multi-step, L5: reverse percent problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-PCT-006",
+              "skill_name": "Percent increase and decrease",
+              "grade_range": [6, 8],
+              "prerequisites": ["NUM-PCT-003"],
+              "difficulty_notes": "L1: calculate increase amount, L2: calculate new amount after increase, L3: decrease, L4: find the percent change, L5: successive percent changes",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-PCT-007",
+              "skill_name": "Discount, tax, tip, markup",
+              "grade_range": [6, 8],
+              "prerequisites": ["NUM-PCT-006"],
+              "difficulty_notes": "L1: simple discount, L2: sales tax, L3: tip calculation, L4: markup/markdown, L5: combined (discount + tax)",
+              "question_types": ["word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-RAT",
+          "unit_name": "Ratio & Proportion",
+          "skills": [
+            {
+              "skill_id": "NUM-RAT-001",
+              "skill_name": "Understand ratios and ratio language",
+              "grade_range": [5, 6],
+              "prerequisites": ["NUM-FRAC-001"],
+              "difficulty_notes": "L1: describe ratio with visuals, L2: write ratios (a:b, a/b, a to b), L3: part-to-part vs part-to-whole, L4: equivalent ratios, L5: ratio word problems",
+              "question_types": ["visual", "fill_in_blank", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-RAT-002",
+              "skill_name": "Equivalent ratios and ratio tables",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-RAT-001"],
+              "difficulty_notes": "L1: complete ratio table, L2: find missing values, L3: generate equivalent ratios, L4: word problems, L5: double number lines",
+              "question_types": ["computation", "fill_in_blank", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-RAT-003",
+              "skill_name": "Unit rates",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-RAT-002", "NUM-DIV-005"],
+              "difficulty_notes": "L1: find unit rate from table, L2: calculate unit rate, L3: compare using unit rates, L4: unit pricing, L5: complex unit rates (miles per gallon, etc.)",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-RAT-004",
+              "skill_name": "Solve proportions (cross-multiplication)",
+              "grade_range": [6, 8],
+              "prerequisites": ["NUM-RAT-002"],
+              "difficulty_notes": "L1: find missing value in proportion, L2: set up proportion from word problem, L3: multi-step, L4: with fractions/decimals, L5: indirect measurement and scale",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-RAT-005",
+              "skill_name": "Scale drawings and maps",
+              "grade_range": [6, 8],
+              "prerequisites": ["NUM-RAT-004"],
+              "difficulty_notes": "L1: use given scale to find actual, L2: find scale factor, L3: create scale drawing, L4: area and scale, L5: multi-step map problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-RAT-006",
+              "skill_name": "Direct and inverse proportion",
+              "grade_range": [7, 9],
+              "prerequisites": ["NUM-RAT-004"],
+              "difficulty_notes": "L1: identify direct proportion, L2: write equation y = kx, L3: identify inverse proportion, L4: write equation y = k/x, L5: distinguish and solve mixed problems",
+              "question_types": ["computation", "word_problem", "multiple_choice"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-OOO",
+          "unit_name": "Order of Operations",
+          "skills": [
+            {
+              "skill_id": "NUM-OOO-001",
+              "skill_name": "Order of operations without exponents (BEDMAS/PEMDAS basics)",
+              "grade_range": [3, 5],
+              "prerequisites": ["NUM-ADD-007", "NUM-MUL-008", "NUM-DIV-004"],
+              "difficulty_notes": "L1: two operations no parentheses, L2: with parentheses, L3: three operations, L4: nested parentheses, L5: error analysis (find the mistake)",
+              "question_types": ["computation", "error_analysis"]
+            },
+            {
+              "skill_id": "NUM-OOO-002",
+              "skill_name": "Order of operations with exponents",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-OOO-001", "NUM-EXP-001"],
+              "difficulty_notes": "L1: simple with one exponent, L2: exponents and multiplication, L3: full BEDMAS, L4: with fractions and decimals, L5: complex nested expressions",
+              "question_types": ["computation", "error_analysis"]
+            },
+            {
+              "skill_id": "NUM-OOO-003",
+              "skill_name": "Order of operations with integers and rational numbers",
+              "grade_range": [7, 8],
+              "prerequisites": ["NUM-OOO-002", "NUM-INT-007"],
+              "difficulty_notes": "L1: integers with two operations, L2: integers with parentheses, L3: rationals mixed, L4: absolute value in expressions, L5: multi-step complex expressions",
+              "question_types": ["computation", "error_analysis"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-CLASS",
+          "unit_name": "Number Classification (Real Number System)",
+          "skills": [
+            {
+              "skill_id": "NUM-CLASS-001",
+              "skill_name": "Classify numbers as natural, whole, integer, rational, or irrational",
+              "grade_range": [7, 9],
+              "prerequisites": ["NUM-INT-001", "NUM-FRAC-001", "NUM-DEC-007"],
+              "difficulty_notes": "L1: identify natural and whole numbers, L2: classify rational numbers (fractions, terminating/repeating decimals), L3: identify irrational numbers (√2, π), L4: Venn diagram of number sets and subsets, L5: prove a number is irrational (e.g., √2) or explain why repeating decimals are rational",
+              "question_types": ["multiple_choice", "true_false", "visual", "open_response"]
+            },
+            {
+              "skill_id": "NUM-CLASS-002",
+              "skill_name": "Understand the real number system and its properties",
+              "grade_range": [8, 11],
+              "prerequisites": ["NUM-CLASS-001"],
+              "difficulty_notes": "L1: place numbers on a number line (including irrationals), L2: density property (between any two reals is another), L3: closure under operations (rationals closed under +, ×; irrationals not), L4: identify what set a result belongs to (rational + irrational = irrational), L5: introduction to complex/imaginary numbers as extending beyond reals",
+              "question_types": ["multiple_choice", "open_response", "true_false"]
+            }
+          ]
+        },
+        {
+          "unit_id": "NUM-FIN",
+          "unit_name": "Financial Literacy",
+          "skills": [
+            {
+              "skill_id": "NUM-FIN-001",
+              "skill_name": "Earning and payment (coins, bills, making change)",
+              "grade_range": [1, 4],
+              "prerequisites": ["NUM-ADD-003", "NUM-SUB-003"],
+              "difficulty_notes": "L1: identify coins and bills, L2: count mixed coins to make an amount, L3: make change from a purchase, L4: word problems with multiple items, L5: compare costs and budgeting basics",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FIN-002",
+              "skill_name": "Budgeting basics",
+              "grade_range": [5, 9],
+              "prerequisites": ["NUM-PCT-003", "NUM-DEC-003"],
+              "difficulty_notes": "L1: identify income and expenses, L2: create a simple budget, L3: track spending and compare to budget, L4: adjust budget when income/expenses change, L5: savings goals and priorities",
+              "question_types": ["word_problem", "computation"]
+            },
+            {
+              "skill_id": "NUM-FIN-003",
+              "skill_name": "Gross and net pay (income, deductions, taxes)",
+              "grade_range": [9, 10],
+              "prerequisites": ["NUM-PCT-003"],
+              "difficulty_notes": "L1: calculate gross pay (hourly rate × hours), L2: overtime pay calculations, L3: identify common deductions (CPP, EI, income tax), L4: calculate net pay from gross pay and deductions, L5: compare pay structures (hourly, salary, commission, piecework) and calculate annual income",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FIN-004",
+              "skill_name": "Simple interest",
+              "grade_range": [7, 9],
+              "prerequisites": ["NUM-PCT-003"],
+              "difficulty_notes": "L1: calculate interest I = Prt, L2: find total amount A = P + I, L3: find rate or time, L4: compare two simple interest scenarios, L5: word problems with mixed unknowns",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FIN-005",
+              "skill_name": "Compound interest",
+              "grade_range": [9, 11],
+              "prerequisites": ["NUM-FIN-004", "NUM-EXP-001"],
+              "difficulty_notes": "L1: annual compounding A = P(1+r)^t, L2: semi-annual and quarterly (A = P(1+r/n)^(nt)), L3: monthly compounding, L4: find rate or time (using logarithms), L5: compare simple vs compound interest, continuous compounding A = Pe^(rt)",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FIN-006",
+              "skill_name": "Investments with regular payments (annuities / TVM)",
+              "grade_range": [10, 11],
+              "prerequisites": ["NUM-FIN-005"],
+              "difficulty_notes": "L1: future value of annuity (regular deposits, using technology/formula), L2: present value of annuity, L3: determine regular payment amount, L4: RRSP/savings plan scenarios, L5: compare investment options with different compounding and payment structures",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FIN-007",
+              "skill_name": "Loans and mortgages",
+              "grade_range": [10, 11],
+              "prerequisites": ["NUM-FIN-006"],
+              "difficulty_notes": "L1: calculate total cost of a loan (principal + interest), L2: monthly payment calculation (using technology), L3: amortization concepts (how much goes to interest vs principal), L4: mortgage scenarios (down payment, amortization period, payment frequency), L5: compare loan options and total interest paid over different terms",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "NUM-FIN-008",
+              "skill_name": "Buying, leasing, and renting",
+              "grade_range": [10, 11],
+              "prerequisites": ["NUM-FIN-007"],
+              "difficulty_notes": "L1: compare total cost of buying vs leasing (simple), L2: factor in depreciation, L3: renting vs buying a home (opportunity cost), L4: car lease terms (residual value, mileage), L5: comprehensive scenario — make and justify a financial decision using multiple factors",
+              "question_types": ["word_problem", "open_response"]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "domain_id": "ALG",
+      "domain_name": "Algebra",
+      "description": "Patterns, variables, expressions, equations, inequalities, and functions from early algebraic thinking through advanced algebra.",
+      "units": [
+        {
+          "unit_id": "ALG-PAT",
+          "unit_name": "Patterns & Sequences",
+          "skills": [
+            {
+              "skill_id": "ALG-PAT-001",
+              "skill_name": "Identify and extend repeating patterns (AB, ABC, ABB, etc.)",
+              "grade_range": [0, 1],
+              "prerequisites": [],
+              "difficulty_notes": "L1: two-element patterns, L2: three-element, L3: growing patterns, L4: find the rule, L5: create own patterns",
+              "question_types": ["visual", "fill_in_blank"]
+            },
+            {
+              "skill_id": "ALG-PAT-002",
+              "skill_name": "Number patterns (arithmetic sequences intro)",
+              "grade_range": [2, 4],
+              "prerequisites": ["NUM-ADD-003", "NUM-COUNT-011"],
+              "difficulty_notes": "L1: find next in +1, +2, +5, +10, L2: find rule, L3: decreasing patterns, L4: two-step rules (×2+1), L5: extend and explain pattern",
+              "question_types": ["fill_in_blank", "computation", "open_response"]
+            },
+            {
+              "skill_id": "ALG-PAT-003",
+              "skill_name": "Input-output tables (function machines)",
+              "grade_range": [3, 5],
+              "prerequisites": ["ALG-PAT-002"],
+              "difficulty_notes": "L1: one operation rule, L2: two operation rule, L3: find the rule from table, L4: complete table both directions, L5: write equation from table",
+              "question_types": ["fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "ALG-PAT-004",
+              "skill_name": "Arithmetic sequences (explicit and recursive)",
+              "grade_range": [7, 10],
+              "prerequisites": ["ALG-PAT-002", "ALG-EXP-003"],
+              "difficulty_notes": "L1: find common difference, L2: find nth term, L3: find n given a term, L4: sum of arithmetic series, L5: word problems and proofs",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-PAT-005",
+              "skill_name": "Geometric sequences (explicit and recursive)",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-PAT-004", "NUM-EXP-004"],
+              "difficulty_notes": "L1: find common ratio, L2: find nth term, L3: find n given a term, L4: sum of geometric series (finite), L5: infinite geometric series and convergence",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-EXP",
+          "unit_name": "Expressions & Variables",
+          "skills": [
+            {
+              "skill_id": "ALG-EXP-001",
+              "skill_name": "Use symbols/variables to represent unknowns",
+              "grade_range": [2, 4],
+              "prerequisites": ["NUM-ADD-003"],
+              "difficulty_notes": "L1: _ + 3 = 7, L2: use letter variables, L3: variable in different positions, L4: two unknowns, L5: explain what a variable represents",
+              "question_types": ["fill_in_blank", "computation"]
+            },
+            {
+              "skill_id": "ALG-EXP-002",
+              "skill_name": "Write and evaluate simple expressions",
+              "grade_range": [4, 6],
+              "prerequisites": ["ALG-EXP-001", "NUM-OOO-001"],
+              "difficulty_notes": "L1: one-operation expressions, L2: two-operation, L3: evaluate for given value, L4: translate words to expressions, L5: evaluate with multiple variables",
+              "question_types": ["computation", "fill_in_blank", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-EXP-003",
+              "skill_name": "Simplify algebraic expressions (combine like terms)",
+              "grade_range": [6, 8],
+              "prerequisites": ["ALG-EXP-002"],
+              "difficulty_notes": "L1: combine single variable terms, L2: with constants, L3: multiple variables, L4: with parentheses, L5: with fractions and decimals as coefficients",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-EXP-004",
+              "skill_name": "Distributive property in expressions",
+              "grade_range": [6, 8],
+              "prerequisites": ["ALG-EXP-003", "NUM-MUL-011"],
+              "difficulty_notes": "L1: a(b+c) with numbers, L2: with variables, L3: negative outside, L4: multiple distributions, L5: factor out common factors (reverse)",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-EXP-005",
+              "skill_name": "Factor algebraic expressions (GCF)",
+              "grade_range": [7, 9],
+              "prerequisites": ["ALG-EXP-004", "NUM-FACT-005"],
+              "difficulty_notes": "L1: factor out a number, L2: factor out a variable, L3: factor out monomial, L4: factor by grouping, L5: multi-step factoring",
+              "question_types": ["computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-EQ1",
+          "unit_name": "Linear Equations (One Variable)",
+          "skills": [
+            {
+              "skill_id": "ALG-EQ1-001",
+              "skill_name": "Solve one-step equations (addition/subtraction)",
+              "grade_range": [5, 7],
+              "prerequisites": ["ALG-EXP-001"],
+              "difficulty_notes": "L1: x + a = b (positive), L2: x - a = b, L3: with negative results, L4: with fractions/decimals, L5: word problems → equation → solve",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-EQ1-002",
+              "skill_name": "Solve one-step equations (multiplication/division)",
+              "grade_range": [5, 7],
+              "prerequisites": ["ALG-EQ1-001"],
+              "difficulty_notes": "L1: ax = b (whole numbers), L2: x/a = b, L3: with negatives, L4: with fractions, L5: word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-EQ1-003",
+              "skill_name": "Solve two-step equations",
+              "grade_range": [6, 8],
+              "prerequisites": ["ALG-EQ1-001", "ALG-EQ1-002"],
+              "difficulty_notes": "L1: ax + b = c, L2: x/a + b = c, L3: with negatives, L4: with fractions, L5: word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-EQ1-004",
+              "skill_name": "Solve multi-step equations (variables on both sides)",
+              "grade_range": [7, 9],
+              "prerequisites": ["ALG-EQ1-003", "ALG-EXP-004"],
+              "difficulty_notes": "L1: ax + b = cx + d, L2: with distribution, L3: no solution / infinite solutions, L4: with fractions, L5: complex multi-step with word problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-EQ1-005",
+              "skill_name": "Literal equations (solve for a variable)",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-EQ1-004"],
+              "difficulty_notes": "L1: solve for one variable (d=rt for t), L2: formulas with fractions, L3: quadratic formulas, L4: multiple occurrences of target variable, L5: complex scientific formulas",
+              "question_types": ["computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-INEQ",
+          "unit_name": "Inequalities",
+          "skills": [
+            {
+              "skill_id": "ALG-INEQ-001",
+              "skill_name": "Understand inequality symbols and graph on number line",
+              "grade_range": [6, 7],
+              "prerequisites": ["NUM-COMP-002"],
+              "difficulty_notes": "L1: read inequality statements, L2: graph simple inequalities, L3: write inequality from number line, L4: compound inequalities, L5: real-world interpretation",
+              "question_types": ["visual", "fill_in_blank"]
+            },
+            {
+              "skill_id": "ALG-INEQ-002",
+              "skill_name": "Solve one-step and two-step inequalities",
+              "grade_range": [6, 8],
+              "prerequisites": ["ALG-INEQ-001", "ALG-EQ1-003"],
+              "difficulty_notes": "L1: add/subtract inequalities, L2: multiply/divide (positive), L3: multiply/divide (negative — flip!), L4: graph solution set, L5: word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-INEQ-003",
+              "skill_name": "Solve multi-step and compound inequalities",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-INEQ-002", "ALG-EQ1-004"],
+              "difficulty_notes": "L1: multi-step single inequality, L2: AND compound, L3: OR compound, L4: absolute value inequalities, L5: systems of inequalities intro",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-INEQ-004",
+              "skill_name": "Quadratic inequalities",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-INEQ-003", "ALG-QUAD-001"],
+              "difficulty_notes": "L1: x² - a² > 0 (factorable, positive leading coeff), L2: x² + bx + c < 0 (two real roots), L3: ax² + bx + c ≥ 0 (a≠1), L4: sign analysis with number line / test intervals, L5: no real roots or always positive/negative, quadratic inequality word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-INEQ-005",
+              "skill_name": "Rational inequalities",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-INEQ-004", "ALG-RATEXP-001"],
+              "difficulty_notes": "L1: (x-a)/(x-b) > 0 (simple), L2: identify critical values (zeros and non-permissible), L3: sign chart with rational expression, L4: combined polynomial and rational factors, L5: multi-step with domain restrictions and word problems",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "ALG-INEQ-006",
+              "skill_name": "Sign analysis and interval notation",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-INEQ-004"],
+              "difficulty_notes": "L1: write solution in interval notation (single interval), L2: union of intervals, L3: sign chart for polynomial, L4: sign chart for rational, L5: identify where f(x) > 0, f(x) < 0, f(x) = 0 from graph or equation",
+              "question_types": ["computation", "visual", "fill_in_blank"]
+            },
+            {
+              "skill_id": "ALG-INEQ-007",
+              "skill_name": "Absolute value equations",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-EQ1-004", "NUM-INT-006"],
+              "difficulty_notes": "L1: |x| = a, L2: |ax + b| = c, L3: |ax + b| = |cx + d|, L4: extraneous solutions check, L5: absolute value equations with quadratics inside",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-INEQ-008",
+              "skill_name": "Absolute value inequalities",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-INEQ-007", "ALG-INEQ-003"],
+              "difficulty_notes": "L1: |x| < a (conjunction), L2: |x| > a (disjunction), L3: |ax + b| ≤ c, L4: |ax + b| ≥ c, L5: compound absolute value with interval notation",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "ALG-INEQ-009",
+              "skill_name": "Absolute value functions (graphing and analysis)",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-INEQ-007", "ALG-FUNC-005"],
+              "difficulty_notes": "L1: graph y = |x| and identify shape, L2: graph y = |ax + b|, L3: transformations of absolute value functions, L4: piecewise definition of absolute value, L5: analyze y = |f(x)| for quadratic and linear f(x), identify domain/range/intercepts",
+              "question_types": ["computation", "visual"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-POLY",
+          "unit_name": "Polynomials",
+          "skills": [
+            {
+              "skill_id": "ALG-POLY-001",
+              "skill_name": "Classify and name polynomials",
+              "grade_range": [8, 9],
+              "prerequisites": ["ALG-EXP-003"],
+              "difficulty_notes": "L1: identify degree, L2: classify by terms (monomial/binomial/trinomial), L3: standard form, L4: leading coefficient, L5: identify from context",
+              "question_types": ["multiple_choice", "fill_in_blank"]
+            },
+            {
+              "skill_id": "ALG-POLY-002",
+              "skill_name": "Add and subtract polynomials",
+              "grade_range": [8, 9],
+              "prerequisites": ["ALG-EXP-003"],
+              "difficulty_notes": "L1: add monomials, L2: add binomials, L3: add trinomials, L4: subtract polynomials, L5: multi-step with distribution",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-POLY-003",
+              "skill_name": "Multiply polynomials",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-POLY-002", "ALG-EXP-004"],
+              "difficulty_notes": "L1: monomial × polynomial, L2: binomial × binomial (FOIL), L3: binomial × trinomial, L4: polynomial × polynomial, L5: special products (difference of squares, perfect squares)",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-POLY-004",
+              "skill_name": "Factor trinomials (a=1): x² + bx + c",
+              "grade_range": [9, 10],
+              "prerequisites": ["ALG-POLY-003"],
+              "difficulty_notes": "L1: both factors positive, L2: one negative, L3: both negative, L4: with common factor first, L5: word problems and geometric applications",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-POLY-005",
+              "skill_name": "Factor trinomials (a≠1): ax² + bx + c",
+              "grade_range": [9, 10],
+              "prerequisites": ["ALG-POLY-004"],
+              "difficulty_notes": "L1: decomposition method, L2: AC method, L3: with GCF factored first, L4: mixed practice, L5: complex coefficients",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-POLY-006",
+              "skill_name": "Factor special products (difference of squares, perfect square trinomials, sum/difference of cubes)",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-POLY-003"],
+              "difficulty_notes": "L1: basic difference of squares (x²-9), L2: generalized difference of squares (a²x²-b²y², e.g., 25x²-16y²), L3: perfect square trinomials (x²+6x+9), L4: sum/difference of cubes (x³±8), L5: recognize in non-obvious forms (x⁴-1 as nested, or 9(x+1)²-4)",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-POLY-007",
+              "skill_name": "Factoring by substitution / pattern recognition: a(f(x))² + b(f(x)) + c",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-POLY-005", "ALG-POLY-006"],
+              "difficulty_notes": "L1: x⁴ + 5x² + 6 (let u = x²), L2: (x+1)² + 3(x+1) + 2, L3: with radicals or fractional exponents, L4: mixed — identify the substitution, L5: higher degree or nested patterns requiring multiple factoring steps",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-POLY-008",
+              "skill_name": "Polynomial long division and synthetic division",
+              "grade_range": [10, 12],
+              "prerequisites": ["ALG-POLY-003", "NUM-DIV-005"],
+              "difficulty_notes": "L1: monomial divisor, L2: binomial divisor (no remainder), L3: with remainder, L4: synthetic division, L5: factor theorem and remainder theorem",
+              "question_types": ["computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-QUAD",
+          "unit_name": "Quadratic Equations & Functions",
+          "skills": [
+            {
+              "skill_id": "ALG-QUAD-001",
+              "skill_name": "Solve quadratics by factoring",
+              "grade_range": [9, 10],
+              "prerequisites": ["ALG-POLY-004", "ALG-POLY-005"],
+              "difficulty_notes": "L1: x² + bx + c = 0 (simple), L2: ax² + bx + c = 0, L3: requiring rearrangement, L4: word problems, L5: higher-degree equations reducible to quadratic",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-QUAD-002",
+              "skill_name": "Solve quadratics using the quadratic formula",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-QUAD-001", "NUM-EXP-002"],
+              "difficulty_notes": "L1: positive rational roots, L2: irrational roots, L3: complex roots, L4: word problems, L5: derive the formula by completing the square",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-QUAD-003",
+              "skill_name": "Solve quadratics by completing the square",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-QUAD-001"],
+              "difficulty_notes": "L1: a=1, even b, L2: a=1, odd b, L3: a≠1, L4: convert to vertex form, L5: derive quadratic formula",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-QUAD-004",
+              "skill_name": "Discriminant and nature of roots",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-QUAD-002"],
+              "difficulty_notes": "L1: calculate discriminant, L2: determine number of real roots, L3: complex roots, L4: find k for specific root conditions, L5: graphical interpretation",
+              "question_types": ["computation", "multiple_choice", "open_response"]
+            },
+            {
+              "skill_id": "ALG-QUAD-005",
+              "skill_name": "Graph quadratic functions (parabolas)",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-QUAD-003"],
+              "difficulty_notes": "L1: y = x² transformations, L2: vertex form y = a(x-h)²+k, L3: standard form → vertex, L4: identify axis of symmetry, vertex, intercepts, L5: applications (projectile motion)",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-QUAD-006",
+              "skill_name": "Quadratic word problems (optimization, projectile, area)",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-QUAD-005"],
+              "difficulty_notes": "L1: max/min from vertex, L2: projectile motion, L3: area optimization, L4: revenue/profit, L5: multi-constraint problems",
+              "question_types": ["word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-SYS",
+          "unit_name": "Systems of Equations",
+          "skills": [
+            {
+              "skill_id": "ALG-SYS-001",
+              "skill_name": "Solve systems by graphing",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-LIN-003"],
+              "difficulty_notes": "L1: both in slope-intercept form, L2: mixed forms, L3: identify no solution (parallel), L4: infinite solutions, L5: estimate from graph and verify",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "ALG-SYS-002",
+              "skill_name": "Solve systems by substitution",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-EQ1-004"],
+              "difficulty_notes": "L1: one variable isolated, L2: isolate then substitute, L3: with fractions, L4: word problems, L5: no solution / infinite solutions",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-SYS-003",
+              "skill_name": "Solve systems by elimination",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-SYS-002"],
+              "difficulty_notes": "L1: opposite coefficients, L2: multiply one equation, L3: multiply both, L4: with fractions/decimals, L5: word problems and special cases",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-SYS-004",
+              "skill_name": "Systems of equations word problems",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-SYS-003"],
+              "difficulty_notes": "L1: define variables and write system, L2: mixture problems, L3: distance-rate-time, L4: break-even, L5: three-variable systems",
+              "question_types": ["word_problem"]
+            },
+            {
+              "skill_id": "ALG-SYS-005",
+              "skill_name": "Systems of inequalities (graphing)",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-SYS-001", "ALG-INEQ-003"],
+              "difficulty_notes": "L1: graph two linear inequalities, L2: identify feasible region, L3: three or more inequalities, L4: optimization (linear programming intro), L5: real-world constraints",
+              "question_types": ["visual", "computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-LIN",
+          "unit_name": "Linear Functions & Graphing",
+          "skills": [
+            {
+              "skill_id": "ALG-LIN-001",
+              "skill_name": "Plot points on the coordinate plane",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-INT-001"],
+              "difficulty_notes": "L1: first quadrant only, L2: all four quadrants, L3: identify coordinates from graph, L4: distance between points (horizontal/vertical), L5: reflections across axes",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "ALG-LIN-002",
+              "skill_name": "Understand slope (rate of change)",
+              "grade_range": [7, 9],
+              "prerequisites": ["ALG-LIN-001", "NUM-FRAC-012"],
+              "difficulty_notes": "L1: find slope from graph (counting), L2: slope formula, L3: positive/negative/zero/undefined, L4: parallel and perpendicular slopes, L5: rate of change in context",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-LIN-003",
+              "skill_name": "Slope-intercept form (y = mx + b)",
+              "grade_range": [7, 9],
+              "prerequisites": ["ALG-LIN-002", "ALG-EQ1-003"],
+              "difficulty_notes": "L1: identify m and b, L2: graph from equation, L3: write equation from graph, L4: write equation from two points, L5: real-world modeling",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-LIN-004",
+              "skill_name": "Point-slope form",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-LIN-003"],
+              "difficulty_notes": "L1: write in point-slope form, L2: convert to slope-intercept, L3: from two points, L4: parallel/perpendicular lines, L5: applications",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-LIN-005",
+              "skill_name": "Standard form of a linear equation (Ax + By = C)",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-LIN-003"],
+              "difficulty_notes": "L1: identify standard form, L2: find intercepts, L3: convert between forms, L4: graph from standard form, L5: applications",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-LIN-006",
+              "skill_name": "Linear function word problems",
+              "grade_range": [7, 10],
+              "prerequisites": ["ALG-LIN-003"],
+              "difficulty_notes": "L1: identify rate and starting value, L2: write equation, L3: make predictions, L4: compare two linear models, L5: interpret and critique models",
+              "question_types": ["word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-RAD",
+          "unit_name": "Radicals & Radical Equations",
+          "skills": [
+            {
+              "skill_id": "ALG-RAD-001",
+              "skill_name": "Simplify radical expressions",
+              "grade_range": [8, 10],
+              "prerequisites": ["NUM-EXP-002", "NUM-FACT-004"],
+              "difficulty_notes": "L1: simplify perfect squares under radical, L2: simplify non-perfect (√50 = 5√2), L3: simplify with variables (√(50x³)), L4: rationalize denominator (monomial and binomial), L5: cube roots and higher index radicals with variables",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-RAD-002",
+              "skill_name": "Convert between radicals and rational exponents",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-RAD-001", "NUM-EXP-007"],
+              "difficulty_notes": "L1: √a = a^(1/2), L2: ⁿ√a = a^(1/n), L3: (√a)^m = a^(m/n), L4: simplify expressions using exponent laws with rational exponents, L5: evaluate numerical expressions both ways and determine which form is simpler",
+              "question_types": ["computation", "multiple_choice"]
+            },
+            {
+              "skill_id": "ALG-RAD-003",
+              "skill_name": "Order and compare irrational numbers",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-RAD-001"],
+              "difficulty_notes": "L1: compare √a and √b, L2: place radicals on number line (approximate), L3: order a mix of radicals, fractions, and decimals, L4: without calculator — use squaring to compare (e.g., 3√2 vs 2√5), L5: mixed forms including π, rational exponents",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "ALG-RAD-004",
+              "skill_name": "Add, subtract, multiply, divide radicals",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-RAD-001"],
+              "difficulty_notes": "L1: add/subtract like radicals, L2: simplify then add/subtract, L3: multiply radicals (including distributive), L4: FOIL with radicals and conjugates, L5: divide and rationalize with binomial denominators",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-RAD-005",
+              "skill_name": "Solve radical equations (including domain restrictions and extraneous roots)",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-RAD-004", "ALG-QUAD-001"],
+              "difficulty_notes": "L1: √x = a (check domain x≥0), L2: √(ax+b) = c (identify domain restriction), L3: isolate radical, square, check for extraneous solutions, L4: two radicals (isolate one, square, repeat), L5: equations mixing radical and linear terms, explain why extraneous roots arise",
+              "question_types": ["computation", "word_problem", "open_response"]
+            },
+            {
+              "skill_id": "ALG-RAD-006",
+              "skill_name": "Graph radical functions and identify characteristics",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-RAD-005", "ALG-FUNC-005"],
+              "difficulty_notes": "L1: graph y = √x and identify domain/range, L2: transformations y = a√(b(x-h))+k, L3: determine domain from expression under radical, L4: find intercepts algebraically, L5: solve graphically — intersection of radical and linear functions",
+              "question_types": ["computation", "visual"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-RATEXP",
+          "unit_name": "Rational Expressions & Equations",
+          "skills": [
+            {
+              "skill_id": "ALG-RATEXP-001",
+              "skill_name": "Identify non-permissible values (restrictions on variables)",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-POLY-004"],
+              "difficulty_notes": "L1: monomial denominator (x≠0), L2: binomial denominator (x≠a), L3: factored polynomial denominator, L4: state restrictions before simplifying, L5: restrictions from context/word problems (e.g., dimensions must be positive)",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "ALG-RATEXP-002",
+              "skill_name": "Simplify rational expressions",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-RATEXP-001", "ALG-POLY-004", "NUM-FRAC-003"],
+              "difficulty_notes": "L1: monomial/monomial, L2: factor and cancel common binomial, L3: trinomial numerator/denominator, L4: factor both then cancel (state NPVs), L5: complex rational expressions (fractions within fractions)",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-RATEXP-003",
+              "skill_name": "Multiply and divide rational expressions",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-RATEXP-002"],
+              "difficulty_notes": "L1: monomial, L2: factor then multiply, L3: divide (multiply by reciprocal), L4: multi-step with NPVs, L5: complex expressions",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-RATEXP-004",
+              "skill_name": "Add and subtract rational expressions",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-RATEXP-002"],
+              "difficulty_notes": "L1: same denominator, L2: find LCD (monomial), L3: LCD with polynomial denominators, L4: complex fractions, L5: word problems requiring addition/subtraction of rational expressions",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "ALG-RATEXP-005",
+              "skill_name": "Solve rational equations (including extraneous root identification)",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-RATEXP-004"],
+              "difficulty_notes": "L1: variable in one denominator — multiply through, L2: variable in both denominators, L3: check for extraneous solutions (solution equals NPV), L4: work/rate problems, L5: mixture problems and multi-step applications",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-FUNC",
+          "unit_name": "Functions (General)",
+          "skills": [
+            {
+              "skill_id": "ALG-FUNC-001",
+              "skill_name": "Understand function concept (definition, notation, vertical line test)",
+              "grade_range": [7, 9],
+              "prerequisites": ["ALG-LIN-001"],
+              "difficulty_notes": "L1: is it a function (sets of ordered pairs), L2: function notation f(x), L3: evaluate f(a), L4: domain and range from graph, L5: domain restrictions algebraically",
+              "question_types": ["multiple_choice", "computation", "visual"]
+            },
+            {
+              "skill_id": "ALG-FUNC-002",
+              "skill_name": "Domain and range",
+              "grade_range": [8, 11],
+              "prerequisites": ["ALG-FUNC-001"],
+              "difficulty_notes": "L1: from a graph, L2: from equation (linear), L3: from quadratic/radical, L4: from rational, L5: piecewise and composite",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "ALG-FUNC-003",
+              "skill_name": "Function composition: f(g(x))",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-FUNC-001"],
+              "difficulty_notes": "L1: evaluate f(g(a)), L2: find f(g(x)), L3: find g(f(x)), L4: domain of composition, L5: decompose composite function",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-FUNC-004",
+              "skill_name": "Inverse functions",
+              "grade_range": [10, 12],
+              "prerequisites": ["ALG-FUNC-003"],
+              "difficulty_notes": "L1: find inverse of linear, L2: verify inverses, L3: inverse of quadratic (restricted domain), L4: graph inverse as reflection, L5: inverse of exponential/logarithmic",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "ALG-FUNC-005",
+              "skill_name": "Transformations of functions",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-FUNC-001", "ALG-QUAD-005"],
+              "difficulty_notes": "L1: vertical shifts, L2: horizontal shifts, L3: reflections, L4: stretches and compressions, L5: combined transformations and write equations",
+              "question_types": ["visual", "computation", "multiple_choice"]
+            },
+            {
+              "skill_id": "ALG-FUNC-006",
+              "skill_name": "Piecewise functions",
+              "grade_range": [10, 11],
+              "prerequisites": ["ALG-FUNC-002"],
+              "difficulty_notes": "L1: evaluate piecewise, L2: graph piecewise, L3: write piecewise from graph, L4: domain and range, L5: absolute value as piecewise",
+              "question_types": ["computation", "visual"]
+            }
+          ]
+        },
+        {
+          "unit_id": "ALG-EXPLOG",
+          "unit_name": "Exponential & Logarithmic Functions",
+          "skills": [
+            {
+              "skill_id": "ALG-EXPLOG-001",
+              "skill_name": "Graph exponential functions (growth and decay)",
+              "grade_range": [9, 11],
+              "prerequisites": ["NUM-EXP-004", "ALG-FUNC-005"],
+              "difficulty_notes": "L1: y = 2^x, L2: y = a·b^x, L3: identify growth vs decay, L4: transformations, L5: asymptotes and end behavior",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "ALG-EXPLOG-002",
+              "skill_name": "Exponential growth/decay word problems",
+              "grade_range": [9, 11],
+              "prerequisites": ["ALG-EXPLOG-001"],
+              "difficulty_notes": "L1: population growth, L2: radioactive decay, L3: compound interest, L4: find rate or time, L5: compare models",
+              "question_types": ["word_problem"]
+            },
+            {
+              "skill_id": "ALG-EXPLOG-003",
+              "skill_name": "Understand logarithms (definition, convert between forms)",
+              "grade_range": [10, 12],
+              "prerequisites": ["ALG-EXPLOG-001"],
+              "difficulty_notes": "L1: convert exponential to log, L2: evaluate simple logs, L3: common and natural log, L4: log properties, L5: change of base formula",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-EXPLOG-004",
+              "skill_name": "Logarithm properties (product, quotient, power)",
+              "grade_range": [10, 12],
+              "prerequisites": ["ALG-EXPLOG-003"],
+              "difficulty_notes": "L1: expand using properties, L2: condense, L3: evaluate with properties, L4: prove identities, L5: apply to solve equations",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "ALG-EXPLOG-005",
+              "skill_name": "Solve exponential and logarithmic equations",
+              "grade_range": [10, 12],
+              "prerequisites": ["ALG-EXPLOG-004"],
+              "difficulty_notes": "L1: same base exponential, L2: using logs to solve, L3: log equations, L4: check extraneous, L5: application problems",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "domain_id": "GEO",
+      "domain_name": "Geometry & Measurement",
+      "description": "Shapes, spatial reasoning, measurement, coordinate geometry, transformations, and proofs.",
+      "units": [
+        {
+          "unit_id": "GEO-SHAPE",
+          "unit_name": "Shapes & Their Properties",
+          "skills": [
+            {
+              "skill_id": "GEO-SHAPE-001",
+              "skill_name": "Identify and describe 2D shapes (circle, triangle, square, rectangle)",
+              "grade_range": [0, 1],
+              "prerequisites": [],
+              "difficulty_notes": "L1: name shapes, L2: describe attributes (sides, corners), L3: classify by attributes, L4: compare shapes, L5: composite shapes",
+              "question_types": ["visual", "multiple_choice", "matching"]
+            },
+            {
+              "skill_id": "GEO-SHAPE-002",
+              "skill_name": "Identify and describe 3D shapes (cube, sphere, cylinder, cone, prism)",
+              "grade_range": [0, 2],
+              "prerequisites": ["GEO-SHAPE-001"],
+              "difficulty_notes": "L1: name 3D shapes, L2: faces/edges/vertices, L3: relate to 2D shapes, L4: real-world examples, L5: nets of 3D shapes",
+              "question_types": ["visual", "multiple_choice"]
+            },
+            {
+              "skill_id": "GEO-SHAPE-003",
+              "skill_name": "Classify triangles (by sides and angles)",
+              "grade_range": [3, 5],
+              "prerequisites": ["GEO-SHAPE-001", "GEO-ANG-001"],
+              "difficulty_notes": "L1: by sides (equilateral, isosceles, scalene), L2: by angles (acute, right, obtuse), L3: combine classifications, L4: from coordinates, L5: triangle inequality theorem",
+              "question_types": ["visual", "multiple_choice", "computation"]
+            },
+            {
+              "skill_id": "GEO-SHAPE-004",
+              "skill_name": "Classify quadrilaterals",
+              "grade_range": [3, 6],
+              "prerequisites": ["GEO-SHAPE-001"],
+              "difficulty_notes": "L1: identify (square, rectangle, parallelogram, rhombus, trapezoid), L2: properties of each, L3: hierarchy/relationships, L4: from coordinates, L5: prove classification",
+              "question_types": ["visual", "multiple_choice", "open_response"]
+            },
+            {
+              "skill_id": "GEO-SHAPE-005",
+              "skill_name": "Polygons (regular and irregular, naming by sides)",
+              "grade_range": [3, 6],
+              "prerequisites": ["GEO-SHAPE-001"],
+              "difficulty_notes": "L1: name by number of sides (pentagon through decagon), L2: regular vs irregular, L3: interior angle sum, L4: exterior angles, L5: diagonals formula",
+              "question_types": ["visual", "computation", "multiple_choice"]
+            },
+            {
+              "skill_id": "GEO-SHAPE-006",
+              "skill_name": "Circle parts and properties",
+              "grade_range": [4, 7],
+              "prerequisites": ["GEO-SHAPE-001"],
+              "difficulty_notes": "L1: identify radius, diameter, center, L2: circumference formula, L3: chord, arc, sector, L4: central angles, L5: inscribed angles",
+              "question_types": ["visual", "computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "GEO-SHAPE-007",
+              "skill_name": "Symmetry (line symmetry and rotational)",
+              "grade_range": [3, 6],
+              "prerequisites": ["GEO-SHAPE-001"],
+              "difficulty_notes": "L1: identify lines of symmetry, L2: draw lines of symmetry, L3: complete symmetric figure, L4: rotational symmetry and order, L5: symmetry in coordinate plane",
+              "question_types": ["visual", "fill_in_blank"]
+            }
+          ]
+        },
+        {
+          "unit_id": "GEO-ANG",
+          "unit_name": "Angles",
+          "skills": [
+            {
+              "skill_id": "GEO-ANG-001",
+              "skill_name": "Understand and classify angles (acute, right, obtuse, straight, reflex)",
+              "grade_range": [3, 5],
+              "prerequisites": [],
+              "difficulty_notes": "L1: identify right angles, L2: classify acute/obtuse, L3: estimate angle measures, L4: straight and reflex, L5: angles in real-world contexts",
+              "question_types": ["visual", "multiple_choice"]
+            },
+            {
+              "skill_id": "GEO-ANG-002",
+              "skill_name": "Measure angles with a protractor",
+              "grade_range": [4, 5],
+              "prerequisites": ["GEO-ANG-001"],
+              "difficulty_notes": "L1: measure given angles, L2: draw angles of given measure, L3: reflex angles, L4: angles in shapes, L5: estimate then verify",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "GEO-ANG-003",
+              "skill_name": "Complementary and supplementary angles",
+              "grade_range": [5, 7],
+              "prerequisites": ["GEO-ANG-002"],
+              "difficulty_notes": "L1: identify complementary pairs, L2: find complement, L3: identify supplementary pairs, L4: find supplement, L5: algebraic problems (find x)",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "GEO-ANG-004",
+              "skill_name": "Vertical angles and linear pairs",
+              "grade_range": [6, 8],
+              "prerequisites": ["GEO-ANG-003"],
+              "difficulty_notes": "L1: identify vertical angles, L2: find measures, L3: algebraic (find x), L4: multiple intersecting lines, L5: proofs",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "GEO-ANG-005",
+              "skill_name": "Angles formed by parallel lines and transversals",
+              "grade_range": [7, 9],
+              "prerequisites": ["GEO-ANG-004"],
+              "difficulty_notes": "L1: identify corresponding/alternate/co-interior, L2: find measures, L3: algebraic, L4: prove lines parallel, L5: complex multi-line configurations",
+              "question_types": ["computation", "visual", "open_response"]
+            },
+            {
+              "skill_id": "GEO-ANG-006",
+              "skill_name": "Angle sum in triangles (180°)",
+              "grade_range": [5, 8],
+              "prerequisites": ["GEO-ANG-001", "GEO-SHAPE-003"],
+              "difficulty_notes": "L1: find missing angle (given two), L2: algebraic, L3: exterior angle theorem, L4: isosceles/equilateral angle problems, L5: proof of angle sum",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-ANG-007",
+              "skill_name": "Angle sums in polygons",
+              "grade_range": [7, 9],
+              "prerequisites": ["GEO-ANG-006", "GEO-SHAPE-005"],
+              "difficulty_notes": "L1: interior angle sum formula, L2: find missing angle, L3: regular polygon angles, L4: exterior angle sum (360°), L5: algebraic multi-step",
+              "question_types": ["computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "GEO-MEAS",
+          "unit_name": "Measurement (Length, Area, Volume)",
+          "skills": [
+            {
+              "skill_id": "GEO-MEAS-001",
+              "skill_name": "Measure length (non-standard and standard units)",
+              "grade_range": [0, 2],
+              "prerequisites": [],
+              "difficulty_notes": "L1: compare lengths, L2: measure with non-standard units, L3: rulers (inches/cm), L4: to nearest 1/2 inch or mm, L5: estimate and verify",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "GEO-MEAS-002",
+              "skill_name": "Perimeter of polygons",
+              "grade_range": [2, 5],
+              "prerequisites": ["NUM-ADD-005", "GEO-SHAPE-001"],
+              "difficulty_notes": "L1: count grid units, L2: add given side lengths, L3: rectangles with formula, L4: irregular polygons, L5: find missing side given perimeter",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-003",
+              "skill_name": "Area of rectangles and squares",
+              "grade_range": [3, 4],
+              "prerequisites": ["NUM-MUL-003", "GEO-MEAS-002"],
+              "difficulty_notes": "L1: count unit squares, L2: formula l×w, L3: find missing dimension, L4: composite rectangular shapes, L5: word problems",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-004",
+              "skill_name": "Area of triangles",
+              "grade_range": [5, 7],
+              "prerequisites": ["GEO-MEAS-003"],
+              "difficulty_notes": "L1: right triangles on grid, L2: formula 1/2 × b × h, L3: obtuse triangles, L4: find missing dimension, L5: composite shapes with triangles",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-005",
+              "skill_name": "Area of parallelograms, trapezoids, rhombuses",
+              "grade_range": [5, 7],
+              "prerequisites": ["GEO-MEAS-004"],
+              "difficulty_notes": "L1: parallelogram (b×h), L2: trapezoid formula, L3: rhombus (diagonals), L4: composite shapes, L5: derive formulas from rectangles/triangles",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-006",
+              "skill_name": "Circumference of circles",
+              "grade_range": [6, 7],
+              "prerequisites": ["GEO-SHAPE-006", "NUM-DEC-005"],
+              "difficulty_notes": "L1: given radius, L2: given diameter, L3: find radius from circumference, L4: semicircles and arcs, L5: composite shapes",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-007",
+              "skill_name": "Area of circles",
+              "grade_range": [6, 7],
+              "prerequisites": ["GEO-MEAS-006"],
+              "difficulty_notes": "L1: given radius, L2: given diameter, L3: find radius from area, L4: sectors and semicircles, L5: composite shapes with circles",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-008",
+              "skill_name": "Surface area of prisms and cylinders",
+              "grade_range": [6, 8],
+              "prerequisites": ["GEO-MEAS-003", "GEO-MEAS-007"],
+              "difficulty_notes": "L1: rectangular prism from net, L2: formula, L3: triangular prism, L4: cylinder, L5: composite solids",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-009",
+              "skill_name": "Surface area of pyramids, cones, spheres",
+              "grade_range": [7, 10],
+              "prerequisites": ["GEO-MEAS-008"],
+              "difficulty_notes": "L1: square pyramid, L2: triangular pyramid, L3: cone, L4: sphere, L5: composite solids",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-010",
+              "skill_name": "Volume of prisms and cylinders",
+              "grade_range": [5, 8],
+              "prerequisites": ["GEO-MEAS-003", "GEO-MEAS-007"],
+              "difficulty_notes": "L1: count unit cubes, L2: rectangular prism formula, L3: triangular prism, L4: cylinder, L5: word problems and composite solids",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-011",
+              "skill_name": "Volume of pyramids, cones, spheres",
+              "grade_range": [7, 10],
+              "prerequisites": ["GEO-MEAS-010"],
+              "difficulty_notes": "L1: pyramid, L2: cone, L3: sphere, L4: composite solids, L5: find dimensions given volume",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-012",
+              "skill_name": "Unit conversion (metric)",
+              "grade_range": [3, 6],
+              "prerequisites": ["NUM-MUL-007", "NUM-DEC-005"],
+              "difficulty_notes": "L1: mm↔cm↔m, L2: m↔km, L3: mL↔L, g↔kg, L4: multi-step conversions, L5: area/volume unit conversions",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-MEAS-013",
+              "skill_name": "Unit conversion (imperial and between systems)",
+              "grade_range": [4, 7],
+              "prerequisites": ["GEO-MEAS-012"],
+              "difficulty_notes": "L1: inches↔feet, L2: feet↔yards↔miles, L3: cups↔pints↔quarts↔gallons, L4: metric↔imperial, L5: multi-step with operations",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "GEO-TRANS",
+          "unit_name": "Transformations",
+          "skills": [
+            {
+              "skill_id": "GEO-TRANS-001",
+              "skill_name": "Translations (slides)",
+              "grade_range": [5, 8],
+              "prerequisites": ["ALG-LIN-001"],
+              "difficulty_notes": "L1: describe translation with visuals, L2: translate on coordinate plane, L3: write translation rule, L4: translate polygons, L5: composition of translations",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "GEO-TRANS-002",
+              "skill_name": "Reflections (flips)",
+              "grade_range": [5, 8],
+              "prerequisites": ["ALG-LIN-001", "GEO-SHAPE-007"],
+              "difficulty_notes": "L1: reflect across x-axis, L2: reflect across y-axis, L3: reflect across y=x, L4: reflect across any line, L5: identify line of reflection",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "GEO-TRANS-003",
+              "skill_name": "Rotations (turns)",
+              "grade_range": [6, 9],
+              "prerequisites": ["ALG-LIN-001", "GEO-ANG-001"],
+              "difficulty_notes": "L1: 90° rotations about origin, L2: 180° rotations, L3: 270° rotations, L4: any angle, L5: about points other than origin",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "GEO-TRANS-004",
+              "skill_name": "Dilations (scaling)",
+              "grade_range": [7, 9],
+              "prerequisites": ["NUM-RAT-004"],
+              "difficulty_notes": "L1: scale factor > 1 from origin, L2: scale factor < 1, L3: from other center points, L4: find scale factor, L5: similar figures and proportional reasoning",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "GEO-TRANS-005",
+              "skill_name": "Congruence and similarity through transformations",
+              "grade_range": [7, 10],
+              "prerequisites": ["GEO-TRANS-001", "GEO-TRANS-002", "GEO-TRANS-003", "GEO-TRANS-004"],
+              "difficulty_notes": "L1: identify congruent figures, L2: describe transformation sequence, L3: similar figures, L4: find missing measurements, L5: prove congruence/similarity",
+              "question_types": ["visual", "computation", "open_response"]
+            }
+          ]
+        },
+        {
+          "unit_id": "GEO-PYTH",
+          "unit_name": "Pythagorean Theorem & Distance",
+          "skills": [
+            {
+              "skill_id": "GEO-PYTH-001",
+              "skill_name": "Pythagorean theorem (find hypotenuse)",
+              "grade_range": [7, 9],
+              "prerequisites": ["NUM-EXP-002", "GEO-SHAPE-003"],
+              "difficulty_notes": "L1: Pythagorean triples (3-4-5), L2: non-integer results, L3: simplify radical, L4: word problems, L5: 3D applications",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-PYTH-002",
+              "skill_name": "Pythagorean theorem (find a leg)",
+              "grade_range": [7, 9],
+              "prerequisites": ["GEO-PYTH-001"],
+              "difficulty_notes": "L1: whole number results, L2: irrational results, L3: word problems, L4: verify right triangles, L5: converse applications",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-PYTH-003",
+              "skill_name": "Distance formula on coordinate plane",
+              "grade_range": [8, 10],
+              "prerequisites": ["GEO-PYTH-001", "ALG-LIN-001"],
+              "difficulty_notes": "L1: horizontal/vertical distances, L2: distance formula, L3: midpoint formula, L4: applications (perimeter on coordinate plane), L5: circle equations",
+              "question_types": ["computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "GEO-TRIG",
+          "unit_name": "Trigonometry",
+          "skills": [
+            {
+              "skill_id": "GEO-TRIG-001",
+              "skill_name": "Primary trigonometric ratios (SOH CAH TOA) in right triangles",
+              "grade_range": [9, 10],
+              "prerequisites": ["GEO-PYTH-001", "NUM-RAT-004"],
+              "difficulty_notes": "L1: identify opposite/adjacent/hypotenuse, L2: write ratios as fractions, L3: find missing side using trig ratio, L4: find missing angle using inverse trig, L5: word problems (angle of elevation/depression, indirect measurement)",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-TRIG-002",
+              "skill_name": "Special right triangles (30-60-90, 45-45-90)",
+              "grade_range": [9, 11],
+              "prerequisites": ["GEO-TRIG-001"],
+              "difficulty_notes": "L1: identify side ratios from diagram, L2: find missing sides using ratio relationships, L3: exact trig values for 30°, 45°, 60°, L4: applications using exact values, L5: derive the ratio relationships",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-TRIG-003",
+              "skill_name": "Angles in standard position (terminal arm, initial arm, rotation)",
+              "grade_range": [10, 11],
+              "prerequisites": ["GEO-TRIG-001", "ALG-LIN-001"],
+              "difficulty_notes": "L1: draw angle in standard position given degree measure, L2: identify quadrant of terminal arm, L3: determine angle given a point on the terminal arm, L4: find exact trig ratios for any angle using coordinates of point on terminal arm (x, y, r), L5: angles greater than 360° and negative angles",
+              "question_types": ["computation", "visual", "fill_in_blank"]
+            },
+            {
+              "skill_id": "GEO-TRIG-004",
+              "skill_name": "Reference angles",
+              "grade_range": [10, 11],
+              "prerequisites": ["GEO-TRIG-003"],
+              "difficulty_notes": "L1: find reference angle for Q2, L2: find reference angle for Q3 and Q4, L3: use reference angle to determine exact trig ratios (with correct sign by CAST rule), L4: given a trig ratio value find all possible angles (0°-360°), L5: connect reference angles to special triangles for exact values in all four quadrants",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "GEO-TRIG-005",
+              "skill_name": "Coterminal angles",
+              "grade_range": [10, 11],
+              "prerequisites": ["GEO-TRIG-003"],
+              "difficulty_notes": "L1: find positive coterminal angle (add 360°), L2: find negative coterminal angle (subtract 360°), L3: determine if two angles are coterminal, L4: find coterminal angle within a specific range, L5: general expression for all coterminal angles (θ + 360°n)",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "GEO-TRIG-006",
+              "skill_name": "Unit circle (degrees)",
+              "grade_range": [10, 11],
+              "prerequisites": ["GEO-TRIG-004", "GEO-TRIG-005"],
+              "difficulty_notes": "L1: key angles and coordinates on unit circle (0°, 90°, 180°, 270°, 360°), L2: coordinates for special angles (30°, 45°, 60° and equivalents in all quadrants), L3: sin/cos/tan from unit circle coordinates, L4: all six trig functions from unit circle, L5: evaluate expressions combining multiple trig values from unit circle",
+              "question_types": ["computation", "fill_in_blank", "visual"]
+            },
+            {
+              "skill_id": "GEO-TRIG-007",
+              "skill_name": "Radian measure and degree-radian conversion",
+              "grade_range": [11, 12],
+              "prerequisites": ["GEO-TRIG-006"],
+              "difficulty_notes": "L1: convert common degree measures to radians (180° = π), L2: convert radians to degrees, L3: unit circle in radians, L4: arc length using radians (s = rθ), L5: sector area and angular velocity",
+              "question_types": ["computation", "fill_in_blank"]
+            },
+            {
+              "skill_id": "GEO-TRIG-008",
+              "skill_name": "Sine law (including ambiguous case)",
+              "grade_range": [10, 11],
+              "prerequisites": ["GEO-TRIG-001"],
+              "difficulty_notes": "L1: find a side using sine law (given AAS), L2: find an angle using sine law (given SSA — one solution), L3: ambiguous case — determine number of triangles (0, 1, or 2 solutions), L4: solve ambiguous case with two triangles, L5: contextual word problems requiring identification of ambiguous case",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-TRIG-009",
+              "skill_name": "Cosine law",
+              "grade_range": [10, 11],
+              "prerequisites": ["GEO-TRIG-001", "ALG-QUAD-002"],
+              "difficulty_notes": "L1: find a side (given SAS), L2: find an angle (given SSS), L3: choose between sine law and cosine law, L4: multi-step problems (find one element, then use it to find another), L5: contextual word problems (navigation, surveying, indirect measurement)",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-TRIG-010",
+              "skill_name": "Simple trigonometric equations (Pre-Calc 11 level)",
+              "grade_range": [10, 11],
+              "prerequisites": ["GEO-TRIG-004", "GEO-TRIG-006"],
+              "difficulty_notes": "L1: sin θ = a where a is a special value (0°-360°), L2: cos θ = a (0°-360°), L3: tan θ = a (0°-360°), L4: 2sin θ + 1 = 0 type (isolate first), L5: equations requiring factoring like sin²θ - sin θ = 0",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "GEO-TRIG-011",
+              "skill_name": "Sine and cosine functions (graphing, amplitude, period, phase shift)",
+              "grade_range": [11, 12],
+              "prerequisites": ["GEO-TRIG-007"],
+              "difficulty_notes": "L1: graph y = sin(x) and y = cos(x), L2: amplitude and vertical shift (y = a·sin(x) + d), L3: period (y = sin(bx)), L4: phase shift (y = sin(x - c)), L5: write equation from graph, model periodic phenomena",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "GEO-TRIG-012",
+              "skill_name": "Tangent and reciprocal trig functions (graphing)",
+              "grade_range": [11, 12],
+              "prerequisites": ["GEO-TRIG-011"],
+              "difficulty_notes": "L1: graph y = tan(x) and identify asymptotes, L2: secant, cosecant, cotangent definitions, L3: graph reciprocal functions, L4: transformations, L5: domain restrictions and asymptotes",
+              "question_types": ["computation", "visual"]
+            },
+            {
+              "skill_id": "GEO-TRIG-013",
+              "skill_name": "Trigonometric identities (Pythagorean, quotient, reciprocal, double angle)",
+              "grade_range": [11, 12],
+              "prerequisites": ["GEO-TRIG-012"],
+              "difficulty_notes": "L1: Pythagorean identities (sin²θ + cos²θ = 1), L2: quotient and reciprocal identities, L3: verify/prove identities, L4: double angle formulas, L5: prove complex multi-step identities",
+              "question_types": ["computation", "open_response"]
+            },
+            {
+              "skill_id": "GEO-TRIG-014",
+              "skill_name": "Solve trigonometric equations (advanced, Pre-Calc 12 level)",
+              "grade_range": [11, 12],
+              "prerequisites": ["GEO-TRIG-013"],
+              "difficulty_notes": "L1: basic (sin x = 1/2) on [0, 2π), L2: general solution with nπ or 2nπ, L3: quadratic in trig function, L4: using identities to simplify then solve, L5: multi-step combining factoring, identities, and multiple angle formulas",
+              "question_types": ["computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "GEO-COORD",
+          "unit_name": "Coordinate Geometry",
+          "skills": [
+            {
+              "skill_id": "GEO-COORD-001",
+              "skill_name": "Midpoint formula",
+              "grade_range": [8, 10],
+              "prerequisites": ["ALG-LIN-001"],
+              "difficulty_notes": "L1: find midpoint, L2: find endpoint given midpoint, L3: verify midpoint, L4: midpoint applications, L5: median and centroid",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "GEO-COORD-002",
+              "skill_name": "Equation of a circle",
+              "grade_range": [9, 11],
+              "prerequisites": ["GEO-PYTH-003"],
+              "difficulty_notes": "L1: standard form given center and radius, L2: identify center and radius from equation, L3: general form to standard form, L4: intersections, L5: tangent lines",
+              "question_types": ["computation"]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "domain_id": "STAT",
+      "domain_name": "Data, Statistics & Probability",
+      "description": "Collecting, organizing, displaying, analyzing data, and understanding probability.",
+      "units": [
+        {
+          "unit_id": "STAT-DATA",
+          "unit_name": "Data Collection & Display",
+          "skills": [
+            {
+              "skill_id": "STAT-DATA-001",
+              "skill_name": "Collect and organize data (tally charts, frequency tables)",
+              "grade_range": [1, 4],
+              "prerequisites": ["NUM-COUNT-004"],
+              "difficulty_notes": "L1: tally marks, L2: frequency tables, L3: design a survey, L4: two-way tables, L5: discuss bias in data collection",
+              "question_types": ["visual", "fill_in_blank", "open_response"]
+            },
+            {
+              "skill_id": "STAT-DATA-002",
+              "skill_name": "Pictographs and bar graphs",
+              "grade_range": [1, 4],
+              "prerequisites": ["STAT-DATA-001"],
+              "difficulty_notes": "L1: read pictograph, L2: create pictograph, L3: read bar graph, L4: create bar graph, L5: interpret and compare",
+              "question_types": ["visual", "computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-DATA-003",
+              "skill_name": "Line plots and dot plots",
+              "grade_range": [2, 5],
+              "prerequisites": ["STAT-DATA-001"],
+              "difficulty_notes": "L1: read line plot, L2: create line plot, L3: with fractions, L4: describe distribution, L5: compare datasets",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "STAT-DATA-004",
+              "skill_name": "Histograms",
+              "grade_range": [5, 8],
+              "prerequisites": ["STAT-DATA-002"],
+              "difficulty_notes": "L1: read histogram, L2: create histogram, L3: choose intervals, L4: describe shape, L5: compare distributions",
+              "question_types": ["visual", "computation", "open_response"]
+            },
+            {
+              "skill_id": "STAT-DATA-005",
+              "skill_name": "Circle graphs (pie charts)",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-PCT-001", "GEO-ANG-002"],
+              "difficulty_notes": "L1: read circle graph, L2: calculate percentages, L3: create circle graph, L4: central angles, L5: compare datasets",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "STAT-DATA-006",
+              "skill_name": "Scatter plots and trend lines",
+              "grade_range": [7, 9],
+              "prerequisites": ["ALG-LIN-001"],
+              "difficulty_notes": "L1: plot points, L2: describe correlation (positive/negative/none), L3: draw line of best fit, L4: make predictions, L5: interpret slope and y-intercept in context",
+              "question_types": ["visual", "computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-DATA-007",
+              "skill_name": "Box-and-whisker plots",
+              "grade_range": [6, 9],
+              "prerequisites": ["STAT-CENTRAL-002"],
+              "difficulty_notes": "L1: read box plot, L2: create box plot, L3: compare two box plots, L4: identify outliers (IQR rule), L5: interpret in context",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "STAT-DATA-008",
+              "skill_name": "Stem-and-leaf plots",
+              "grade_range": [5, 7],
+              "prerequisites": ["NUM-PV-002"],
+              "difficulty_notes": "L1: read stem-and-leaf, L2: create, L3: back-to-back, L4: find statistics from plot, L5: compare datasets",
+              "question_types": ["visual", "computation"]
+            }
+          ]
+        },
+        {
+          "unit_id": "STAT-CENTRAL",
+          "unit_name": "Measures of Central Tendency & Spread",
+          "skills": [
+            {
+              "skill_id": "STAT-CENTRAL-001",
+              "skill_name": "Mean (average)",
+              "grade_range": [4, 7],
+              "prerequisites": ["NUM-ADD-007", "NUM-DIV-004"],
+              "difficulty_notes": "L1: small dataset (3-5 values), L2: larger dataset, L3: find missing value given mean, L4: weighted mean, L5: effect of outliers",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-CENTRAL-002",
+              "skill_name": "Median and mode",
+              "grade_range": [4, 7],
+              "prerequisites": ["NUM-COMP-003"],
+              "difficulty_notes": "L1: median of odd dataset, L2: median of even dataset, L3: mode (one mode), L4: no mode / multiple modes, L5: compare mean vs median",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-CENTRAL-003",
+              "skill_name": "Range",
+              "grade_range": [4, 6],
+              "prerequisites": ["NUM-SUB-007"],
+              "difficulty_notes": "L1: find range, L2: find range with negatives, L3: effect of outliers, L4: compare ranges, L5: use to assess spread",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "STAT-CENTRAL-004",
+              "skill_name": "Quartiles and interquartile range (IQR)",
+              "grade_range": [6, 9],
+              "prerequisites": ["STAT-CENTRAL-002"],
+              "difficulty_notes": "L1: find Q1, Q2, Q3, L2: calculate IQR, L3: identify outliers, L4: interpret in context, L5: compare datasets using IQR",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "STAT-CENTRAL-005",
+              "skill_name": "Mean absolute deviation (MAD)",
+              "grade_range": [6, 8],
+              "prerequisites": ["STAT-CENTRAL-001"],
+              "difficulty_notes": "L1: calculate MAD, L2: interpret MAD, L3: compare datasets, L4: word problems, L5: connect to standard deviation concept",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-CENTRAL-006",
+              "skill_name": "Standard deviation and variance",
+              "grade_range": [9, 12],
+              "prerequisites": ["STAT-CENTRAL-005"],
+              "difficulty_notes": "L1: calculate variance (population), L2: calculate standard deviation, L3: sample vs population, L4: interpret in context, L5: normal distribution applications",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "STAT-PROB",
+          "unit_name": "Probability",
+          "skills": [
+            {
+              "skill_id": "STAT-PROB-001",
+              "skill_name": "Basic probability (likelihood, certain, impossible)",
+              "grade_range": [2, 4],
+              "prerequisites": ["NUM-FRAC-001"],
+              "difficulty_notes": "L1: certain/impossible/likely, L2: express as fraction, L3: with visual models, L4: complement, L5: word problems",
+              "question_types": ["multiple_choice", "fill_in_blank", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-PROB-002",
+              "skill_name": "Theoretical probability",
+              "grade_range": [5, 7],
+              "prerequisites": ["STAT-PROB-001", "NUM-FRAC-003"],
+              "difficulty_notes": "L1: equally likely outcomes (coins, dice), L2: express as fraction/decimal/percent, L3: not equally likely, L4: complement rule, L5: compare theoretical to experimental",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-PROB-003",
+              "skill_name": "Experimental probability",
+              "grade_range": [5, 7],
+              "prerequisites": ["STAT-PROB-002"],
+              "difficulty_notes": "L1: from given data, L2: conduct experiment, L3: compare to theoretical, L4: predict outcomes, L5: law of large numbers intro",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-PROB-004",
+              "skill_name": "Compound events (independent and dependent)",
+              "grade_range": [6, 8],
+              "prerequisites": ["STAT-PROB-002", "NUM-FRAC-010"],
+              "difficulty_notes": "L1: independent events (with replacement), L2: tree diagrams, L3: dependent events (without replacement), L4: multiplication rule, L5: three or more events",
+              "question_types": ["computation", "visual", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-PROB-005",
+              "skill_name": "Counting principle, permutations, combinations",
+              "grade_range": [7, 10],
+              "prerequisites": ["STAT-PROB-004", "NUM-MUL-009"],
+              "difficulty_notes": "L1: fundamental counting principle, L2: factorial, L3: permutations (nPr), L4: combinations (nCr), L5: application in probability problems",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "STAT-PROB-006",
+              "skill_name": "Probability with permutations and combinations",
+              "grade_range": [9, 12],
+              "prerequisites": ["STAT-PROB-005"],
+              "difficulty_notes": "L1: simple counting problems, L2: probability using combinations, L3: at least/at most problems, L4: conditional probability intro, L5: Bayes' theorem intro",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "domain_id": "CALC",
+      "domain_name": "Calculus (Intro)",
+      "description": "Foundational calculus concepts typically covered in Pre-Calculus 12 and introductory calculus courses.",
+      "units": [
+        {
+          "unit_id": "CALC-LIM",
+          "unit_name": "Limits",
+          "skills": [
+            {
+              "skill_id": "CALC-LIM-001",
+              "skill_name": "Intuitive understanding of limits (tables and graphs)",
+              "grade_range": [11, 12],
+              "prerequisites": ["ALG-FUNC-001"],
+              "difficulty_notes": "L1: estimate from graph, L2: estimate from table, L3: one-sided limits, L4: limits at infinity, L5: oscillating functions",
+              "question_types": ["visual", "computation"]
+            },
+            {
+              "skill_id": "CALC-LIM-002",
+              "skill_name": "Evaluate limits algebraically",
+              "grade_range": [11, 12],
+              "prerequisites": ["CALC-LIM-001", "ALG-RATEXP-001"],
+              "difficulty_notes": "L1: direct substitution, L2: factor and cancel, L3: rationalization, L4: special limits (sin x/x), L5: L'Hôpital's rule",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "CALC-LIM-003",
+              "skill_name": "Continuity",
+              "grade_range": [11, 12],
+              "prerequisites": ["CALC-LIM-002"],
+              "difficulty_notes": "L1: identify from graph, L2: three conditions for continuity, L3: removable vs jump vs infinite discontinuity, L4: piecewise continuity, L5: Intermediate Value Theorem",
+              "question_types": ["visual", "computation", "open_response"]
+            }
+          ]
+        },
+        {
+          "unit_id": "CALC-DER",
+          "unit_name": "Derivatives",
+          "skills": [
+            {
+              "skill_id": "CALC-DER-001",
+              "skill_name": "Average vs instantaneous rate of change",
+              "grade_range": [11, 12],
+              "prerequisites": ["ALG-LIN-002"],
+              "difficulty_notes": "L1: average rate from table, L2: average rate from function, L3: secant to tangent concept, L4: estimate instantaneous from graph, L5: difference quotient",
+              "question_types": ["computation", "word_problem"]
+            },
+            {
+              "skill_id": "CALC-DER-002",
+              "skill_name": "Derivative definition (limit of difference quotient)",
+              "grade_range": [11, 12],
+              "prerequisites": ["CALC-DER-001", "CALC-LIM-002"],
+              "difficulty_notes": "L1: linear functions, L2: quadratic functions, L3: radical functions, L4: prove using definition, L5: piecewise differentiability",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "CALC-DER-003",
+              "skill_name": "Basic differentiation rules (power, constant, sum/difference)",
+              "grade_range": [11, 12],
+              "prerequisites": ["CALC-DER-002"],
+              "difficulty_notes": "L1: power rule, L2: constant multiple, L3: sum/difference, L4: rewrite then differentiate, L5: higher-order derivatives",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "CALC-DER-004",
+              "skill_name": "Product and quotient rules",
+              "grade_range": [11, 12],
+              "prerequisites": ["CALC-DER-003"],
+              "difficulty_notes": "L1: product rule, L2: quotient rule, L3: combined, L4: with trig functions, L5: multi-step problems",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "CALC-DER-005",
+              "skill_name": "Chain rule",
+              "grade_range": [11, 12],
+              "prerequisites": ["CALC-DER-004", "ALG-FUNC-003"],
+              "difficulty_notes": "L1: simple composite, L2: with trig, L3: with exponential, L4: multiple chain rule, L5: implicit differentiation",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "CALC-DER-006",
+              "skill_name": "Applications of derivatives (tangent lines, optimization, related rates)",
+              "grade_range": [11, 12],
+              "prerequisites": ["CALC-DER-005"],
+              "difficulty_notes": "L1: equation of tangent line, L2: velocity and acceleration, L3: optimization, L4: related rates, L5: curve sketching",
+              "question_types": ["computation", "word_problem"]
+            }
+          ]
+        },
+        {
+          "unit_id": "CALC-INT",
+          "unit_name": "Integrals (Intro)",
+          "skills": [
+            {
+              "skill_id": "CALC-INT-001",
+              "skill_name": "Antiderivatives and indefinite integrals",
+              "grade_range": [12, 12],
+              "prerequisites": ["CALC-DER-003"],
+              "difficulty_notes": "L1: reverse power rule, L2: with constant multiple, L3: sum/difference, L4: with initial conditions, L5: basic substitution",
+              "question_types": ["computation"]
+            },
+            {
+              "skill_id": "CALC-INT-002",
+              "skill_name": "Definite integrals and area under a curve",
+              "grade_range": [12, 12],
+              "prerequisites": ["CALC-INT-001"],
+              "difficulty_notes": "L1: Riemann sums (rectangles), L2: Fundamental Theorem of Calculus, L3: evaluate definite integrals, L4: area between curves, L5: applications (displacement, accumulation)",
+              "question_types": ["computation", "visual", "word_problem"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
