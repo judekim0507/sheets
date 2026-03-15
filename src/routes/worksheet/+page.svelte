@@ -29,6 +29,12 @@
 		libraryStore.update(ws);
 	}
 
+	function updateField(field: 'title' | 'studentName', value: string) {
+		if (!worksheetStore.worksheet) return;
+		const ws = { ...worksheetStore.worksheet, [field]: value || undefined };
+		handleWorksheetUpdate(ws);
+	}
+
 	function onKeydown(e: KeyboardEvent) {
 		// Escape → close thread panel
 		if (e.key === 'Escape' && activeQuestion !== null) {
@@ -77,7 +83,13 @@
 	</div>
 
 	<div class="worksheet-page mx-auto max-w-4xl px-6 py-4">
-		<WorksheetHeader title={worksheetStore.worksheet.title} />
+		<WorksheetHeader
+			title={worksheetStore.worksheet.title}
+			studentName={worksheetStore.worksheet.studentName}
+			editable
+			onTitleChange={(t) => updateField('title', t)}
+			onStudentChange={(n) => updateField('studentName', n)}
+		/>
 
 		<div class="worksheet-columns">
 			<div class="worksheet-col space-y-4">

@@ -41,7 +41,9 @@
 	<div class="worksheet-page mx-auto max-w-4xl px-6 py-4">
 		<div class="mb-6 text-center">
 			<h1 class="text-lg font-bold">Answer Key</h1>
-			<p class="text-sm text-muted-foreground">{worksheetStore.worksheet.title}</p>
+			<p class="text-sm text-muted-foreground">
+				{worksheetStore.worksheet.title}{worksheetStore.worksheet.studentName ? ` — ${worksheetStore.worksheet.studentName}` : ''}
+			</p>
 		</div>
 
 		<div class="worksheet-columns">

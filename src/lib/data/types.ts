@@ -71,6 +71,7 @@ export interface QuestionThread {
 export interface Worksheet {
 	id: string;
 	title: string;
+	studentName?: string;
 	created_at: string;
 	config: BuilderConfig;
 	questions: GeneratedQuestion[];

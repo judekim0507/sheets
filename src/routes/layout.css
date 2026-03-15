@@ -194,6 +194,10 @@
   }
   .question-card {
     break-inside: avoid;
+    margin-bottom: 1.25rem !important;
+  }
+  .worksheet-col {
+    gap: 1.25rem !important;
   }
   .question-wrapper {
     background: none !important;

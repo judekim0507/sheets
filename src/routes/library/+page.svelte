@@ -91,7 +91,12 @@
 					style="animation: fadeIn 0.2s ease-out both; animation-delay: {i * 30}ms;"
 				>
 					<button class="flex-1 text-left" onclick={() => open(ws, '/worksheet')}>
-						<div class="font-medium">{ws.title}</div>
+						<div class="font-medium">
+							{ws.title}
+							{#if ws.studentName}
+								<span class="ml-2 text-sm font-normal text-muted-foreground">— {ws.studentName}</span>
+							{/if}
+						</div>
 						<div class="mt-1 flex items-center gap-2.5 text-sm text-muted-foreground">
 							<span>Grade {ws.config.grade !== null ? gradeLabel(ws.config.grade) : '?'}</span>
 							<span class="text-muted-foreground/30">/</span>
