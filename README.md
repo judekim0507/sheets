@@ -1,42 +1,30 @@
-# sv
+# Sheets
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+AI math worksheet generator. BYOK, print-ready, free.
 
-## Creating a project
+> [!CAUTION]
+> **This project is largely AI-generated.** Humans direct the architecture, priorities, and design decisions — but this is not a line-by-line audit. There will be bugs, rough edges, and things that don't work perfectly. Use at your own risk.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## What it does
 
-```sh
-# create a new project
-npx sv create my-app
+Pick a grade → choose skills (or type any topic) → generate a worksheet with LaTeX math, diagrams, and answer keys. Click any question to edit it with AI. Select questions a student bombed → generate a targeted clinic session. Everything saves locally.
+
+## Run it
+
+```bash
+bun install && bun run dev
 ```
 
-To recreate this project with the same configuration:
+Add your API key in settings. [Gemini](https://aistudio.google.com/apikey) has a free tier. [Claude](https://console.anthropic.com/) is also supported.
 
-```sh
-# recreate this project
-bun x sv@0.12.7 create --template minimal --types ts --add tailwindcss="plugins:none" --install bun math
-```
+## Cost
 
-## Developing
+Gemini Flash: ~1¢/worksheet. Heavy use (5/day): ~$2/month.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Stack
 
-```sh
-npm run dev
+SvelteKit · Svelte 5 · Tailwind v4 · shadcn-svelte · Vercel AI SDK · KaTeX · Zod
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+## License
 
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+MIT
