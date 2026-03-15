@@ -44,6 +44,29 @@
 
 	const availableTypes = $derived(worksheetStore.availableQuestionTypes);
 
+	let costLabel = $state('');
+
+	$effect(() => {
+		const model = settingsStore.activeModel;
+		const count = worksheetStore.questionCount;
+		const skills = worksheetStore.isCustom ? 1 : worksheetStore.selectedSkills.length;
+		const params = new URLSearchParams({ model, questions: String(count), skills: String(skills) });
+		fetch(`/api/estimate?${params}`)
+			.then((r) => r.json())
+			.then((d) => {
+				if (d.totalUSD != null) {
+					const c = d.totalUSD as number;
+					if (c < 0.005) costLabel = '< 1¢';
+					else if (c < 0.01) costLabel = `~${(c * 100).toFixed(1)}¢`;
+					else if (c < 1) costLabel = `~${(c * 100).toFixed(0)}¢`;
+					else costLabel = `~$${c.toFixed(2)}`;
+				} else {
+					costLabel = '';
+				}
+			})
+			.catch(() => { costLabel = ''; });
+	});
+
 	function handleDifficultyChange(value: number) {
 		worksheetStore.difficulty = value as DifficultyLevel;
 	}
@@ -207,6 +230,12 @@
 					Generate Worksheet
 				{/if}
 			</Button>
+
+			{#if settingsStore.isConfigured && costLabel}
+				<p class="text-center text-xs text-muted-foreground">
+					Estimated cost: {costLabel}
+				</p>
+			{/if}
 		</div>
 	</div>
 </div>

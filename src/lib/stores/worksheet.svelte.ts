@@ -121,9 +121,12 @@ class WorksheetStore {
 		} else {
 			this.selectedSkills = [...this.selectedSkills, skill];
 		}
-		const available = getAvailableQuestionTypes(this.selectedSkills);
-		if (available.length > 0 && !available.includes(this.questionType)) {
-			this.questionType = available[0];
+		// Only reset if current type isn't 'auto' and isn't in the available set
+		if (this.questionType !== 'auto') {
+			const available = getAvailableQuestionTypes(this.selectedSkills);
+			if (available.length > 0 && !available.includes(this.questionType)) {
+				this.questionType = 'auto';
+			}
 		}
 	}
 
@@ -133,9 +136,11 @@ class WorksheetStore {
 		} else {
 			this.selectedSkills = [...skills];
 		}
-		const available = getAvailableQuestionTypes(this.selectedSkills);
-		if (available.length > 0 && !available.includes(this.questionType)) {
-			this.questionType = available[0];
+		if (this.questionType !== 'auto') {
+			const available = getAvailableQuestionTypes(this.selectedSkills);
+			if (available.length > 0 && !available.includes(this.questionType)) {
+				this.questionType = 'auto';
+			}
 		}
 	}
 
