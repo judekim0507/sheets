@@ -44,8 +44,8 @@
 
 			<!-- Answer space -->
 			{#if !question.choices && !question.match_pairs}
-				<div class="mt-2 space-y-4 pb-1 print:space-y-6">
-					{#each Array(3) as _}
+				<div class="mt-2 space-y-4 pb-1 print:space-y-7">
+					{#each Array(4) as _}
 						<div class="border-b border-dashed border-muted-foreground/25"></div>
 					{/each}
 				</div>
