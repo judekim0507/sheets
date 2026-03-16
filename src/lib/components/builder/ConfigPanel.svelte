@@ -5,23 +5,19 @@
 	import type { QuestionType, DifficultyLevel } from '$lib/data/types';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import Slider from '$lib/components/ui/slider/slider.svelte';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
-	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import LoadingSpinner from '$lib/components/shared/LoadingSpinner.svelte';
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
-	import Minus from '@lucide/svelte/icons/minus';
-	import Plus from '@lucide/svelte/icons/plus';
 
 	let { onOpenSettings }: { onOpenSettings: () => void } = $props();
 
-	const difficultyLabels: Record<number, string> = {
-		1: 'Introductory',
-		2: 'Developing',
-		3: 'Proficient',
-		4: 'Advanced',
-		5: 'Challenge'
-	};
+	const difficulties: { value: DifficultyLevel; label: string; short: string }[] = [
+		{ value: 1, label: 'Introductory', short: 'L1' },
+		{ value: 2, label: 'Developing', short: 'L2' },
+		{ value: 3, label: 'Proficient', short: 'L3' },
+		{ value: 4, label: 'Advanced', short: 'L4' },
+		{ value: 5, label: 'Challenge', short: 'L5' }
+	];
 
 	const questionTypeLabels: Record<QuestionType, string> = {
 		auto: 'Auto (mixed)',
@@ -36,6 +32,8 @@
 		open_response: 'Open Response'
 	};
 
+	const countPresets = [5, 10, 15, 20, 25, 30, 40, 50];
+
 	const diffNote = $derived(() => {
 		if (worksheetStore.selectedSkills.length === 0) return '';
 		const notes = parseDifficultyNotes(worksheetStore.selectedSkills[0].difficulty_notes);
@@ -43,6 +41,8 @@
 	});
 
 	const availableTypes = $derived(worksheetStore.availableQuestionTypes);
+
+	let customCount = $state(false);
 
 	let costLabel = $state('');
 
@@ -67,17 +67,6 @@
 			.catch(() => { costLabel = ''; });
 	});
 
-	function handleDifficultyChange(value: number) {
-		worksheetStore.difficulty = value as DifficultyLevel;
-	}
-
-	function adjustCount(delta: number) {
-		const next = worksheetStore.questionCount + delta;
-		if (next >= 5 && next <= 30) {
-			worksheetStore.questionCount = next;
-		}
-	}
-
 	async function handleGenerate() {
 		if (worksheetStore.isGenerating) return;
 		if (!settingsStore.isConfigured) {
@@ -94,7 +83,6 @@
 			class="flex h-8 w-8 items-center justify-center rounded-lg border hover:bg-accent"
 			onclick={() => {
 				if (worksheetStore.isCustom) {
-					// Custom topic came from step 1, go back there
 					worksheetStore.customTopic = '';
 					worksheetStore.step = 1;
 				} else {
@@ -118,21 +106,22 @@
 
 	<div class="space-y-8">
 		<!-- Difficulty -->
-		<div class="space-y-4">
-			<div class="flex items-center justify-between">
-				<Label class="text-base font-medium">Difficulty</Label>
-				<span class="text-sm font-medium text-primary">
-					L{worksheetStore.difficulty} — {difficultyLabels[worksheetStore.difficulty]}
-				</span>
+		<div class="space-y-3">
+			<Label class="text-base font-medium">Difficulty</Label>
+			<div class="flex flex-wrap gap-2">
+				{#each difficulties as d}
+					<button
+						class="rounded-lg border px-3 py-2 text-sm transition-colors
+							{worksheetStore.difficulty === d.value
+							? 'border-primary bg-primary/5 font-medium text-primary'
+							: 'hover:bg-accent'}"
+						onclick={() => { worksheetStore.difficulty = d.value; }}
+					>
+						<span class="font-semibold">{d.short}</span>
+						<span class="ml-1 hidden sm:inline">{d.label}</span>
+					</button>
+				{/each}
 			</div>
-			<Slider
-				type="single"
-				value={worksheetStore.difficulty}
-				onValueChange={handleDifficultyChange}
-				min={1}
-				max={5}
-				step={1}
-			/>
 			{#if diffNote()}
 				<p class="text-sm text-muted-foreground">{diffNote()}</p>
 			{/if}
@@ -142,36 +131,42 @@
 
 		<!-- Question Count -->
 		<div class="space-y-3">
-			<Label class="text-base font-medium">Number of Questions</Label>
-			<div class="flex items-center gap-4">
-				<button
-					class="flex h-9 w-9 items-center justify-center rounded-lg border hover:bg-accent disabled:opacity-50"
-					onclick={() => adjustCount(-1)}
-					disabled={worksheetStore.questionCount <= 5}
-				>
-					<Minus class="h-4 w-4" />
-				</button>
-				<input
-					type="number"
-					class="h-10 w-20 rounded-lg border bg-transparent text-center text-lg font-medium [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-					value={worksheetStore.questionCount}
-					min={5}
-					max={30}
-					oninput={(e) => {
-						const val = parseInt(e.currentTarget.value);
-						if (!isNaN(val) && val >= 5 && val <= 30) {
-							worksheetStore.questionCount = val;
-						}
-					}}
-				/>
-				<button
-					class="flex h-9 w-9 items-center justify-center rounded-lg border hover:bg-accent disabled:opacity-50"
-					onclick={() => adjustCount(1)}
-					disabled={worksheetStore.questionCount >= 30}
-				>
-					<Plus class="h-4 w-4" />
-				</button>
-				<span class="text-sm text-muted-foreground">5–30 questions</span>
+			<Label class="text-base font-medium">Questions</Label>
+			<div class="flex flex-wrap gap-2">
+				{#each countPresets as n}
+					<button
+						class="flex h-9 min-w-[2.5rem] items-center justify-center rounded-lg border px-3 text-sm transition-colors
+							{!customCount && worksheetStore.questionCount === n
+							? 'border-primary bg-primary/5 font-medium text-primary'
+							: 'hover:bg-accent'}"
+						onclick={() => { worksheetStore.questionCount = n; customCount = false; }}
+					>
+						{n}
+					</button>
+				{/each}
+				{#if customCount}
+					<input
+						type="number"
+						class="h-9 w-16 rounded-lg border bg-primary/5 border-primary text-center text-sm font-medium text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+						value={worksheetStore.questionCount}
+						min={1}
+						max={50}
+						autofocus
+						oninput={(e) => {
+							const val = parseInt(e.currentTarget.value);
+							if (!isNaN(val) && val >= 1 && val <= 50) {
+								worksheetStore.questionCount = val;
+							}
+						}}
+					/>
+				{:else}
+					<button
+						class="flex h-9 items-center rounded-lg border px-3 text-sm text-muted-foreground hover:bg-accent"
+						onclick={() => { customCount = true; }}
+					>
+						Custom
+					</button>
+				{/if}
 			</div>
 		</div>
 
@@ -180,29 +175,24 @@
 		<!-- Question Type -->
 		<div class="space-y-3">
 			<Label class="text-base font-medium">Question Type</Label>
-			<RadioGroup.Root
-				value={worksheetStore.questionType}
-				onValueChange={(v) => {
-					if (v) worksheetStore.questionType = v as QuestionType;
-				}}
-			>
-				<div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
-					{#each ['auto' as QuestionType, ...availableTypes] as qtype}
-						<label
-							class="flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:bg-accent
-								{worksheetStore.questionType === qtype ? 'border-primary bg-primary/5' : ''}"
-						>
-							<RadioGroup.Item value={qtype} />
-							{questionTypeLabels[qtype]}
-						</label>
-					{/each}
-				</div>
-			</RadioGroup.Root>
+			<div class="flex flex-wrap gap-2">
+				{#each ['auto' as QuestionType, ...availableTypes] as qtype}
+					<button
+						class="rounded-lg border px-3 py-2 text-sm transition-colors
+							{worksheetStore.questionType === qtype
+							? 'border-primary bg-primary/5 font-medium text-primary'
+							: 'hover:bg-accent'}"
+						onclick={() => { worksheetStore.questionType = qtype; }}
+					>
+						{questionTypeLabels[qtype]}
+					</button>
+				{/each}
+			</div>
 		</div>
 
 		<Separator />
 
-		<!-- Generate Button -->
+		<!-- Generate -->
 		<div class="space-y-3">
 			{#if worksheetStore.error}
 				<div class="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
