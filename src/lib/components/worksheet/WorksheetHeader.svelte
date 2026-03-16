@@ -35,12 +35,13 @@
 <div class="worksheet-header mb-6">
 	{#if editable && editingTitle}
 		<input
-			class="w-full border-b-2 border-primary bg-transparent text-center text-lg font-bold leading-tight outline-none"
+			class="no-print w-full border-b-2 border-primary bg-transparent text-center text-lg font-bold leading-tight outline-none"
 			bind:value={titleDraft}
 			onblur={commitTitle}
 			onkeydown={(e) => { if (e.key === 'Enter') commitTitle(); if (e.key === 'Escape') { titleDraft = title; editingTitle = false; } }}
 			autofocus
 		/>
+		<h1 class="hidden text-center text-lg font-bold leading-tight print:block">{title}</h1>
 	{:else}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<h1
@@ -55,10 +56,11 @@
 	<div class="mt-3 flex items-end gap-6 border-b border-foreground/30 pb-2 text-xs">
 		<div class="flex-1">
 			<span class="font-medium">Name:</span>
+			<!-- Screen: editable click-to-edit -->
 			{#if editable}
 				{#if editingStudent}
 					<input
-						class="ml-1 w-40 border-b border-primary bg-transparent text-xs outline-none"
+						class="no-print ml-1 w-40 border-b border-primary bg-transparent text-xs outline-none"
 						bind:value={studentDraft}
 						placeholder="Student name"
 						onblur={commitStudent}
@@ -68,20 +70,18 @@
 				{:else}
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<span
-						class="ml-1 inline-block cursor-text rounded px-1 hover:bg-accent/40 {studentName ? '' : 'text-muted-foreground'}"
+						class="no-print ml-1 inline-block cursor-text rounded px-1 hover:bg-accent/40 {studentName ? '' : 'text-muted-foreground'}"
 						onclick={() => { studentDraft = studentName ?? ''; editingStudent = true; }}
 						onkeydown={() => {}}
 					>
 						{studentName || 'Add student'}
 					</span>
 				{/if}
-			{:else}
-				<span class="ml-1 inline-block w-full border-b border-foreground/40">
-					{#if studentName}
-						{studentName}
-					{/if}
-				</span>
 			{/if}
+			<!-- Print: show name or blank line -->
+			<span class="ml-1 hidden print:inline-block {studentName ? '' : 'w-full border-b border-foreground/40'}">
+				{studentName ?? ''}
+			</span>
 		</div>
 		<div>
 			<span class="font-medium">Date:</span>

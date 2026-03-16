@@ -170,6 +170,12 @@
   .no-print {
     display: none !important;
   }
+  .print\:block {
+    display: block !important;
+  }
+  .print\:inline-block {
+    display: inline-block !important;
+  }
   @page {
     size: letter portrait;
     margin: 0.5in 0.6in;
