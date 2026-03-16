@@ -36,18 +36,28 @@ export function fixDiagram(q: any): GeneratedQuestion {
 		}
 	}
 
+	// Check if this is a graph/axes diagram (don't auto-label points on graphs)
+	const isGraphDiagram = elements.some((e) => e.type === 'axes');
+
 	// 1. Fix point labels, positions, and validate coordinates
 	for (const el of elements) {
 		if (el.type !== 'point') continue;
-		// Skip invalid points
 		if (el.x == null || el.y == null) continue;
-		// Copy id to label if missing
-		if (!el.label && el.id) {
-			el.label = el.id;
-		}
-		// Set label_position if missing, based on position relative to centroid
-		if (!el.label_position) {
-			el.label_position = inferLabelPosition(el.x, el.y, diagram.width, diagram.height, pointMap);
+		// For graph diagrams: DON'T auto-copy id→label (points are just markers, not vertices)
+		// Only keep labels the LLM explicitly set (like "(2,0)" for intercepts)
+		if (!isGraphDiagram) {
+			if (!el.label && el.id) {
+				el.label = el.id;
+			}
+			if (!el.label_position) {
+				el.label_position = inferLabelPosition(el.x, el.y, diagram.width, diagram.height, pointMap);
+			}
+		} else {
+			// On graphs, strip single-letter labels (like "A", "B") — they're noise
+			// Keep coordinate labels like "(2,0)" or descriptive ones
+			if (el.label && /^[A-Z]$/.test(el.label)) {
+				el.label = undefined;
+			}
 		}
 	}
 	// Remove invalid points (no coordinates)
@@ -57,17 +67,52 @@ export function fixDiagram(q: any): GeneratedQuestion {
 		}
 	}
 
-	// 2. Try to add measurement labels to segments
+	// 2. Auto-generate segments for polygons that are missing them
+	const existingSegments = new Set(
+		elements.filter((e) => e.type === 'segment' && e.from && e.to)
+			.map((e) => [e.from, e.to].sort().join('-'))
+	);
+	for (const el of elements) {
+		if (el.type !== 'polygon' || !el.vertices || el.vertices.length < 3) continue;
+		for (let i = 0; i < el.vertices.length; i++) {
+			const from = el.vertices[i];
+			const to = el.vertices[(i + 1) % el.vertices.length];
+			const key = [from, to].sort().join('-');
+			if (!existingSegments.has(key) && pointMap.has(from) && pointMap.has(to)) {
+				elements.push({ type: 'segment', from, to });
+				existingSegments.add(key);
+			}
+		}
+	}
+
+	// 3. Try to add measurement labels to segments
 	const measurements = extractMeasurements(text);
 	for (const el of elements) {
 		if (el.type !== 'segment' || el.label) continue;
 		if (!el.from || !el.to) continue;
-		// Check if there's a measurement for this segment (e.g., "AB = 10 cm" or "side a = 10")
 		const label = findSegmentMeasurement(el.from, el.to, measurements);
 		if (label) el.label = label;
 	}
 
-	// 3. Try to add angle_arc for mentioned angles
+	// 3b. For rectangles: extract width/height from text and apply to segments
+	const widthMatch = text.match(/width\s*(?:of|is|=|:)?\s*([\d.]+\s*(?:cm|m|mm|in|ft|units?)?)/i);
+	const heightMatch = text.match(/height\s*(?:of|is|=|:)?\s*([\d.]+\s*(?:cm|m|mm|in|ft|units?)?)/i);
+	const lengthMatch = text.match(/length\s*(?:of|is|=|:)?\s*([\d.]+\s*(?:cm|m|mm|in|ft|units?)?)/i);
+	if (widthMatch || heightMatch || lengthMatch) {
+		const wLabel = widthMatch?.[1]?.trim() || lengthMatch?.[1]?.trim();
+		const hLabel = heightMatch?.[1]?.trim();
+		for (const el of elements) {
+			if (el.type !== 'segment' || el.label || !el.from || !el.to) continue;
+			const p1 = pointMap.get(el.from);
+			const p2 = pointMap.get(el.to);
+			if (!p1 || !p2) continue;
+			const isHorizontal = Math.abs(p1.y - p2.y) < Math.abs(p1.x - p2.x);
+			if (isHorizontal && wLabel && !el.label) el.label = wLabel;
+			else if (!isHorizontal && hLabel && !el.label) el.label = hLabel;
+		}
+	}
+
+	// 4. Try to add angle_arc for mentioned angles
 	const angleRefs = extractAngleReferences(text);
 	const existingAngleVertices = new Set(
 		elements.filter((e) => e.type === 'angle_arc' || e.type === 'right_angle').map((e) => e.vertex)

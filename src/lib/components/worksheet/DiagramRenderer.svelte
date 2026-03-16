@@ -16,7 +16,16 @@
 	const measLabelFs = 0.5;
 	const angleLabelFs = 0.45;
 
-	const vb = $derived(`${-pad} ${-pad} ${diagram.width + pad * 2} ${diagram.height + pad * 2}`);
+	// If diagram has axes, use axis range for viewBox (y-flipped for math convention)
+	const axesEl = $derived(diagram.elements.find((e) => e.type === 'axes'));
+	const hasAxes = $derived(axesEl && axesEl.x_min != null && axesEl.x_max != null && axesEl.y_min != null && axesEl.y_max != null);
+	const vb = $derived(
+		hasAxes
+			? `${axesEl!.x_min! - pad} ${-axesEl!.y_max! - pad} ${axesEl!.x_max! - axesEl!.x_min! + pad * 2} ${axesEl!.y_max! - axesEl!.y_min! + pad * 2}`
+			: `${-pad} ${-pad} ${diagram.width + pad * 2} ${diagram.height + pad * 2}`
+	);
+	// For axes diagrams: flip y coordinate (math y-up → SVG y-down)
+	function yf(y: number): number { return hasAxes ? -y : y; }
 	const pm: PointMap = $derived(buildPointMap(diagram.elements));
 	const sorted: DiagramElement[] = $derived(sortElementsByLayer(diagram.elements));
 
@@ -141,10 +150,11 @@
 				{/if}
 
 			{:else if el.type === 'curve' && el.curve_points}
+				{@const pts = el.curve_points.map((p) => ({ x: p.x, y: yf(p.y) }))}
 				{#if el.smooth}
-					<path d={bezierPath(el.curve_points)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<path d={bezierPath(pts)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
 				{:else}
-					<polyline points={el.curve_points.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<polyline points={pts.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
 				{/if}
 
 			{:else if el.type === 'angle_arc' && el.vertex && el.ray1_through && el.ray2_through}
@@ -174,14 +184,16 @@
 				{@const ti = el.tick_interval ?? 1}
 				{#if el.grid}
 					{#each rng(el.x_min, el.x_max, ti) as x}
-						<line x1={x} y1={el.y_min} x2={x} y2={el.y_max} stroke="#e5e5e5" stroke-width={sw * 0.4} />
+						<line x1={x} y1={yf(el.y_min)} x2={x} y2={yf(el.y_max)} stroke="#e5e5e5" stroke-width={sw * 0.4} />
 					{/each}
 					{#each rng(el.y_min, el.y_max, ti) as y}
-						<line x1={el.x_min} y1={y} x2={el.x_max} y2={y} stroke="#e5e5e5" stroke-width={sw * 0.4} />
+						<line x1={el.x_min} y1={yf(y)} x2={el.x_max} y2={yf(y)} stroke="#e5e5e5" stroke-width={sw * 0.4} />
 					{/each}
 				{/if}
+				<!-- X axis -->
 				<line x1={el.x_min} y1={0} x2={el.x_max} y2={0} stroke="#1a1a1a" stroke-width={sw} marker-end="url(#ar)" />
-				<line x1={0} y1={el.y_max} x2={0} y2={el.y_min} stroke="#1a1a1a" stroke-width={sw} marker-end="url(#ar)" />
+				<!-- Y axis (points upward in math = negative SVG y) -->
+				<line x1={0} y1={yf(el.y_min)} x2={0} y2={yf(el.y_max)} stroke="#1a1a1a" stroke-width={sw} marker-end="url(#ar)" />
 				{#each rng(el.x_min, el.x_max, ti) as x}
 					{#if x !== 0}
 						<line x1={x} y1={-0.1} x2={x} y2={0.1} stroke="#1a1a1a" stroke-width={sw} />
@@ -190,8 +202,8 @@
 				{/each}
 				{#each rng(el.y_min, el.y_max, ti) as y}
 					{#if y !== 0}
-						<line x1={-0.1} y1={y} x2={0.1} y2={y} stroke="#1a1a1a" stroke-width={sw} />
-						{@render lbl(-0.4, y, String(y), measLabelFs * 0.7, '400')}
+						<line x1={-0.1} y1={yf(y)} x2={0.1} y2={yf(y)} stroke="#1a1a1a" stroke-width={sw} />
+						{@render lbl(-0.5, yf(y), String(y), measLabelFs * 0.7, '400')}
 					{/if}
 				{/each}
 
@@ -232,14 +244,16 @@
 				{/if}
 
 			{:else if el.type === 'point' && el.x != null && el.y != null}
-				<circle cx={el.x} cy={el.y} r={pr} fill={el.filled !== false ? '#1a1a1a' : 'white'} stroke="#1a1a1a" stroke-width={sw} />
+				{@const pointR = hasAxes ? pr * 0.6 : pr}
+				{@const pointFs = hasAxes ? measLabelFs : ptLabelFs}
+				<circle cx={el.x} cy={yf(el.y)} r={pointR} fill={el.filled !== false ? '#1a1a1a' : 'white'} stroke="#1a1a1a" stroke-width={sw} />
 				{#if el.label}
 					{@const off = labelOffset(el.label_position)}
-					{@render lbl(el.x + off.dx, el.y + off.dy, el.label, ptLabelFs, '700')}
+					{@render lbl(el.x + off.dx, yf(el.y) + off.dy, el.label, pointFs, hasAxes ? '500' : '700')}
 				{/if}
 
 			{:else if el.type === 'label' && el.x != null && el.y != null && el.text}
-				{@render lbl(el.x, el.y, el.text, el.font_size ? el.font_size * 0.08 : measLabelFs, '500')}
+				{@render lbl(el.x, yf(el.y), el.text, el.font_size ? el.font_size * 0.08 : measLabelFs, '500')}
 
 			<!-- 3D SHAPES -->
 			{:else if el.type === 'rectangular_prism' && el.cx != null && el.cy != null && el.shape_width && el.shape_height && el.depth}
@@ -384,8 +398,8 @@
 			{/if}
 		{/each}
 		<defs>
-			<marker id="ar" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-				<polygon points="0 0, 8 3, 0 6" fill="#1a1a1a" />
+			<marker id="ar" markerWidth={hasAxes ? 0.4 : 8} markerHeight={hasAxes ? 0.3 : 6} refX={hasAxes ? 0.35 : 7} refY={hasAxes ? 0.15 : 3} orient="auto" markerUnits={hasAxes ? 'userSpaceOnUse' : 'strokeWidth'}>
+				<polygon points={hasAxes ? '0 0, 0.4 0.15, 0 0.3' : '0 0, 8 3, 0 6'} fill="#1a1a1a" />
 			</marker>
 		</defs>
 	</svg>

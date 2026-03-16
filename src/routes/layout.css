@@ -147,11 +147,16 @@
 
 /* Two-column worksheet layout */
 .worksheet-columns {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   gap: 0;
 }
+.worksheet-col {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+}
 .worksheet-col-divider {
+  flex: 0 0 1px;
   width: 1px;
   background: var(--border);
   margin: 0 0.75rem;
