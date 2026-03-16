@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 				title: result.object.title,
 				created_at: new Date().toISOString(),
 				config,
-				questions: result.object.questions.map(fixDiagram)
+				questions: result.object.questions.map((q) => fixDiagram(q))
 			};
 
 			return json({ worksheet });
@@ -93,7 +93,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			title: result1.object.title,
 			created_at: new Date().toISOString(),
 			config,
-			questions: [...result1.object.questions, ...result2.object.questions].map(fixDiagram)
+			questions: [...result1.object.questions, ...result2.object.questions].map((q) => fixDiagram(q))
 		};
 
 		return json({ worksheet });

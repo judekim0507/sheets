@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			title: result.object.title || `Clinic: ${sourceTitle}`,
 			created_at: new Date().toISOString(),
 			config,
-			questions: result.object.questions.map(fixDiagram)
+			questions: result.object.questions.map((q) => fixDiagram(q))
 		};
 
 		return json({ worksheet });

@@ -1,106 +1,139 @@
 import { z } from 'zod';
 
-// Flattened diagram element schema — uses a single object with optional fields
-// instead of discriminatedUnion (unsupported by Gemini).
-// The `type` field determines which fields are relevant.
-const diagramElementSchema = z.object({
-	type: z.enum([
-		'point',
-		'segment',
-		'line',
-		'ray',
-		'polygon',
-		'circle',
-		'arc',
-		'angle_arc',
-		'right_angle',
-		'axes',
-		'number_line',
-		'curve',
-		'label',
-		'tick_marks',
-		'parallel_marks'
-	]),
-	style: z.enum(['solid', 'dashed']).optional(),
+// Diagram uses typed arrays — each element type gets its own array
+// with only relevant fields. Keeps optional params low per object
+// (Anthropic limit: 24) and gives LLMs clear structure.
 
-	// point
-	id: z.string().optional(),
-	x: z.number().optional(),
-	y: z.number().optional(),
+const pointSchema = z.object({
+	id: z.string(),
+	x: z.number(),
+	y: z.number(),
 	label: z.string().optional(),
-	label_position: z
-		.enum(['top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left', 'bottom-right'])
-		.optional(),
+	label_position: z.enum(['top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left', 'bottom-right']).optional(),
 	filled: z.boolean().optional(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// segment, ray
-	from: z.string().optional(),
-	to: z.string().optional(),
-	origin: z.string().optional(),
-	through: z.string().optional(),
+const segmentSchema = z.object({
+	from: z.string(),
+	to: z.string(),
+	label: z.string().optional(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// line (through as array of 2 point IDs)
-	through_points: z.array(z.string()).optional(),
+const lineSchema = z.object({
+	through_points: z.array(z.string()),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// polygon
-	vertices: z.array(z.string()).optional(),
+const raySchema = z.object({
+	origin: z.string(),
+	through: z.string(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
+
+const polygonSchema = z.object({
+	vertices: z.array(z.string()),
 	fill: z.string().optional(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// circle
-	center: z.string().optional(),
+const circleSchema = z.object({
+	center: z.string(),
 	radius: z.number().optional(),
+	through: z.string().optional(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// arc
-	start_angle: z.number().optional(),
-	end_angle: z.number().optional(),
+const arcSchema = z.object({
+	center: z.string(),
+	radius: z.number(),
+	start_angle: z.number(),
+	end_angle: z.number(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// angle_arc, right_angle
-	vertex: z.string().optional(),
-	ray1_through: z.string().optional(),
-	ray2_through: z.string().optional(),
-	size: z.number().optional(),
+const angleArcSchema = z.object({
+	vertex: z.string(),
+	ray1_through: z.string(),
+	ray2_through: z.string(),
+	radius: z.number().optional(),
+	label: z.string().optional(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// axes — use separate min/max fields instead of tuple
-	x_min: z.number().optional(),
-	x_max: z.number().optional(),
-	y_min: z.number().optional(),
-	y_max: z.number().optional(),
+const rightAngleSchema = z.object({
+	vertex: z.string(),
+	ray1_through: z.string(),
+	ray2_through: z.string(),
+	size: z.number().optional()
+});
+
+const axesSchema = z.object({
+	x_min: z.number(),
+	x_max: z.number(),
+	y_min: z.number(),
+	y_max: z.number(),
 	x_label: z.string().optional(),
 	y_label: z.string().optional(),
 	grid: z.boolean().optional(),
-	tick_interval: z.number().optional(),
+	tick_interval: z.number().optional()
+});
 
-	// number_line
-	min: z.number().optional(),
-	max: z.number().optional(),
-	points: z
-		.array(
-			z.object({
-				value: z.number(),
-				label: z.string().optional(),
-				filled: z.boolean().optional()
-			})
-		)
-		.optional(),
+const numberLineSchema = z.object({
+	min: z.number(),
+	max: z.number(),
+	tick_interval: z.number(),
+	points: z.array(z.object({
+		value: z.number(),
+		label: z.string().optional(),
+		filled: z.boolean().optional()
+	})).optional()
+});
 
-	// curve
-	curve_points: z.array(z.object({ x: z.number(), y: z.number() })).optional(),
+const curveSchema = z.object({
+	curve_points: z.array(z.object({ x: z.number(), y: z.number() })),
 	smooth: z.boolean().optional(),
+	style: z.enum(['solid', 'dashed']).optional()
+});
 
-	// label
-	text: z.string().optional(),
-	font_size: z.number().optional(),
+const labelSchema = z.object({
+	x: z.number(),
+	y: z.number(),
+	text: z.string(),
+	font_size: z.number().optional()
+});
 
-	// tick_marks, parallel_marks
-	segment_from: z.string().optional(),
-	segment_to: z.string().optional(),
-	count: z.number().optional()
+const tickMarksSchema = z.object({
+	segment_from: z.string(),
+	segment_to: z.string(),
+	count: z.number()
+});
+
+const parallelMarksSchema = z.object({
+	segment_from: z.string(),
+	segment_to: z.string(),
+	count: z.number()
 });
 
 const diagramSceneGraphSchema = z.object({
 	width: z.number(),
 	height: z.number(),
-	elements: z.array(diagramElementSchema)
+	points: z.array(pointSchema).optional(),
+	segments: z.array(segmentSchema).optional(),
+	lines: z.array(lineSchema).optional(),
+	rays: z.array(raySchema).optional(),
+	polygons: z.array(polygonSchema).optional(),
+	circles: z.array(circleSchema).optional(),
+	arcs: z.array(arcSchema).optional(),
+	angle_arcs: z.array(angleArcSchema).optional(),
+	right_angles: z.array(rightAngleSchema).optional(),
+	axes: z.array(axesSchema).optional(),
+	number_lines: z.array(numberLineSchema).optional(),
+	curves: z.array(curveSchema).optional(),
+	labels: z.array(labelSchema).optional(),
+	tick_marks: z.array(tickMarksSchema).optional(),
+	parallel_marks: z.array(parallelMarksSchema).optional()
 });
 
 const generatedQuestionSchema = z.object({

@@ -1,16 +1,31 @@
 import type { GeneratedQuestion, DiagramElement, DiagramSceneGraph } from '$lib/data/types';
+import { normalizeDiagram } from './normalize-diagram';
 
 /**
- * Post-process a generated question to fix common diagram issues:
+ * Post-process a generated question:
+ * 0. Normalize typed-array diagram to flat elements array
  * 1. Copy point id → label if label is missing
  * 2. Infer label_position from point coordinates
  * 3. Extract measurements from question text and add to unlabeled segments
  * 4. Detect angle references and add angle_arc if missing
  */
-export function fixDiagram(q: GeneratedQuestion): GeneratedQuestion {
-	if (!q.has_diagram || !q.diagram || !q.diagram.elements) return q;
+// Accept raw schema output (typed arrays) or already-normalized (flat elements)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function fixDiagram(q: any): GeneratedQuestion {
+	if (!q.has_diagram || !q.diagram) return q as GeneratedQuestion;
 
-	const elements = [...q.diagram.elements.map((e) => ({ ...e }))];
+	// Normalize typed-array format (from schema) to flat elements array (for renderer)
+	const raw = q.diagram as Record<string, unknown>;
+	let diagram: DiagramSceneGraph;
+	if (Array.isArray(raw.elements)) {
+		diagram = raw as unknown as DiagramSceneGraph;
+	} else {
+		const normalized = normalizeDiagram(raw);
+		if (!normalized) return { ...q, has_diagram: false, diagram: undefined } as GeneratedQuestion;
+		diagram = normalized;
+	}
+
+	const elements = [...diagram.elements.map((e) => ({ ...e }))];
 	const text = q.question;
 
 	// Build point map
@@ -68,7 +83,7 @@ export function fixDiagram(q: GeneratedQuestion): GeneratedQuestion {
 
 	return {
 		...q,
-		diagram: { ...q.diagram, elements }
+		diagram: { width: diagram.width, height: diagram.height, elements }
 	};
 }
 
