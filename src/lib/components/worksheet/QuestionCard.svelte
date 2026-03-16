@@ -10,7 +10,7 @@
 	<div class="flex gap-2">
 		<span class="mt-px text-sm font-bold">{index + 1}.</span>
 		<div class="flex-1 space-y-2">
-			<div class="text-[11px] leading-snug">
+			<div class="text-sm leading-relaxed">
 				<KatexBlock text={question.question} />
 			</div>
 
@@ -21,7 +21,7 @@
 			{/if}
 
 			{#if question.choices && question.choices.length > 0}
-				<div class="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px]">
+				<div class="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
 					{#each question.choices as choice, i}
 						<div class="flex items-start gap-1">
 							<span class="font-medium text-muted-foreground">{String.fromCharCode(65 + i)}.</span>
@@ -32,7 +32,7 @@
 			{/if}
 
 			{#if question.match_pairs && question.match_pairs.length > 0}
-				<div class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px]">
+				<div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
 					<div class="font-medium text-muted-foreground">Column A</div>
 					<div class="font-medium text-muted-foreground">Column B</div>
 					{#each question.match_pairs as pair, i}
