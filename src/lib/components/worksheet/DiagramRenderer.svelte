@@ -151,11 +151,14 @@
 
 			{:else if el.type === 'curve' && el.curve_points}
 				{@const pts = el.curve_points.map((p) => ({ x: p.x, y: yf(p.y) }))}
-				{#if el.smooth}
-					<path d={bezierPath(pts)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
-				{:else}
-					<polyline points={pts.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
-				{/if}
+				<!-- Clip curves to viewBox to prevent asymptotes shooting to infinity -->
+				<g clip-path={hasAxes ? 'url(#axes-clip)' : undefined}>
+					{#if el.smooth}
+						<path d={bezierPath(pts)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					{:else}
+						<polyline points={pts.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					{/if}
+				</g>
 
 			{:else if el.type === 'angle_arc' && el.vertex && el.ray1_through && el.ray2_through}
 				{@const r = el.radius ?? 0.7}
@@ -181,7 +184,12 @@
 				{/if}
 
 			{:else if el.type === 'axes' && el.x_min != null && el.x_max != null && el.y_min != null && el.y_max != null}
-				{@const ti = el.tick_interval ?? 1}
+				{@const xRange = el.x_max - el.x_min}
+				{@const yRange = el.y_max - el.y_min}
+				{@const rawTi = el.tick_interval ?? 1}
+				{@const ti = xRange / rawTi > 20 ? Math.ceil(xRange / 10) : rawTi}
+				{@const tickSize = Math.max(0.08, Math.min(0.15, xRange * 0.012))}
+				{@const tickFs = Math.max(0.2, Math.min(0.4, xRange * 0.035))}
 				{#if el.grid}
 					{#each rng(el.x_min, el.x_max, ti) as x}
 						<line x1={x} y1={yf(el.y_min)} x2={x} y2={yf(el.y_max)} stroke="#e5e5e5" stroke-width={sw * 0.4} />
@@ -192,18 +200,18 @@
 				{/if}
 				<!-- X axis -->
 				<line x1={el.x_min} y1={0} x2={el.x_max} y2={0} stroke="#1a1a1a" stroke-width={sw} marker-end="url(#ar)" />
-				<!-- Y axis (points upward in math = negative SVG y) -->
+				<!-- Y axis -->
 				<line x1={0} y1={yf(el.y_min)} x2={0} y2={yf(el.y_max)} stroke="#1a1a1a" stroke-width={sw} marker-end="url(#ar)" />
 				{#each rng(el.x_min, el.x_max, ti) as x}
 					{#if x !== 0}
-						<line x1={x} y1={-0.1} x2={x} y2={0.1} stroke="#1a1a1a" stroke-width={sw} />
-						{@render lbl(x, 0.4, String(x), measLabelFs * 0.7, '400')}
+						<line x1={x} y1={-tickSize} x2={x} y2={tickSize} stroke="#1a1a1a" stroke-width={sw} />
+						{@render lbl(x, tickSize + tickFs * 0.8, String(x), tickFs, '400')}
 					{/if}
 				{/each}
 				{#each rng(el.y_min, el.y_max, ti) as y}
 					{#if y !== 0}
-						<line x1={-0.1} y1={yf(y)} x2={0.1} y2={yf(y)} stroke="#1a1a1a" stroke-width={sw} />
-						{@render lbl(-0.5, yf(y), String(y), measLabelFs * 0.7, '400')}
+						<line x1={-tickSize} y1={yf(y)} x2={tickSize} y2={yf(y)} stroke="#1a1a1a" stroke-width={sw} />
+						{@render lbl(-tickSize - tickFs, yf(y), String(y), tickFs, '400')}
 					{/if}
 				{/each}
 
@@ -398,6 +406,11 @@
 			{/if}
 		{/each}
 		<defs>
+			{#if hasAxes}
+				<clipPath id="axes-clip">
+					<rect x={axesEl!.x_min! - 0.5} y={yf(axesEl!.y_max!) - 0.5} width={axesEl!.x_max! - axesEl!.x_min! + 1} height={axesEl!.y_max! - axesEl!.y_min! + 1} />
+				</clipPath>
+			{/if}
 			<marker id="ar" markerWidth={hasAxes ? 0.4 : 8} markerHeight={hasAxes ? 0.3 : 6} refX={hasAxes ? 0.35 : 7} refY={hasAxes ? 0.15 : 3} orient="auto" markerUnits={hasAxes ? 'userSpaceOnUse' : 'strokeWidth'}>
 				<polygon points={hasAxes ? '0 0, 0.4 0.15, 0 0.3' : '0 0, 8 3, 0 6'} fill="#1a1a1a" />
 			</marker>

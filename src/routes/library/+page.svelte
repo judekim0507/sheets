@@ -12,6 +12,19 @@
 	import Copy from '@lucide/svelte/icons/copy';
 	import GitBranch from '@lucide/svelte/icons/git-branch';
 
+	let deleteTarget = $state<string | null>(null);
+
+	function confirmDelete(id: string) {
+		deleteTarget = id;
+	}
+
+	function executeDelete() {
+		if (deleteTarget) {
+			libraryStore.remove(deleteTarget);
+			deleteTarget = null;
+		}
+	}
+
 	function open(ws: Worksheet, route: string) {
 		worksheetStore.worksheet = ws;
 		worksheetStore.step = 4;
@@ -137,7 +150,7 @@
 						</button>
 						<button
 							class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-							onclick={() => libraryStore.remove(ws.id)}
+							onclick={() => confirmDelete(ws.id)}
 							title="Delete"
 						>
 							<Trash2 class="h-4 w-4" />
@@ -148,6 +161,21 @@
 		</div>
 	{/if}
 </main>
+
+{#if deleteTarget}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-[2px]" onclick={() => (deleteTarget = null)} onkeydown={() => {}}>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div class="mx-4 w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl" onclick={(e) => e.stopPropagation()} onkeydown={() => {}}>
+			<h3 class="text-base font-semibold">Delete worksheet?</h3>
+			<p class="mt-2 text-sm text-muted-foreground">This can't be undone. The worksheet and all its versions will be permanently deleted.</p>
+			<div class="mt-5 flex justify-end gap-2">
+				<Button variant="outline" size="sm" onclick={() => (deleteTarget = null)}>Cancel</Button>
+				<Button variant="destructive" size="sm" onclick={executeDelete}>Delete</Button>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	@keyframes fadeIn {
