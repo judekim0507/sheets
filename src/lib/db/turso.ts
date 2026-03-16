@@ -1,12 +1,13 @@
 import { createClient, type Client } from '@libsql/client';
+import { env } from '$env/dynamic/private';
 
 let client: Client | null = null;
 
 export function getDb(): Client | null {
 	if (client) return client;
 
-	const url = process.env.TURSO_DATABASE_URL || import.meta.env?.VITE_TURSO_DATABASE_URL;
-	const authToken = process.env.TURSO_AUTH_TOKEN || import.meta.env?.VITE_TURSO_AUTH_TOKEN;
+	const url = env.TURSO_DATABASE_URL;
+	const authToken = env.TURSO_AUTH_TOKEN;
 
 	if (!url) return null;
 
