@@ -116,6 +116,22 @@ const parallelMarksSchema = z.object({
 	count: z.number()
 });
 
+const dimensionLabelsSchema = z.object({
+	width: z.string().optional(),
+	height: z.string().optional(),
+	depth: z.string().optional(),
+	radius: z.string().optional(),
+	base: z.string().optional(),
+	slant: z.string().optional()
+});
+
+const vertexLabelsSchema = z.object({
+	A: z.string().optional(), B: z.string().optional(),
+	C: z.string().optional(), D: z.string().optional(),
+	E: z.string().optional(), F: z.string().optional(),
+	G: z.string().optional(), H: z.string().optional()
+});
+
 // 3D shapes — rendered as standard textbook oblique projections
 const rectangularPrismSchema = z.object({
 	cx: z.number(),
@@ -123,8 +139,8 @@ const rectangularPrismSchema = z.object({
 	shape_width: z.number(),
 	shape_height: z.number(),
 	depth: z.number(),
-	vertex_labels: z.record(z.string(), z.string()).optional(),
-	dimension_labels: z.record(z.string(), z.string()).optional()
+	vertex_labels: vertexLabelsSchema.optional(),
+	dimension_labels: dimensionLabelsSchema.optional()
 });
 
 const cylinderSchema = z.object({
@@ -132,7 +148,7 @@ const cylinderSchema = z.object({
 	cy: z.number(),
 	radius: z.number(),
 	shape_height: z.number(),
-	dimension_labels: z.record(z.string(), z.string()).optional()
+	dimension_labels: dimensionLabelsSchema.optional()
 });
 
 const coneSchema = z.object({
@@ -140,14 +156,14 @@ const coneSchema = z.object({
 	cy: z.number(),
 	radius: z.number(),
 	shape_height: z.number(),
-	dimension_labels: z.record(z.string(), z.string()).optional()
+	dimension_labels: dimensionLabelsSchema.optional()
 });
 
 const sphereSchema = z.object({
 	cx: z.number(),
 	cy: z.number(),
 	radius: z.number(),
-	dimension_labels: z.record(z.string(), z.string()).optional()
+	dimension_labels: dimensionLabelsSchema.optional()
 });
 
 const pyramidSchema = z.object({
@@ -156,8 +172,8 @@ const pyramidSchema = z.object({
 	base_width: z.number(),
 	base_depth: z.number(),
 	shape_height: z.number(),
-	vertex_labels: z.record(z.string(), z.string()).optional(),
-	dimension_labels: z.record(z.string(), z.string()).optional()
+	vertex_labels: vertexLabelsSchema.optional(),
+	dimension_labels: dimensionLabelsSchema.optional()
 });
 
 const diagramSceneGraphSchema = z.object({
