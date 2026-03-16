@@ -7,6 +7,7 @@ import { worksheetSchema } from '$lib/ai/schema';
 import { systemPrompt, buildQuestionEditPrompt, buildQuestionRegenPrompt } from '$lib/ai/question-prompt';
 import { fixDiagram } from '$lib/ai/fix-diagram';
 import { checkRateLimit } from '$lib/ai/rate-limit';
+import { logQuestions } from '$lib/db/turso';
 import type { GeneratedQuestion, BuilderConfig, AIProvider } from '$lib/data/types';
 
 export const POST: RequestHandler = async ({ request, getClientAddress }) => {
@@ -54,7 +55,22 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			return json({ error: 'No question generated' }, { status: 500 });
 		}
 
-		return json({ question: fixDiagram(raw) });
+		const fixed = fixDiagram(raw);
+
+		logQuestions({
+			worksheetId: 'edit',
+			worksheetTitle: 'Question Edit',
+			grade: config.grade,
+			skillIds: config.selectedSkills?.map((s) => s.skill_id) || [],
+			customTopic: config.customTopic,
+			difficulty: config.difficulty,
+			questionType: config.questionType,
+			provider,
+			model: modelId,
+			questions: [fixed]
+		});
+
+		return json({ question: fixed });
 	} catch (e) {
 		const message = e instanceof Error ? e.message : 'Generation failed';
 		console.error('Question generation error:', e);

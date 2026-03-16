@@ -7,6 +7,7 @@ import { worksheetSchema } from '$lib/ai/schema';
 import { systemPrompt, buildUserPrompt } from '$lib/ai/prompt';
 import { fixDiagram } from '$lib/ai/fix-diagram';
 import { checkRateLimit } from '$lib/ai/rate-limit';
+import { logQuestions } from '$lib/db/turso';
 import type { BuilderConfig, AIProvider, Worksheet } from '$lib/data/types';
 
 const BATCH_SIZE = 10;
@@ -67,6 +68,20 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			config,
 			questions
 		};
+
+		// Log to Turso (fire and forget — don't block response)
+		logQuestions({
+			worksheetId: worksheet.id,
+			worksheetTitle: worksheet.title,
+			grade: config.grade,
+			skillIds: config.selectedSkills?.map((s) => s.skill_id) || [],
+			customTopic: config.customTopic,
+			difficulty: config.difficulty,
+			questionType: config.questionType,
+			provider,
+			model: modelId,
+			questions
+		});
 
 		return json({ worksheet });
 	} catch (e) {

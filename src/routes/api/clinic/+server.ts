@@ -8,6 +8,7 @@ import { systemPrompt } from '$lib/ai/prompt';
 import { buildClinicPrompt } from '$lib/ai/clinic-prompt';
 import { fixDiagram } from '$lib/ai/fix-diagram';
 import { checkRateLimit } from '$lib/ai/rate-limit';
+import { logQuestions } from '$lib/db/turso';
 import type { GeneratedQuestion, BuilderConfig, AIProvider, Worksheet } from '$lib/data/types';
 
 export const POST: RequestHandler = async ({ request, getClientAddress }) => {
@@ -58,6 +59,19 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			config,
 			questions: result.object.questions.map((q) => fixDiagram(q))
 		};
+
+		logQuestions({
+			worksheetId: worksheet.id,
+			worksheetTitle: worksheet.title,
+			grade: config.grade,
+			skillIds: config.selectedSkills?.map((s) => s.skill_id) || [],
+			customTopic: config.customTopic,
+			difficulty: config.difficulty,
+			questionType: config.questionType,
+			provider,
+			model: modelId,
+			questions: worksheet.questions
+		});
 
 		return json({ worksheet });
 	} catch (e) {
