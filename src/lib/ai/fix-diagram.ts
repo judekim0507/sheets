@@ -36,16 +36,24 @@ export function fixDiagram(q: any): GeneratedQuestion {
 		}
 	}
 
-	// 1. Fix point labels and positions
+	// 1. Fix point labels, positions, and validate coordinates
 	for (const el of elements) {
 		if (el.type !== 'point') continue;
+		// Skip invalid points
+		if (el.x == null || el.y == null) continue;
 		// Copy id to label if missing
 		if (!el.label && el.id) {
 			el.label = el.id;
 		}
-		// Set label_position if missing, based on position relative to center
-		if (!el.label_position && el.x != null && el.y != null) {
-			el.label_position = inferLabelPosition(el.x, el.y, q.diagram.width, q.diagram.height, pointMap);
+		// Set label_position if missing, based on position relative to centroid
+		if (!el.label_position) {
+			el.label_position = inferLabelPosition(el.x, el.y, diagram.width, diagram.height, pointMap);
+		}
+	}
+	// Remove invalid points (no coordinates)
+	for (let i = elements.length - 1; i >= 0; i--) {
+		if (elements[i].type === 'point' && (elements[i].x == null || elements[i].y == null)) {
+			elements.splice(i, 1);
 		}
 	}
 
@@ -67,14 +75,30 @@ export function fixDiagram(q: any): GeneratedQuestion {
 
 	for (const ref of angleRefs) {
 		if (existingAngleVertices.has(ref.vertex)) continue;
-		if (!pointMap.has(ref.vertex)) continue; // vertex must exist as a point
-		const neighbors = findNeighbors(ref.vertex, elements).filter((n) => pointMap.has(n));
-		if (neighbors.length >= 2) {
+		if (!pointMap.has(ref.vertex)) continue;
+
+		let r1: string | undefined;
+		let r2: string | undefined;
+
+		// Use explicit ray points from triple (∠ABC → A and C) if they exist
+		if (ref.ray1 && ref.ray2 && pointMap.has(ref.ray1) && pointMap.has(ref.ray2)) {
+			r1 = ref.ray1;
+			r2 = ref.ray2;
+		} else {
+			// Fall back to polygon/segment neighbors
+			const neighbors = findNeighbors(ref.vertex, elements).filter((n) => pointMap.has(n));
+			if (neighbors.length >= 2) {
+				r1 = neighbors[0];
+				r2 = neighbors[1];
+			}
+		}
+
+		if (r1 && r2) {
 			elements.push({
 				type: 'angle_arc',
 				vertex: ref.vertex,
-				ray1_through: neighbors[0],
-				ray2_through: neighbors[1],
+				ray1_through: r1,
+				ray2_through: r2,
 				label: ref.label,
 				radius: 0.7
 			});
@@ -101,8 +125,14 @@ function inferLabelPosition(
 	const dx = x - cx;
 	const dy = y - cy;
 
-	if (Math.abs(dx) < 0.5 && dy < 0) return 'top';
-	if (Math.abs(dx) < 0.5 && dy > 0) return 'bottom';
+	const absDx = Math.abs(dx);
+	const absDy = Math.abs(dy);
+
+	// Primarily horizontal offset → left/right
+	if (absDx > absDy * 2) return dx < 0 ? 'left' : 'right';
+	// Primarily vertical offset → top/bottom
+	if (absDy > absDx * 2) return dy < 0 ? 'top' : 'bottom';
+	// Diagonal
 	if (dx < 0 && dy < 0) return 'top-left';
 	if (dx > 0 && dy < 0) return 'top-right';
 	if (dx < 0 && dy > 0) return 'bottom-left';
@@ -165,6 +195,8 @@ function findSegmentMeasurement(fromId: string, toId: string, measurements: Meas
 
 interface AngleRef {
 	vertex: string;
+	ray1?: string; // first letter of triple (if ∠ABC, this is A)
+	ray2?: string; // third letter of triple (if ∠ABC, this is C)
 	label: string;
 }
 
@@ -176,9 +208,12 @@ function extractAngleReferences(text: string): AngleRef[] {
 	const anglePattern = /(?:∠|\\angle\s*|angle\s+)([A-Z](?:[A-Z]{2})?)\s*=\s*([\d.]+)°?/gi;
 	for (const m of cleaned.matchAll(anglePattern)) {
 		const letters = m[1].toUpperCase();
-		// For ∠ABC, vertex is the middle letter B
-		const vertex = letters.length === 3 ? letters[1] : letters[0];
-		results.push({ vertex, label: `${m[2]}°` });
+		if (letters.length === 3) {
+			// ∠ABC → vertex B, rays through A and C
+			results.push({ vertex: letters[1], ray1: letters[0], ray2: letters[2], label: `${m[2]}°` });
+		} else {
+			results.push({ vertex: letters[0], label: `${m[2]}°` });
+		}
 	}
 
 	return results;

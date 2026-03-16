@@ -13,9 +13,14 @@ export function buildClinicPrompt(
 		.map((q, i) => `${i + 1}. ${q.question}\n   Answer: ${q.final_answer}`)
 		.join('\n\n');
 
+	const difficultyLabels: Record<number, string> = {
+		1: 'Introductory', 2: 'Developing', 3: 'Proficient', 4: 'Advanced', 5: 'Challenge'
+	};
+
 	return `Generate a CLINIC worksheet — targeted practice for a student who needs extra work on specific problem types.
 
 **Grade:** ${grade === '0' ? 'K' : grade}
+**Difficulty:** L${config.difficulty} — ${difficultyLabels[config.difficulty]}
 **Questions:** ${questionCount}
 
 The student struggled with these problems:

@@ -157,7 +157,7 @@
   margin: 0 0.75rem;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .worksheet-columns {
     grid-template-columns: 1fr;
   }
@@ -191,9 +191,15 @@
     background: #ccc;
     margin: 0 0.5rem;
   }
+  .worksheet-header {
+    break-after: avoid;
+  }
   .question-card {
     break-inside: avoid;
     margin-bottom: 1.5rem !important;
+  }
+  .diagram-svg {
+    max-width: 200px !important;
   }
   .question-wrapper {
     background: none !important;
