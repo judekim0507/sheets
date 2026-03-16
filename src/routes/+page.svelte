@@ -11,6 +11,8 @@
 	import LoadingSpinner from '$lib/components/shared/LoadingSpinner.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { libraryStore } from '$lib/stores/library.svelte';
+	import Onboarding from '$lib/components/shared/Onboarding.svelte';
+	import { onMount } from 'svelte';
 	import Settings from '@lucide/svelte/icons/settings';
 	import RotateCcw from '@lucide/svelte/icons/rotate-ccw';
 	import FileText from '@lucide/svelte/icons/file-text';
@@ -18,6 +20,18 @@
 	import Library from '@lucide/svelte/icons/library';
 
 	let settingsOpen = $state(false);
+	let showOnboarding = $state(false);
+
+	onMount(() => {
+		if (typeof window !== 'undefined' && !localStorage.getItem('sheets-onboarded') && libraryStore.worksheets.length === 0) {
+			showOnboarding = true;
+		}
+	});
+
+	function dismissOnboarding() {
+		showOnboarding = false;
+		localStorage.setItem('sheets-onboarded', '1');
+	}
 
 	function onKeydown(e: KeyboardEvent) {
 		// Cmd/Ctrl + , → settings
@@ -130,3 +144,7 @@
 </main>
 
 <SettingsDialog bind:open={settingsOpen} />
+
+{#if showOnboarding}
+	<Onboarding onDismiss={dismissOnboarding} />
+{/if}

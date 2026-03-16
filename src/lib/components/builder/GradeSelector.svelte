@@ -23,7 +23,7 @@
 				<div class="grid grid-cols-4 gap-3 sm:grid-cols-6 md:grid-cols-7">
 					{#each group.grades as grade}
 						<button
-							class="flex h-16 items-center justify-center rounded-xl border-2 text-lg font-semibold transition-all hover:border-primary hover:bg-primary/5 active:scale-95
+							class="flex h-16 items-center justify-center rounded-xl border-2 text-lg font-semibold transition-all hover:border-primary hover:bg-primary/5
 								{worksheetStore.grade === grade
 								? 'border-primary bg-primary/10 text-primary'
 								: 'border-border'}"
