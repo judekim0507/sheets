@@ -159,9 +159,13 @@ class WorksheetStore {
 		};
 
 		try {
+			const controller = new AbortController();
+			const timeout = setTimeout(() => controller.abort(), 120000);
+
 			const response = await fetch('/api/generate', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
+				signal: controller.signal,
 				body: JSON.stringify({
 					config,
 					provider: settingsStore.provider,
@@ -169,10 +173,12 @@ class WorksheetStore {
 					model: settingsStore.activeModel
 				})
 			});
+			clearTimeout(timeout);
 
 			if (!response.ok) {
-				const data = await response.json();
-				throw new Error(data.error || `Generation failed (${response.status})`);
+				let msg = `Generation failed (${response.status})`;
+				try { const d = await response.json(); msg = d.error || msg; } catch { /* */ }
+				throw new Error(msg);
 			}
 
 			const data = await response.json();
@@ -181,7 +187,11 @@ class WorksheetStore {
 			libraryStore.save(data.worksheet);
 			this.step = 4;
 		} catch (e) {
-			this.error = e instanceof Error ? e.message : 'An unexpected error occurred';
+			if (e instanceof DOMException && e.name === 'AbortError') {
+				this.error = 'Generation timed out — try fewer questions or a faster model';
+			} else {
+				this.error = e instanceof Error ? e.message : 'An unexpected error occurred';
+			}
 		} finally {
 			this.isGenerating = false;
 		}
