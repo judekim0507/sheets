@@ -116,6 +116,50 @@ const parallelMarksSchema = z.object({
 	count: z.number()
 });
 
+// 3D shapes — rendered as standard textbook oblique projections
+const rectangularPrismSchema = z.object({
+	cx: z.number(),
+	cy: z.number(),
+	shape_width: z.number(),
+	shape_height: z.number(),
+	depth: z.number(),
+	vertex_labels: z.record(z.string(), z.string()).optional(),
+	dimension_labels: z.record(z.string(), z.string()).optional()
+});
+
+const cylinderSchema = z.object({
+	cx: z.number(),
+	cy: z.number(),
+	radius: z.number(),
+	shape_height: z.number(),
+	dimension_labels: z.record(z.string(), z.string()).optional()
+});
+
+const coneSchema = z.object({
+	cx: z.number(),
+	cy: z.number(),
+	radius: z.number(),
+	shape_height: z.number(),
+	dimension_labels: z.record(z.string(), z.string()).optional()
+});
+
+const sphereSchema = z.object({
+	cx: z.number(),
+	cy: z.number(),
+	radius: z.number(),
+	dimension_labels: z.record(z.string(), z.string()).optional()
+});
+
+const pyramidSchema = z.object({
+	cx: z.number(),
+	cy: z.number(),
+	base_width: z.number(),
+	base_depth: z.number(),
+	shape_height: z.number(),
+	vertex_labels: z.record(z.string(), z.string()).optional(),
+	dimension_labels: z.record(z.string(), z.string()).optional()
+});
+
 const diagramSceneGraphSchema = z.object({
 	width: z.number(),
 	height: z.number(),
@@ -133,7 +177,12 @@ const diagramSceneGraphSchema = z.object({
 	curves: z.array(curveSchema).optional(),
 	labels: z.array(labelSchema).optional(),
 	tick_marks: z.array(tickMarksSchema).optional(),
-	parallel_marks: z.array(parallelMarksSchema).optional()
+	parallel_marks: z.array(parallelMarksSchema).optional(),
+	rectangular_prisms: z.array(rectangularPrismSchema).optional(),
+	cylinders: z.array(cylinderSchema).optional(),
+	cones: z.array(coneSchema).optional(),
+	spheres: z.array(sphereSchema).optional(),
+	pyramids: z.array(pyramidSchema).optional()
 });
 
 const generatedQuestionSchema = z.object({

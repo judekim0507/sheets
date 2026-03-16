@@ -59,6 +59,22 @@ export function normalizeDiagram(raw: Record<string, unknown>): DiagramSceneGrap
 	for (const pm of arr('parallel_marks')) {
 		elements.push({ type: 'parallel_marks', segment_from: s(pm.segment_from), segment_to: s(pm.segment_to), count: n(pm.count) });
 	}
+	// 3D shapes
+	for (const rp of arr('rectangular_prisms')) {
+		elements.push({ type: 'rectangular_prism', cx: n(rp.cx), cy: n(rp.cy), shape_width: n(rp.shape_width), shape_height: n(rp.shape_height), depth: n(rp.depth), vertex_labels: rp.vertex_labels as Record<string, string>, dimension_labels: rp.dimension_labels as Record<string, string> });
+	}
+	for (const cy of arr('cylinders')) {
+		elements.push({ type: 'cylinder', cx: n(cy.cx), cy: n(cy.cy), radius: n(cy.radius), shape_height: n(cy.shape_height), dimension_labels: cy.dimension_labels as Record<string, string> });
+	}
+	for (const co of arr('cones')) {
+		elements.push({ type: 'cone', cx: n(co.cx), cy: n(co.cy), radius: n(co.radius), shape_height: n(co.shape_height), dimension_labels: co.dimension_labels as Record<string, string> });
+	}
+	for (const sp of arr('spheres')) {
+		elements.push({ type: 'sphere', cx: n(sp.cx), cy: n(sp.cy), radius: n(sp.radius), dimension_labels: sp.dimension_labels as Record<string, string> });
+	}
+	for (const py of arr('pyramids')) {
+		elements.push({ type: 'pyramid', cx: n(py.cx), cy: n(py.cy), shape_width: n(py.base_width), depth: n(py.base_depth), shape_height: n(py.shape_height), vertex_labels: py.vertex_labels as Record<string, string>, dimension_labels: py.dimension_labels as Record<string, string> });
+	}
 
 	if (elements.length === 0) return undefined;
 	return { width, height, elements };

@@ -138,4 +138,16 @@ export interface DiagramElement {
 	segment_from?: string;
 	segment_to?: string;
 	count?: number;
+	// 3D shapes (rendered as standard textbook oblique projections)
+	// rectangular_prism, cylinder, cone, sphere, pyramid
+	cx?: number;
+	cy?: number;
+	shape_width?: number;
+	shape_height?: number;
+	depth?: number;
+	apex_x?: number;
+	apex_y?: number;
+	base_vertices?: string[];
+	vertex_labels?: Record<string, string>;
+	dimension_labels?: Record<string, string>;
 }

@@ -65,6 +65,25 @@
 		for (let v = min; v <= max + step * 0.001; v += step) a.push(Math.round(v * 1e3) / 1e3);
 		return a;
 	}
+
+	// 3D projection helpers — standard oblique at ~30° angle
+	const OBL = 0.35; // oblique depth factor
+	const OBLA = Math.PI / 6; // 30° angle
+	function oblX(d: number) { return d * OBL * Math.cos(OBLA); }
+	function oblY(d: number) { return -d * OBL * Math.sin(OBLA); } // negative = up in screen coords
+
+	// SVG ellipse arc path for partial ellipses
+	function ellipseArc(cx: number, cy: number, rx: number, ry: number, start: number, end: number): string {
+		const s = (start * Math.PI) / 180, e = (end * Math.PI) / 180;
+		const x1 = cx + rx * Math.cos(s), y1 = cy + ry * Math.sin(s);
+		const x2 = cx + rx * Math.cos(e), y2 = cy + ry * Math.sin(e);
+		const sweep = ((end - start + 360) % 360) > 180 ? 1 : 0;
+		return `M ${x1} ${y1} A ${rx} ${ry} 0 ${sweep} 1 ${x2} ${y2}`;
+	}
+
+	function dimLabel(labels: Record<string, string> | undefined, key: string): string | undefined {
+		return labels?.[key];
+	}
 </script>
 
 {#snippet lbl(x: number, y: number, text: string, size: number, weight: string = '600')}
@@ -221,6 +240,147 @@
 
 			{:else if el.type === 'label' && el.x != null && el.y != null && el.text}
 				{@render lbl(el.x, el.y, el.text, el.font_size ? el.font_size * 0.08 : measLabelFs, '500')}
+
+			<!-- 3D SHAPES -->
+			{:else if el.type === 'rectangular_prism' && el.cx != null && el.cy != null && el.shape_width && el.shape_height && el.depth}
+				{@const w = el.shape_width}
+				{@const h = el.shape_height}
+				{@const ox = oblX(el.depth)}
+				{@const oy = oblY(el.depth)}
+				{@const x0 = el.cx - w / 2}
+				{@const y0 = el.cy - h / 2}
+				<!-- Back face (dashed) -->
+				<line x1={x0 + ox} y1={y0 + oy} x2={x0 + w + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<line x1={x0 + ox} y1={y0 + oy} x2={x0 + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<line x1={x0 + ox} y1={y0 + h + oy} x2={x0 + ox + w} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<line x1={x0 + w + ox} y1={y0 + oy} x2={x0 + w + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Front face (solid) -->
+				<rect x={x0} y={y0} width={w} height={h} fill="#f5f5f5" stroke="#1a1a1a" stroke-width={sw} />
+				<!-- Connecting edges (top-right visible, bottom-left dashed) -->
+				<line x1={x0 + w} y1={y0} x2={x0 + w + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={x0 + w} y1={y0 + h} x2={x0 + w + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={x0} y1={y0} x2={x0 + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<line x1={x0} y1={y0 + h} x2={x0 + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Top face edges -->
+				<line x1={x0} y1={y0} x2={x0 + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<line x1={x0 + ox} y1={y0 + oy} x2={x0 + w + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Dimension labels -->
+				{#if dimLabel(el.dimension_labels, 'width')}
+					{@render lbl(el.cx, y0 + h + 0.5, dimLabel(el.dimension_labels, 'width')!, measLabelFs, '500')}
+				{/if}
+				{#if dimLabel(el.dimension_labels, 'height')}
+					{@render lbl(x0 - 0.5, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
+				{/if}
+				{#if dimLabel(el.dimension_labels, 'depth')}
+					{@render lbl(x0 + w + ox / 2 + 0.4, y0 + oy / 2 - 0.3, dimLabel(el.dimension_labels, 'depth')!, measLabelFs, '500')}
+				{/if}
+				<!-- Vertex labels -->
+				{#if el.vertex_labels}
+					{#each Object.entries(el.vertex_labels) as [key, label]}
+						{#if key === 'A'}{@render lbl(x0 - 0.3, y0 + h + 0.3, label, ptLabelFs, '600')}
+						{:else if key === 'B'}{@render lbl(x0 + w + 0.3, y0 + h + 0.3, label, ptLabelFs, '600')}
+						{:else if key === 'C'}{@render lbl(x0 + w + 0.3, y0 - 0.3, label, ptLabelFs, '600')}
+						{:else if key === 'D'}{@render lbl(x0 - 0.3, y0 - 0.3, label, ptLabelFs, '600')}
+						{:else if key === 'E'}{@render lbl(x0 + ox - 0.3, y0 + h + oy + 0.3, label, ptLabelFs, '600')}
+						{:else if key === 'F'}{@render lbl(x0 + w + ox + 0.3, y0 + h + oy + 0.3, label, ptLabelFs, '600')}
+						{:else if key === 'G'}{@render lbl(x0 + w + ox + 0.3, y0 + oy - 0.3, label, ptLabelFs, '600')}
+						{:else if key === 'H'}{@render lbl(x0 + ox - 0.3, y0 + oy - 0.3, label, ptLabelFs, '600')}
+						{/if}
+					{/each}
+				{/if}
+
+			{:else if el.type === 'cylinder' && el.cx != null && el.cy != null && el.radius && el.shape_height}
+				{@const r = el.radius}
+				{@const h = el.shape_height}
+				{@const ry = r * 0.3}
+				{@const topY = el.cy - h / 2}
+				{@const botY = el.cy + h / 2}
+				<!-- Side lines -->
+				<line x1={el.cx - r} y1={topY} x2={el.cx - r} y2={botY} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={el.cx + r} y1={topY} x2={el.cx + r} y2={botY} stroke="#1a1a1a" stroke-width={sw} />
+				<!-- Bottom ellipse (front half solid, back half dashed) -->
+				<path d={ellipseArc(el.cx, botY, r, ry, 0, 180)} fill="none" stroke="#1a1a1a" stroke-width={sw} />
+				<path d={ellipseArc(el.cx, botY, r, ry, 180, 360)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Top ellipse (full, solid) -->
+				<ellipse cx={el.cx} cy={topY} rx={r} ry={ry} fill="#f5f5f5" stroke="#1a1a1a" stroke-width={sw} />
+				<!-- Labels -->
+				{#if dimLabel(el.dimension_labels, 'radius')}
+					<line x1={el.cx} y1={topY} x2={el.cx + r} y2={topY} stroke="#1a1a1a" stroke-width={sw * 0.6} />
+					{@render lbl(el.cx + r / 2, topY - 0.35, dimLabel(el.dimension_labels, 'radius')!, measLabelFs, '500')}
+				{/if}
+				{#if dimLabel(el.dimension_labels, 'height')}
+					{@render lbl(el.cx + r + 0.5, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
+				{/if}
+
+			{:else if el.type === 'cone' && el.cx != null && el.cy != null && el.radius && el.shape_height}
+				{@const r = el.radius}
+				{@const h = el.shape_height}
+				{@const ry = r * 0.3}
+				{@const botY = el.cy + h / 2}
+				{@const topY = el.cy - h / 2}
+				<!-- Slant lines -->
+				<line x1={el.cx} y1={topY} x2={el.cx - r} y2={botY} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={el.cx} y1={topY} x2={el.cx + r} y2={botY} stroke="#1a1a1a" stroke-width={sw} />
+				<!-- Base ellipse (front solid, back dashed) -->
+				<path d={ellipseArc(el.cx, botY, r, ry, 0, 180)} fill="none" stroke="#1a1a1a" stroke-width={sw} />
+				<path d={ellipseArc(el.cx, botY, r, ry, 180, 360)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Apex dot -->
+				<circle cx={el.cx} cy={topY} r={pr * 0.8} fill="#1a1a1a" />
+				<!-- Labels -->
+				{#if dimLabel(el.dimension_labels, 'radius')}
+					<line x1={el.cx} y1={botY} x2={el.cx + r} y2={botY} stroke="#1a1a1a" stroke-width={sw * 0.6} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+					{@render lbl(el.cx + r / 2, botY + 0.5, dimLabel(el.dimension_labels, 'radius')!, measLabelFs, '500')}
+				{/if}
+				{#if dimLabel(el.dimension_labels, 'height')}
+					<line x1={el.cx} y1={topY} x2={el.cx} y2={botY} stroke="#1a1a1a" stroke-width={sw * 0.6} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+					{@render lbl(el.cx - 0.6, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
+				{/if}
+				{#if dimLabel(el.dimension_labels, 'slant')}
+					{@render lbl(el.cx + r / 2 + 0.3, el.cy - 0.2, dimLabel(el.dimension_labels, 'slant')!, measLabelFs, '500')}
+				{/if}
+
+			{:else if el.type === 'sphere' && el.cx != null && el.cy != null && el.radius}
+				{@const r = el.radius}
+				<!-- Main circle -->
+				<circle cx={el.cx} cy={el.cy} r={r} fill="#f5f5f5" stroke="#1a1a1a" stroke-width={sw} />
+				<!-- Equator ellipse (dashed) -->
+				<ellipse cx={el.cx} cy={el.cy} rx={r} ry={r * 0.3} fill="none" stroke="#1a1a1a" stroke-width={sw * 0.6} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Center dot -->
+				<circle cx={el.cx} cy={el.cy} r={pr * 0.6} fill="#1a1a1a" />
+				<!-- Radius line -->
+				{#if dimLabel(el.dimension_labels, 'radius')}
+					<line x1={el.cx} y1={el.cy} x2={el.cx + r} y2={el.cy} stroke="#1a1a1a" stroke-width={sw * 0.6} />
+					{@render lbl(el.cx + r / 2, el.cy - 0.35, dimLabel(el.dimension_labels, 'radius')!, measLabelFs, '500')}
+				{/if}
+
+			{:else if el.type === 'pyramid' && el.cx != null && el.cy != null && el.shape_width && el.shape_height && el.depth}
+				{@const bw = el.shape_width}
+				{@const bd = el.depth}
+				{@const h = el.shape_height}
+				{@const ox2 = oblX(bd)}
+				{@const oy2 = oblY(bd)}
+				{@const botY = el.cy + h / 2}
+				{@const topY = el.cy - h / 2}
+				<!-- Base (front edge solid, back edges dashed) -->
+				<line x1={el.cx - bw / 2} y1={botY} x2={el.cx + bw / 2} y2={botY} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={el.cx - bw / 2} y1={botY} x2={el.cx - bw / 2 + ox2} y2={botY + oy2} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<line x1={el.cx + bw / 2} y1={botY} x2={el.cx + bw / 2 + ox2} y2={botY + oy2} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={el.cx - bw / 2 + ox2} y1={botY + oy2} x2={el.cx + bw / 2 + ox2} y2={botY + oy2} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Edges to apex -->
+				<line x1={el.cx - bw / 2} y1={botY} x2={el.cx + ox2 / 2} y2={topY} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={el.cx + bw / 2} y1={botY} x2={el.cx + ox2 / 2} y2={topY} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={el.cx + bw / 2 + ox2} y1={botY + oy2} x2={el.cx + ox2 / 2} y2={topY} stroke="#1a1a1a" stroke-width={sw} />
+				<line x1={el.cx - bw / 2 + ox2} y1={botY + oy2} x2={el.cx + ox2 / 2} y2={topY} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Apex dot -->
+				<circle cx={el.cx + ox2 / 2} cy={topY} r={pr * 0.8} fill="#1a1a1a" />
+				<!-- Labels -->
+				{#if dimLabel(el.dimension_labels, 'height')}
+					<line x1={el.cx + ox2 / 2} y1={topY} x2={el.cx + ox2 / 2} y2={botY} stroke="#1a1a1a" stroke-width={sw * 0.6} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+					{@render lbl(el.cx + ox2 / 2 - 0.6, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
+				{/if}
+				{#if dimLabel(el.dimension_labels, 'base')}
+					{@render lbl(el.cx, botY + 0.5, dimLabel(el.dimension_labels, 'base')!, measLabelFs, '500')}
+				{/if}
 			{/if}
 		{/each}
 		<defs>
