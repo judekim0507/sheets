@@ -212,7 +212,7 @@
 			onStudentChange={(n) => updateField('studentName', n)}
 		/>
 
-		<div class="worksheet-columns">
+		<div class="screen-only worksheet-columns">
 			<div class="worksheet-col space-y-4">
 				{#each leftCol as question, i}
 					{@const isSelected = selectedForClinic.has(i)}
@@ -281,6 +281,14 @@
 					</button>
 				{/each}
 			</div>
+		</div>
+
+		<div class="print-only worksheet-print-flow">
+			{#each questions as question, i (`${i}:${question.question}`)}
+				<div class="worksheet-print-item">
+					<QuestionCard {question} index={i} />
+				</div>
+			{/each}
 		</div>
 	</div>
 

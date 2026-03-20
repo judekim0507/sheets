@@ -161,6 +161,19 @@
   background: var(--border);
   margin: 0 0.75rem;
 }
+.print-only {
+  display: none;
+}
+.worksheet-print-flow {
+  column-count: 2;
+  column-gap: 1.6rem;
+  column-rule: 1px solid var(--border);
+}
+.worksheet-print-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 1rem;
+}
 
 @media (max-width: 768px) {
   .worksheet-columns {
@@ -199,6 +212,12 @@
     display: flex !important;
     gap: 0 !important;
   }
+  .screen-only {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
   .worksheet-col {
     flex: 1 1 0 !important;
     min-width: 0 !important;
@@ -216,6 +235,17 @@
     width: 1px !important;
     background: #ccc !important;
     margin: 0 !important;
+  }
+  .worksheet-print-flow {
+    column-count: 2 !important;
+    column-gap: 1.6rem !important;
+    column-rule: 1px solid #ccc !important;
+    column-fill: auto !important;
+  }
+  .worksheet-print-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 1rem !important;
   }
   .worksheet-header {
     break-after: avoid;

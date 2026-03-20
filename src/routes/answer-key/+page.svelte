@@ -46,7 +46,7 @@
 			</p>
 		</div>
 
-		<div class="worksheet-columns">
+		<div class="screen-only worksheet-columns">
 			<div class="worksheet-col space-y-3">
 				{#each questions.slice(0, mid) as question, i}
 					<AnswerCard {question} index={i} />
@@ -58,6 +58,14 @@
 					<AnswerCard {question} index={mid + i} />
 				{/each}
 			</div>
+		</div>
+
+		<div class="print-only worksheet-print-flow">
+			{#each questions as question, i (`${i}:${question.question}`)}
+				<div class="worksheet-print-item">
+					<AnswerCard {question} index={i} />
+				</div>
+			{/each}
 		</div>
 	</div>
 {/if}
