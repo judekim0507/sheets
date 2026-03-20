@@ -10,6 +10,7 @@ export const systemPrompt = `You are a math educator creating worksheet question
 
 ## Diagrams
 For any question involving shapes, angles, graphs, or number lines, you MUST set has_diagram to true and include a diagram.
+Because the API schema transports diagrams as text, the "diagram" field must contain a valid JSON string encoding the diagram object.
 
 **Coordinate system: y=0 is TOP, y increases DOWNWARD (screen coordinates). x increases rightward.**
 
@@ -30,16 +31,24 @@ The diagram object uses TYPED ARRAYS — each element type gets its own array:
 - **tick_marks**: [{ segment_from, segment_to, count }]
 - **parallel_marks**: [{ segment_from, segment_to, count }]
 
+For coordinate-plane graphing questions, use the dedicated **graph** object:
+- **graph**: {
+    viewport: { left, right, bottom, top },
+    expressions: [{ latex, line_style, point_style, fill, label, show_label }],
+    degree_mode, show_grid, show_x_axis, show_y_axis, show_x_axis_numbers, show_y_axis_numbers
+  }
+
 **3D shapes** (rendered as standard textbook oblique projections with dashed hidden edges):
-- **rectangular_prisms**: [{ cx, cy, shape_width, shape_height, depth, width_label: "5 cm", height_label: "3 cm", depth_label: "4 cm" }]
-- **cylinders**: [{ cx, cy, radius, shape_height, radius_label: "3 cm", height_label: "8 cm" }]
-- **cones**: [{ cx, cy, radius, shape_height, radius_label: "4 cm", height_label: "6 cm", slant_label: "7.2 cm" }]
-- **spheres**: [{ cx, cy, radius, radius_label: "5 cm" }]
-- **pyramids**: [{ cx, cy, base_width, base_depth, shape_height, base_label: "6 cm", height_label: "8 cm" }]
+- **rectangular_prisms**: [{ cx, cy, shape_width, shape_height, depth, dimension_labels: { width: "5 cm", height: "3 cm", depth: "4 cm" } }]
+- **cylinders**: [{ cx, cy, radius, shape_height, dimension_labels: { radius: "3 cm", height: "8 cm" } }]
+- **cones**: [{ cx, cy, radius, shape_height, dimension_labels: { radius: "4 cm", height: "6 cm", slant: "7.2 cm" } }]
+- **spheres**: [{ cx, cy, radius, dimension_labels: { radius: "5 cm" } }]
+- **pyramids**: [{ cx, cy, base_width, base_depth, shape_height, dimension_labels: { base: "6 cm", height: "8 cm" } }]
 
 Use cx, cy as center position. Label fields are optional strings for dimension measurements.
 
 ### Example: Triangle PQR with labels, side lengths, and angle marks
+Diagram object example:
 {
   "width": 10, "height": 8,
   "points": [
@@ -61,6 +70,22 @@ Use cx, cy as center position. Label fields are optional strings for dimension m
 }
 
 Notice: EVERY point has "label" set. EVERY known side has a labeled segment. EVERY angle has an angle_arc.
+
+### Example: Graph of y = x^2 with a labeled vertex
+Graph diagram object example:
+{
+  "width": 10, "height": 8,
+  "graph": {
+    "viewport": { "left": -4, "right": 4, "bottom": -1, "top": 8 },
+    "show_grid": true,
+    "expressions": [
+      { "id": "parabola", "latex": "y=x^2" },
+      { "id": "vertex", "latex": "(0,0)", "point_style": "point", "label": "(0,0)", "show_label": true }
+    ]
+  }
+}
+
+When has_diagram is true, put ONE of the objects above into the "diagram" field as a JSON string.
 
 ${DIAGRAM_RULES}
 

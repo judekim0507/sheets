@@ -78,11 +78,45 @@ export interface Worksheet {
 	threads?: QuestionThread[]; // one per question, tracks modifications
 }
 
+export interface GraphViewport {
+	left: number;
+	right: number;
+	bottom: number;
+	top: number;
+}
+
+export interface GraphExpression {
+	id?: string;
+	latex: string;
+	color?: string;
+	line_style?: 'solid' | 'dashed' | 'dotted';
+	point_style?: 'point' | 'open' | 'cross';
+	points?: boolean;
+	lines?: boolean;
+	fill?: boolean;
+	fill_opacity?: number;
+	hidden?: boolean;
+	label?: string;
+	show_label?: boolean;
+}
+
+export interface DiagramGraph {
+	viewport: GraphViewport;
+	expressions: GraphExpression[];
+	degree_mode?: boolean;
+	show_grid?: boolean;
+	show_x_axis?: boolean;
+	show_y_axis?: boolean;
+	show_x_axis_numbers?: boolean;
+	show_y_axis_numbers?: boolean;
+}
+
 // Diagram scene graph — flat element structure for Gemini compatibility
 export interface DiagramSceneGraph {
 	width: number;
 	height: number;
 	elements: DiagramElement[];
+	graph?: DiagramGraph;
 }
 
 export interface DiagramElement {

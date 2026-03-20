@@ -8,6 +8,20 @@ export { systemPrompt };
 function describeDiagramIssues(q: GeneratedQuestion): string {
 	if (!q.has_diagram || !q.diagram) return '';
 
+	if (q.diagram.graph) {
+		const issues: string[] = [];
+		if (q.diagram.graph.expressions.length === 0) {
+			issues.push('The graph object has no expressions to plot');
+		}
+		const { left, right, bottom, top } = q.diagram.graph.viewport;
+		if (!(left < right && bottom < top)) {
+			issues.push('The graph viewport bounds are invalid');
+		}
+		return issues.length > 0
+			? `\n\n**CURRENT DIAGRAM PROBLEMS:**\n${issues.map((i) => `- ${i}`).join('\n')}\nYou MUST fix all of these in the replacement.`
+			: '';
+	}
+
 	const elements = q.diagram.elements;
 	const points = elements.filter((e) => e.type === 'point');
 	const segments = elements.filter((e) => e.type === 'segment');
@@ -58,9 +72,11 @@ Generate exactly 1 replacement question. Keep the same question text and skill u
 ${DIAGRAM_RULES}
 
 IMPORTANT: The replacement MUST have a complete diagram where:
-- Every point has "label" set to the vertex letter (e.g., label: "A")
-- Every known side has a segment with a measurement label (e.g., label: "10 cm")
-- Every referenced angle has an angle_arc with a degree label (e.g., label: "60°")
+- For geometry shapes: every point has "label" set to the vertex letter (e.g., label: "A")
+- For geometry shapes: every known side has a segment with a measurement label (e.g., label: "10 cm")
+- For geometry shapes: every referenced angle has an angle_arc with a degree label (e.g., label: "60°")
+- For coordinate-plane graphing: use the "graph" object with viewport + expressions instead of sampled curve_points
+- Put the final diagram into the "diagram" field as a valid JSON string
 - Use right_angle for 90° angles`;
 }
 
@@ -79,5 +95,8 @@ ${original.has_diagram ? '\nThe original had a diagram. The replacement MUST als
 
 ${DIAGRAM_RULES}
 
-IMPORTANT: Every point MUST have "label" set. Every known side MUST have a labeled segment. Every mentioned angle MUST have an angle_arc with label.`;
+IMPORTANT:
+- Geometry shapes must have labeled points, labeled known sides, and angle markers where needed.
+- Coordinate-plane graphs must use the "graph" object with mathematically correct expressions and viewport bounds.
+- Put the final diagram into the "diagram" field as a valid JSON string.`;
 }

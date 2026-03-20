@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { DiagramSceneGraph, DiagramElement } from '$lib/data/types';
+	import GraphRenderer from './GraphRenderer.svelte';
 	import {
 		buildPointMap, resolvePoint, sortElementsByLayer,
-		extendLineToViewBox, extendRayToViewBox,
-		arcPath, perpOffset, bezierPath, labelOffset, angleBisector,
+		extendLineToBounds, extendLineToViewBox, extendRayToBounds, extendRayToViewBox,
+		arcPath, perpOffset, bezierPath, labelOffset, angleBisector, pointCentroid,
 		type PointMap
 	} from '$lib/diagram/renderer';
 
@@ -19,6 +20,21 @@
 	// If diagram has axes, use axis range for viewBox (y-flipped for math convention)
 	const axesEl = $derived(diagram.elements.find((e) => e.type === 'axes'));
 	const hasAxes = $derived(axesEl && axesEl.x_min != null && axesEl.x_max != null && axesEl.y_min != null && axesEl.y_max != null);
+	const viewBounds = $derived(
+		hasAxes
+			? {
+				left: axesEl!.x_min! - pad,
+				right: axesEl!.x_max! + pad,
+				top: axesEl!.y_min! - pad,
+				bottom: axesEl!.y_max! + pad
+			}
+			: {
+				left: -pad,
+				right: diagram.width + pad,
+				top: -pad,
+				bottom: diagram.height + pad
+			}
+	);
 	const vb = $derived(
 		hasAxes
 			? `${axesEl!.x_min! - pad} ${-axesEl!.y_max! - pad} ${axesEl!.x_max! - axesEl!.x_min! + pad * 2} ${axesEl!.y_max! - axesEl!.y_min! + pad * 2}`
@@ -36,11 +52,23 @@
 	function segMid(fId: string, tId: string) {
 		const a = resolvePoint(fId, pm), b = resolvePoint(tId, pm);
 		if (!a || !b) return null;
-		return perpOffset(a.x, a.y, b.x, b.y, 0.45);
+		const screenA = { x: a.x, y: yf(a.y) };
+		const screenB = { x: b.x, y: yf(b.y) };
+		const centroid = pointCentroid(pm);
+		if (!centroid) return perpOffset(screenA.x, screenA.y, screenB.x, screenB.y, 0.45);
+		const screenCentroid = { x: centroid.x, y: yf(centroid.y) };
+		const above = perpOffset(screenA.x, screenA.y, screenB.x, screenB.y, 0.5);
+		const below = perpOffset(screenA.x, screenA.y, screenB.x, screenB.y, -0.5);
+		const dAbove = Math.hypot(above.x - screenCentroid.x, above.y - screenCentroid.y);
+		const dBelow = Math.hypot(below.x - screenCentroid.x, below.y - screenCentroid.y);
+		return dAbove >= dBelow ? above : below;
 	}
 
 	function mkAngleArc(vId: string, r1Id: string, r2Id: string, r: number): string {
-		const v = resolvePoint(vId, pm), p1 = resolvePoint(r1Id, pm), p2 = resolvePoint(r2Id, pm);
+		const vRaw = resolvePoint(vId, pm), p1Raw = resolvePoint(r1Id, pm), p2Raw = resolvePoint(r2Id, pm);
+		const v = vRaw ? { x: vRaw.x, y: yf(vRaw.y) } : null;
+		const p1 = p1Raw ? { x: p1Raw.x, y: yf(p1Raw.y) } : null;
+		const p2 = p2Raw ? { x: p2Raw.x, y: yf(p2Raw.y) } : null;
 		if (!v || !p1 || !p2) return '';
 		const a1 = Math.atan2(p1.y - v.y, p1.x - v.x) * (180 / Math.PI);
 		const a2 = Math.atan2(p2.y - v.y, p2.x - v.x) * (180 / Math.PI);
@@ -48,7 +76,10 @@
 	}
 
 	function mkRightAngle(vId: string, r1Id: string, r2Id: string, sz: number): string {
-		const v = resolvePoint(vId, pm), p1 = resolvePoint(r1Id, pm), p2 = resolvePoint(r2Id, pm);
+		const vRaw = resolvePoint(vId, pm), p1Raw = resolvePoint(r1Id, pm), p2Raw = resolvePoint(r2Id, pm);
+		const v = vRaw ? { x: vRaw.x, y: yf(vRaw.y) } : null;
+		const p1 = p1Raw ? { x: p1Raw.x, y: yf(p1Raw.y) } : null;
+		const p2 = p2Raw ? { x: p2Raw.x, y: yf(p2Raw.y) } : null;
 		if (!v || !p1 || !p2) return '';
 		const d1x = p1.x - v.x, d1y = p1.y - v.y, d2x = p2.x - v.x, d2y = p2.y - v.y;
 		const l1 = Math.hypot(d1x, d1y), l2 = Math.hypot(d2x, d2y);
@@ -59,7 +90,9 @@
 	}
 
 	function ticks(fId: string, tId: string, n: number) {
-		const a = resolvePoint(fId, pm), b = resolvePoint(tId, pm);
+		const aRaw = resolvePoint(fId, pm), bRaw = resolvePoint(tId, pm);
+		const a = aRaw ? { x: aRaw.x, y: yf(aRaw.y) } : null;
+		const b = bRaw ? { x: bRaw.x, y: yf(bRaw.y) } : null;
 		if (!a || !b) return [];
 		const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
 		const ang = Math.atan2(b.y - a.y, b.x - a.x), perp = ang + Math.PI / 2;
@@ -93,25 +126,54 @@
 	function dimLabel(labels: Record<string, string> | undefined, key: string): string | undefined {
 		return labels?.[key];
 	}
+
+	function prettyText(text: string): string {
+		return text
+			.replace(/\\theta/g, 'θ')
+			.replace(/\\alpha/g, 'α')
+			.replace(/\\beta/g, 'β')
+			.replace(/\\gamma/g, 'γ')
+			.replace(/\\delta/g, 'δ')
+			.replace(/\\phi/g, 'φ')
+			.replace(/\\pi/g, 'π')
+			.replace(/\\angle/g, '∠')
+			.replace(/\\circ/g, '°')
+			.replace(/\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/g, '$1/$2')
+			.replace(/\\left/g, '')
+			.replace(/\\right/g, '')
+			.replace(/[{}]/g, '')
+			.replace(/_([A-Za-z0-9]+)/g, '$1')
+			.trim();
+	}
+
+	function extLine(a: { x: number; y: number }, b: { x: number; y: number }) {
+		return hasAxes ? extendLineToBounds(a, b, viewBounds) : extendLineToViewBox(a, b, diagram.width, diagram.height);
+	}
+
+	function extRay(a: { x: number; y: number }, b: { x: number; y: number }) {
+		return hasAxes ? extendRayToBounds(a, b, viewBounds) : extendRayToViewBox(a, b, diagram.width, diagram.height);
+	}
 </script>
 
 {#snippet lbl(x: number, y: number, text: string, size: number, weight: string = '600')}
-	<text x={x} y={y} text-anchor="middle" dominant-baseline="central" font-size={size} font-weight={weight} fill="white" stroke="white" stroke-width={size * 0.4} stroke-linejoin="round" font-family="sans-serif">{text}</text>
-	<text x={x} y={y} text-anchor="middle" dominant-baseline="central" font-size={size} font-weight={weight} fill="#1a1a1a" font-family="sans-serif">{text}</text>
+	<text x={x} y={y} text-anchor="middle" dominant-baseline="central" font-size={size} font-weight={weight} fill="white" stroke="white" stroke-width={size * 0.4} stroke-linejoin="round" font-family="sans-serif">{prettyText(text)}</text>
+	<text x={x} y={y} text-anchor="middle" dominant-baseline="central" font-size={size} font-weight={weight} fill="#1a1a1a" font-family="sans-serif">{prettyText(text)}</text>
 {/snippet}
 
-{#if diagram?.elements}
-	<svg viewBox={vb} class="diagram-svg w-full max-w-[240px]" style="height: auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mathematical diagram">
+{#if diagram?.graph}
+	<GraphRenderer graph={diagram.graph} />
+{:else if diagram?.elements}
+	<svg viewBox={vb} class="diagram-svg w-full max-w-[280px]" style="height: auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mathematical diagram">
 		{#each sorted as el}
 			{#if el.type === 'polygon' && el.vertices}
-				{@const pts = el.vertices.map((id) => resolvePoint(id, pm)).filter((p): p is {x:number;y:number} => p !== null).map((p) => `${p.x},${p.y}`).join(' ')}
-				<polygon points={pts} fill="#f5f5f5" stroke="#1a1a1a" stroke-width={sw} stroke-linejoin="round" stroke-dasharray={d(el)} />
+				{@const pts = el.vertices.map((id) => resolvePoint(id, pm)).filter((p): p is {x:number;y:number} => p !== null).map((p) => `${p.x},${yf(p.y)}`).join(' ')}
+				<polygon points={pts} fill={el.fill ?? '#f5f5f5'} stroke="#1a1a1a" stroke-width={sw} stroke-linejoin="round" stroke-dasharray={d(el)} />
 
 			{:else if el.type === 'segment' && el.from && el.to}
 				{@const a = resolvePoint(el.from, pm)}
 				{@const b = resolvePoint(el.to, pm)}
 				{#if a && b}
-					<line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<line x1={a.x} y1={yf(a.y)} x2={b.x} y2={yf(b.y)} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
 					{#if el.label}
 						{@const lp = segMid(el.from, el.to)}
 						{#if lp}
@@ -124,29 +186,29 @@
 				{@const a = resolvePoint(el.through_points[0], pm)}
 				{@const b = resolvePoint(el.through_points[1], pm)}
 				{#if a && b}
-					{@const ext = extendLineToViewBox(a, b, diagram.width, diagram.height)}
-					<line x1={ext.x1} y1={ext.y1} x2={ext.x2} y2={ext.y2} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} marker-start="url(#ar)" marker-end="url(#ar)" />
+					{@const ext = extLine(a, b)}
+					<line x1={ext.x1} y1={yf(ext.y1)} x2={ext.x2} y2={yf(ext.y2)} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} marker-start="url(#ar)" marker-end="url(#ar)" />
 				{/if}
 
 			{:else if el.type === 'ray' && el.origin && el.through}
 				{@const o = resolvePoint(el.origin, pm)}
 				{@const t = resolvePoint(el.through, pm)}
 				{#if o && t}
-					{@const end = extendRayToViewBox(o, t, diagram.width, diagram.height)}
-					<line x1={o.x} y1={o.y} x2={end.x} y2={end.y} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} marker-end="url(#ar)" />
+					{@const end = extRay(o, t)}
+					<line x1={o.x} y1={yf(o.y)} x2={end.x} y2={yf(end.y)} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} marker-end="url(#ar)" />
 				{/if}
 
 			{:else if el.type === 'circle' && el.center}
 				{@const c = resolvePoint(el.center, pm)}
 				{#if c}
 					{@const r = el.radius ?? (el.through ? (() => { const t = resolvePoint(el.through, pm); return t ? Math.hypot(t.x - c.x, t.y - c.y) : 1; })() : 1)}
-					<circle cx={c.x} cy={c.y} r={r} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<circle cx={c.x} cy={yf(c.y)} r={r} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
 				{/if}
 
 			{:else if el.type === 'arc' && el.center && el.radius != null && el.start_angle != null && el.end_angle != null}
 				{@const c = resolvePoint(el.center, pm)}
 				{#if c}
-					<path d={arcPath(c.x, c.y, el.radius, el.start_angle, el.end_angle)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<path d={arcPath(c.x, yf(c.y), el.radius, el.start_angle, el.end_angle)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
 				{/if}
 
 			{:else if el.type === 'curve' && el.curve_points}
@@ -166,9 +228,12 @@
 				{#if path}
 					<path d={path} fill="none" stroke="#1a1a1a" stroke-width={sw * 0.7} />
 					{#if el.label}
-						{@const v = resolvePoint(el.vertex, pm)}
-						{@const p1 = resolvePoint(el.ray1_through, pm)}
-						{@const p2 = resolvePoint(el.ray2_through, pm)}
+						{@const vRaw = resolvePoint(el.vertex, pm)}
+						{@const p1Raw = resolvePoint(el.ray1_through, pm)}
+						{@const p2Raw = resolvePoint(el.ray2_through, pm)}
+						{@const v = vRaw ? { x: vRaw.x, y: yf(vRaw.y) } : null}
+						{@const p1 = p1Raw ? { x: p1Raw.x, y: yf(p1Raw.y) } : null}
+						{@const p2 = p2Raw ? { x: p2Raw.x, y: yf(p2Raw.y) } : null}
 						{#if v && p1 && p2}
 							{@const bis = angleBisector(v.x, v.y, p1.x, p1.y, p2.x, p2.y)}
 							{@const lr = r + 0.5}
@@ -271,29 +336,25 @@
 				{@const oy = oblY(el.depth)}
 				{@const x0 = el.cx - w / 2}
 				{@const y0 = el.cy - h / 2}
-				<!-- Back face (dashed) -->
-				<line x1={x0 + ox} y1={y0 + oy} x2={x0 + w + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Visible faces -->
+				<polygon points={`${x0},${y0} ${x0 + w},${y0} ${x0 + w + ox},${y0 + oy} ${x0 + ox},${y0 + oy}`} fill="#f8f8f8" stroke="#1a1a1a" stroke-width={sw} />
+				<polygon points={`${x0 + w},${y0} ${x0 + w},${y0 + h} ${x0 + w + ox},${y0 + h + oy} ${x0 + w + ox},${y0 + oy}`} fill="#f1f1f1" stroke="#1a1a1a" stroke-width={sw} />
+				<rect x={x0} y={y0} width={w} height={h} fill="#ffffff" stroke="#1a1a1a" stroke-width={sw} />
+				<!-- Hidden edges -->
 				<line x1={x0 + ox} y1={y0 + oy} x2={x0 + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
-				<line x1={x0 + ox} y1={y0 + h + oy} x2={x0 + ox + w} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
-				<line x1={x0 + w + ox} y1={y0 + oy} x2={x0 + w + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
-				<!-- Front face (solid) -->
-				<rect x={x0} y={y0} width={w} height={h} fill="#f5f5f5" stroke="#1a1a1a" stroke-width={sw} />
-				<!-- Connecting edges (top-right visible, bottom-left dashed) -->
-				<line x1={x0 + w} y1={y0} x2={x0 + w + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} />
-				<line x1={x0 + w} y1={y0 + h} x2={x0 + w + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} />
-				<line x1={x0} y1={y0} x2={x0 + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<line x1={x0 + ox} y1={y0 + h + oy} x2={x0 + w + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
 				<line x1={x0} y1={y0 + h} x2={x0 + ox} y2={y0 + h + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
-				<!-- Top face edges -->
-				<line x1={x0} y1={y0} x2={x0 + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
-				<line x1={x0 + ox} y1={y0 + oy} x2={x0 + w + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
 				<!-- Dimension labels -->
 				{#if dimLabel(el.dimension_labels, 'width')}
+					<line x1={x0} y1={y0 + h + 0.25} x2={x0 + w} y2={y0 + h + 0.25} stroke="#1a1a1a" stroke-width={sw * 0.6} />
 					{@render lbl(el.cx, y0 + h + 0.5, dimLabel(el.dimension_labels, 'width')!, measLabelFs, '500')}
 				{/if}
 				{#if dimLabel(el.dimension_labels, 'height')}
+					<line x1={x0 - 0.2} y1={y0} x2={x0 - 0.2} y2={y0 + h} stroke="#1a1a1a" stroke-width={sw * 0.6} />
 					{@render lbl(x0 - 0.5, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
 				{/if}
 				{#if dimLabel(el.dimension_labels, 'depth')}
+					<line x1={x0 + w} y1={y0} x2={x0 + w + ox} y2={y0 + oy} stroke="#1a1a1a" stroke-width={sw * 0.6} />
 					{@render lbl(x0 + w + ox / 2 + 0.4, y0 + oy / 2 - 0.3, dimLabel(el.dimension_labels, 'depth')!, measLabelFs, '500')}
 				{/if}
 				<!-- Vertex labels -->
@@ -331,6 +392,7 @@
 					{@render lbl(el.cx + r / 2, topY - 0.35, dimLabel(el.dimension_labels, 'radius')!, measLabelFs, '500')}
 				{/if}
 				{#if dimLabel(el.dimension_labels, 'height')}
+					<line x1={el.cx + r + 0.15} y1={topY} x2={el.cx + r + 0.15} y2={botY} stroke="#1a1a1a" stroke-width={sw * 0.6} />
 					{@render lbl(el.cx + r + 0.5, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
 				{/if}
 
@@ -358,6 +420,7 @@
 					{@render lbl(el.cx - 0.6, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
 				{/if}
 				{#if dimLabel(el.dimension_labels, 'slant')}
+					<line x1={el.cx} y1={topY} x2={el.cx + r} y2={botY} stroke="#1a1a1a" stroke-width={sw * 0.6} />
 					{@render lbl(el.cx + r / 2 + 0.3, el.cy - 0.2, dimLabel(el.dimension_labels, 'slant')!, measLabelFs, '500')}
 				{/if}
 
@@ -365,8 +428,9 @@
 				{@const r = el.radius}
 				<!-- Main circle -->
 				<circle cx={el.cx} cy={el.cy} r={r} fill="#f5f5f5" stroke="#1a1a1a" stroke-width={sw} />
-				<!-- Equator ellipse (dashed) -->
-				<ellipse cx={el.cx} cy={el.cy} rx={r} ry={r * 0.3} fill="none" stroke="#1a1a1a" stroke-width={sw * 0.6} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
+				<!-- Equator ellipse -->
+				<path d={ellipseArc(el.cx, el.cy, r, r * 0.3, 0, 180)} fill="none" stroke="#1a1a1a" stroke-width={sw * 0.6} />
+				<path d={ellipseArc(el.cx, el.cy, r, r * 0.3, 180, 360)} fill="none" stroke="#1a1a1a" stroke-width={sw * 0.6} stroke-dasharray={`${sw * 5} ${sw * 3}`} />
 				<!-- Center dot -->
 				<circle cx={el.cx} cy={el.cy} r={pr * 0.6} fill="#1a1a1a" />
 				<!-- Radius line -->
@@ -401,6 +465,7 @@
 					{@render lbl(el.cx + ox2 / 2 - 0.6, el.cy, dimLabel(el.dimension_labels, 'height')!, measLabelFs, '500')}
 				{/if}
 				{#if dimLabel(el.dimension_labels, 'base')}
+					<line x1={el.cx - bw / 2} y1={botY + 0.2} x2={el.cx + bw / 2} y2={botY + 0.2} stroke="#1a1a1a" stroke-width={sw * 0.6} />
 					{@render lbl(el.cx, botY + 0.5, dimLabel(el.dimension_labels, 'base')!, measLabelFs, '500')}
 				{/if}
 			{/if}

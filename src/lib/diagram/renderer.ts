@@ -23,6 +23,7 @@ export function resolvePoint(id: string, pointMap: PointMap): { x: number; y: nu
 export function sortElementsByLayer(elements: DiagramElement[]): DiagramElement[] {
 	const order: Record<string, number> = {
 		polygon: 0, axes: 1, number_line: 1,
+		rectangular_prism: 1, cylinder: 1, cone: 1, sphere: 1, pyramid: 1,
 		line: 2, ray: 2, segment: 2, circle: 2, arc: 2, curve: 2,
 		angle_arc: 3, right_angle: 3, tick_marks: 3, parallel_marks: 3,
 		point: 4, label: 5
@@ -30,20 +31,40 @@ export function sortElementsByLayer(elements: DiagramElement[]): DiagramElement[
 	return [...elements].sort((a, b) => (order[a.type] ?? 3) - (order[b.type] ?? 3));
 }
 
+export interface ViewBounds {
+	left: number;
+	right: number;
+	top: number;
+	bottom: number;
+}
+
 export function extendLineToViewBox(
 	p1: { x: number; y: number }, p2: { x: number; y: number },
 	width: number, height: number, padding: number = 0.5
+) {
+	return extendLineToBounds(p1, p2, {
+		left: -padding,
+		right: width + padding,
+		top: -padding,
+		bottom: height + padding
+	});
+}
+
+export function extendLineToBounds(
+	p1: { x: number; y: number },
+	p2: { x: number; y: number },
+	bounds: ViewBounds
 ) {
 	const dx = p2.x - p1.x, dy = p2.y - p1.y;
 	if (dx === 0 && dy === 0) return { x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y };
 	let tMin = -1000, tMax = 1000;
 	if (dx !== 0) {
-		const t1 = (-padding - p1.x) / dx, t2 = (width + padding - p1.x) / dx;
+		const t1 = (bounds.left - p1.x) / dx, t2 = (bounds.right - p1.x) / dx;
 		tMin = Math.max(tMin, Math.min(t1, t2));
 		tMax = Math.min(tMax, Math.max(t1, t2));
 	}
 	if (dy !== 0) {
-		const t1 = (-padding - p1.y) / dy, t2 = (height + padding - p1.y) / dy;
+		const t1 = (bounds.top - p1.y) / dy, t2 = (bounds.bottom - p1.y) / dy;
 		tMin = Math.max(tMin, Math.min(t1, t2));
 		tMax = Math.min(tMax, Math.max(t1, t2));
 	}
@@ -54,16 +75,29 @@ export function extendRayToViewBox(
 	origin: { x: number; y: number }, through: { x: number; y: number },
 	width: number, height: number, padding: number = 0.5
 ) {
+	return extendRayToBounds(origin, through, {
+		left: -padding,
+		right: width + padding,
+		top: -padding,
+		bottom: height + padding
+	});
+}
+
+export function extendRayToBounds(
+	origin: { x: number; y: number },
+	through: { x: number; y: number },
+	bounds: ViewBounds
+) {
 	const dx = through.x - origin.x, dy = through.y - origin.y;
 	if (dx === 0 && dy === 0) return through;
 	let tMax = 1000;
 	if (dx !== 0) {
-		const t1 = (-padding - origin.x) / dx, t2 = (width + padding - origin.x) / dx;
+		const t1 = (bounds.left - origin.x) / dx, t2 = (bounds.right - origin.x) / dx;
 		const maxT = Math.max(t1, t2);
 		if (maxT > 0) tMax = Math.min(tMax, maxT);
 	}
 	if (dy !== 0) {
-		const t1 = (-padding - origin.y) / dy, t2 = (height + padding - origin.y) / dy;
+		const t1 = (bounds.top - origin.y) / dy, t2 = (bounds.bottom - origin.y) / dy;
 		const maxT = Math.max(t1, t2);
 		if (maxT > 0) tMax = Math.min(tMax, maxT);
 	}
@@ -119,6 +153,15 @@ export function perpOffset(x1: number, y1: number, x2: number, y2: number, dist:
 	const len = Math.sqrt(dx * dx + dy * dy);
 	if (len === 0) return { x: mx, y: my + dist };
 	return { x: mx + (-dy / len) * dist, y: my + (dx / len) * dist };
+}
+
+export function pointCentroid(pointMap: PointMap): { x: number; y: number } | null {
+	const points = [...pointMap.values()];
+	if (points.length === 0) return null;
+	return {
+		x: points.reduce((sum, point) => sum + point.x, 0) / points.length,
+		y: points.reduce((sum, point) => sum + point.y, 0) / points.length
+	};
 }
 
 export function bezierPath(points: { x: number; y: number }[]): string {

@@ -105,6 +105,15 @@ class WorksheetStore {
 		this.step = 2;
 	}
 
+	selectCatalogueUnit(grade: GradeLevel, domain: Domain, unit: Unit) {
+		this.grade = grade;
+		this.selectedDomain = domain;
+		this.selectedUnit = unit;
+		this.selectedSkills = [];
+		this.customTopic = '';
+		this.step = 2;
+	}
+
 	/** Use a custom topic — skip skill selection, go straight to config */
 	useCustomTopic(topic: string) {
 		this.customTopic = topic;
