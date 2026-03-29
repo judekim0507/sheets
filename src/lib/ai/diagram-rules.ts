@@ -33,6 +33,7 @@ export const DIAGRAM_RULES = `
    - "viewport": { left, right, bottom, top }
    - "expressions": [{ latex, ... }]
    Use valid Desmos-style LaTeX for each plotted relation or point.
+   Every graph expression MUST come directly from the equation, inequality, or coordinates stated in the question. Do NOT reuse placeholder graphs.
    Examples:
    - Parabola: { "latex": "y=x^2" }
    - Inequality: { "latex": "y\\le 2x+1", "fill": true }
@@ -49,4 +50,11 @@ export const DIAGRAM_RULES = `
     - Spheres → use "spheres" array
     - Rectangular prisms/boxes → use "rectangular_prisms" array
     - Pyramids → use "pyramids" array
-    3D solids do NOT need matching entries in the 2D "points" array.`;
+    3D solids do NOT need matching entries in the 2D "points" array.
+
+11. If the question mentions a shaded/colored part of a circle, use:
+    - "circles" with "fill" / "fill_opacity" for a fully shaded circle, OR
+    - "sectors": [{ center, radius, start_angle, end_angle, fill: "#ef4444", fill_opacity: 0.35 }]
+    Also include the matching circle outline in "circles" when drawing a shaded region of a circle.
+
+12. Never mention a color, shaded region, or highlighted face unless the diagram data explicitly encodes it with a fill color.`;

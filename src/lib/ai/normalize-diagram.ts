@@ -19,22 +19,25 @@ export function normalizeDiagram(raw: Record<string, unknown>): DiagramSceneGrap
 		elements.push({ type: 'point', id: s(p.id), x: n(p.x), y: n(p.y), label: s(p.label), label_position: s(p.label_position), filled: b(p.filled), style: s(p.style) as 'solid' | 'dashed' | undefined });
 	}
 	for (const seg of arr('segments')) {
-		elements.push({ type: 'segment', from: s(seg.from), to: s(seg.to), label: s(seg.label), style: s(seg.style) as 'solid' | 'dashed' | undefined });
+		elements.push({ type: 'segment', from: s(seg.from), to: s(seg.to), label: s(seg.label), style: s(seg.style) as 'solid' | 'dashed' | undefined, stroke: s(seg.stroke), stroke_opacity: n(seg.stroke_opacity) });
 	}
 	for (const line of arr('lines')) {
-		elements.push({ type: 'line', through_points: line.through_points as string[], style: s(line.style) as 'solid' | 'dashed' | undefined });
+		elements.push({ type: 'line', through_points: line.through_points as string[], style: s(line.style) as 'solid' | 'dashed' | undefined, stroke: s(line.stroke), stroke_opacity: n(line.stroke_opacity) });
 	}
 	for (const ray of arr('rays')) {
-		elements.push({ type: 'ray', origin: s(ray.origin), through: s(ray.through), style: s(ray.style) as 'solid' | 'dashed' | undefined });
+		elements.push({ type: 'ray', origin: s(ray.origin), through: s(ray.through), style: s(ray.style) as 'solid' | 'dashed' | undefined, stroke: s(ray.stroke), stroke_opacity: n(ray.stroke_opacity) });
 	}
 	for (const poly of arr('polygons')) {
-		elements.push({ type: 'polygon', vertices: poly.vertices as string[], fill: s(poly.fill), style: s(poly.style) as 'solid' | 'dashed' | undefined });
+		elements.push({ type: 'polygon', vertices: poly.vertices as string[], fill: s(poly.fill), fill_opacity: n(poly.fill_opacity), stroke: s(poly.stroke), stroke_opacity: n(poly.stroke_opacity), style: s(poly.style) as 'solid' | 'dashed' | undefined });
 	}
 	for (const c of arr('circles')) {
-		elements.push({ type: 'circle', center: s(c.center), radius: n(c.radius), through: s(c.through), style: s(c.style) as 'solid' | 'dashed' | undefined });
+		elements.push({ type: 'circle', center: s(c.center), radius: n(c.radius), through: s(c.through), fill: s(c.fill), fill_opacity: n(c.fill_opacity), stroke: s(c.stroke), stroke_opacity: n(c.stroke_opacity), style: s(c.style) as 'solid' | 'dashed' | undefined });
 	}
 	for (const a of arr('arcs')) {
-		elements.push({ type: 'arc', center: s(a.center), radius: n(a.radius)!, start_angle: n(a.start_angle)!, end_angle: n(a.end_angle)!, style: s(a.style) as 'solid' | 'dashed' | undefined });
+		elements.push({ type: 'arc', center: s(a.center), radius: n(a.radius)!, start_angle: n(a.start_angle)!, end_angle: n(a.end_angle)!, stroke: s(a.stroke), stroke_opacity: n(a.stroke_opacity), style: s(a.style) as 'solid' | 'dashed' | undefined });
+	}
+	for (const sector of arr('sectors')) {
+		elements.push({ type: 'sector', center: s(sector.center), radius: n(sector.radius), start_angle: n(sector.start_angle), end_angle: n(sector.end_angle), fill: s(sector.fill), fill_opacity: n(sector.fill_opacity), stroke: s(sector.stroke), stroke_opacity: n(sector.stroke_opacity), label: s(sector.label), style: s(sector.style) as 'solid' | 'dashed' | undefined });
 	}
 	for (const aa of arr('angle_arcs')) {
 		elements.push({ type: 'angle_arc', vertex: s(aa.vertex), ray1_through: s(aa.ray1_through), ray2_through: s(aa.ray2_through), radius: n(aa.radius), label: s(aa.label), style: s(aa.style) as 'solid' | 'dashed' | undefined });
@@ -52,7 +55,7 @@ export function normalizeDiagram(raw: Record<string, unknown>): DiagramSceneGrap
 		elements.push({ type: 'curve', curve_points: c.curve_points as { x: number; y: number }[], smooth: b(c.smooth), style: s(c.style) as 'solid' | 'dashed' | undefined });
 	}
 	for (const l of arr('labels')) {
-		elements.push({ type: 'label', x: n(l.x), y: n(l.y), text: s(l.text), font_size: n(l.font_size) });
+		elements.push({ type: 'label', x: n(l.x), y: n(l.y), text: s(l.text), font_size: n(l.font_size), fill: s(l.fill) });
 	}
 	for (const tm of arr('tick_marks')) {
 		elements.push({ type: 'tick_marks', segment_from: s(tm.segment_from), segment_to: s(tm.segment_to), count: n(tm.count) });

@@ -25,6 +25,7 @@ export interface DesmosCalculator {
 	setExpressions(expressions: DesmosExpression[]): void;
 	updateSettings(settings: Record<string, unknown>): void;
 	setMathBounds(bounds: { left: number; right: number; bottom: number; top: number }): void;
+	resize(): void;
 	screenshot(opts?: Record<string, unknown>): string;
 	asyncScreenshot(
 		opts: Record<string, unknown>,
@@ -57,6 +58,10 @@ export async function loadDesmos(): Promise<DesmosGlobal> {
 	loadPromise = new Promise<DesmosGlobal>((resolve, reject) => {
 		const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
 		if (existing) {
+			if (window.Desmos) {
+				resolve(window.Desmos);
+				return;
+			}
 			existing.addEventListener('load', () => window.Desmos ? resolve(window.Desmos) : reject(new Error('Desmos failed to initialize')));
 			existing.addEventListener('error', () => reject(new Error('Failed to load Desmos')));
 			return;
@@ -101,11 +106,6 @@ export function createDesmosExpressions(graph: DiagramGraph, desmos: DesmosGloba
 		if (expr.fill != null) state.fill = expr.fill;
 		if (expr.fill_opacity != null) state.fillOpacity = expr.fill_opacity;
 		if (expr.hidden != null) state.hidden = expr.hidden;
-		if (expr.label) {
-			state.label = expr.label;
-			if (expr.show_label != null) state.showLabel = expr.show_label;
-		}
-
 		return state as unknown as DesmosExpression;
 	});
 }

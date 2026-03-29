@@ -258,6 +258,11 @@
     max-width: 160px !important;
     height: auto !important;
   }
+  .diagram-graph {
+    max-width: 180px !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
   .question-wrapper {
     background: none !important;
     box-shadow: none !important;

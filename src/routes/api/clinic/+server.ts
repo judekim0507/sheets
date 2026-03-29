@@ -6,8 +6,8 @@ import { generateObject } from 'ai';
 import { worksheetSchema } from '$lib/ai/schema';
 import { systemPrompt } from '$lib/ai/prompt';
 import { buildClinicPrompt } from '$lib/ai/clinic-prompt';
-import { fixDiagram } from '$lib/ai/fix-diagram';
 import { checkRateLimit } from '$lib/ai/rate-limit';
+import { postprocessGeneratedQuestions } from '$lib/ai/question-postprocess';
 import { logQuestions } from '$lib/db/turso';
 import type { GeneratedQuestion, BuilderConfig, AIProvider, Worksheet } from '$lib/data/types';
 
@@ -42,6 +42,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			provider === 'anthropic'
 				? createAnthropic({ apiKey })(modelId)
 				: createGoogleGenerativeAI({ apiKey })(modelId);
+		const maxRetries = provider === 'google' ? 0 : undefined;
 
 		const prompt = buildClinicPrompt(sourceQuestions, questionCount, config);
 
@@ -49,15 +50,18 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			model,
 			schema: worksheetSchema,
 			system: systemPrompt,
-			prompt
+			prompt,
+			maxRetries
 		});
+
+		const questions = await postprocessGeneratedQuestions(result.object.questions, config, model, { maxRetries });
 
 		const worksheet: Worksheet = {
 			id: crypto.randomUUID(),
 			title: result.object.title || `Clinic: ${sourceTitle}`,
 			created_at: new Date().toISOString(),
 			config,
-			questions: result.object.questions.map((q) => fixDiagram(q))
+			questions
 		};
 
 		logQuestions({

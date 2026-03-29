@@ -5,8 +5,8 @@ import type { ModelCatalog } from 'tokenlens';
 
 // Map our model IDs to their models.dev provider
 const MODEL_PROVIDERS: Record<string, string> = {
-	'claude-sonnet-4-6-20250415': 'anthropic',
-	'claude-haiku-4-5-20251001': 'anthropic',
+	'claude-sonnet-4-6': 'anthropic',
+	'claude-haiku-4-5': 'anthropic',
 	'gemini-2.5-flash': 'google',
 	'gemini-2.5-pro': 'google',
 	'gemini-3-flash-preview': 'google',
@@ -75,8 +75,8 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	// Hardcoded fallback for models not yet in models.dev
 	const fallback: Record<string, { input: number; output: number }> = {
-		'claude-sonnet-4-6-20250415': { input: 3, output: 15 },
-		'claude-haiku-4-5-20251001': { input: 0.80, output: 4 }
+		'claude-sonnet-4-6': { input: 3, output: 15 },
+		'claude-haiku-4-5': { input: 0.80, output: 4 }
 	};
 	const fb = fallback[modelId];
 	if (fb) {

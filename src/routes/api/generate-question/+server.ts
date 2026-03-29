@@ -5,8 +5,8 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { worksheetSchema } from '$lib/ai/schema';
 import { systemPrompt, buildQuestionEditPrompt, buildQuestionRegenPrompt } from '$lib/ai/question-prompt';
-import { fixDiagram } from '$lib/ai/fix-diagram';
 import { checkRateLimit } from '$lib/ai/rate-limit';
+import { ensureDiagramQuality } from '$lib/ai/question-postprocess';
 import { logQuestions } from '$lib/db/turso';
 import type { GeneratedQuestion, BuilderConfig, AIProvider } from '$lib/data/types';
 
@@ -38,6 +38,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			provider === 'anthropic'
 				? createAnthropic({ apiKey })(modelId)
 				: createGoogleGenerativeAI({ apiKey })(modelId);
+		const maxRetries = provider === 'google' ? 0 : undefined;
 
 		const prompt = instruction
 			? buildQuestionEditPrompt(original, instruction, config)
@@ -47,7 +48,8 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			model,
 			schema: worksheetSchema,
 			system: systemPrompt,
-			prompt
+			prompt,
+			maxRetries
 		});
 
 		const raw = result.object.questions[0];
@@ -55,7 +57,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			return json({ error: 'No question generated' }, { status: 500 });
 		}
 
-		const fixed = fixDiagram(raw);
+		const fixed = await ensureDiagramQuality(raw, config, model, { maxRetries });
 
 		logQuestions({
 			worksheetId: 'edit',

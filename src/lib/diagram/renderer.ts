@@ -22,7 +22,7 @@ export function resolvePoint(id: string, pointMap: PointMap): { x: number; y: nu
  */
 export function sortElementsByLayer(elements: DiagramElement[]): DiagramElement[] {
 	const order: Record<string, number> = {
-		polygon: 0, axes: 1, number_line: 1,
+		polygon: 0, sector: 0, axes: 1, number_line: 1,
 		rectangular_prism: 1, cylinder: 1, cone: 1, sphere: 1, pyramid: 1,
 		line: 2, ray: 2, segment: 2, circle: 2, arc: 2, curve: 2,
 		angle_arc: 3, right_angle: 3, tick_marks: 3, parallel_marks: 3,
@@ -132,6 +132,21 @@ export function arcPath(cx: number, cy: number, r: number, startDeg: number, end
 	const y2 = cy + r * Math.sin(eRad);
 
 	return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} ${sweepFlag} ${x2} ${y2}`;
+}
+
+export function sectorPath(cx: number, cy: number, r: number, startDeg: number, endDeg: number): string {
+	const s = normAngle(startDeg);
+	const e = normAngle(endDeg);
+	const sweep = normAngle(e - s);
+	const largeArc = sweep > 180 ? 1 : 0;
+	const sRad = (s * Math.PI) / 180;
+	const eRad = (e * Math.PI) / 180;
+	const x1 = cx + r * Math.cos(sRad);
+	const y1 = cy + r * Math.sin(sRad);
+	const x2 = cx + r * Math.cos(eRad);
+	const y2 = cy + r * Math.sin(eRad);
+
+	return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
 }
 
 /**

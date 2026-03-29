@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { tick } from 'svelte';
 	import type { GeneratedQuestion, Worksheet, QuestionThread } from '$lib/data/types';
+	import { findDiagramIssues } from '$lib/ai/diagram-validation';
 	import { settingsStore } from '$lib/stores/settings.svelte';
 	import KatexBlock from './KatexBlock.svelte';
 	import DiagramRenderer from './DiagramRenderer.svelte';
@@ -62,6 +63,15 @@
 			...worksheet,
 			questions: threads.map((t) => t.versions[t.activeIndex]),
 			threads
+		});
+	}
+
+	function handleQuestionRepair(repairedQuestion: GeneratedQuestion) {
+		const versions = [...thread.versions];
+		versions[thread.activeIndex] = repairedQuestion;
+		updateWorksheet({
+			...thread,
+			versions
 		});
 	}
 
@@ -135,15 +145,12 @@
 			{ label: 'Multiple choice', inst: 'Convert to multiple choice with 4 options' },
 			{ label: 'New numbers', inst: 'Keep the same structure but use completely different numbers' }
 		];
-		// Add "Fix diagram" if the current question has diagram issues
-		if (currentQuestion.has_diagram && currentQuestion.diagram) {
-			const els = currentQuestion.diagram.elements;
-			const hasUnlabeled = els.some((e) => e.type === 'point' && !e.label);
-			const noSegLabels = els.filter((e) => e.type === 'segment').every((e) => !e.label);
-			const noAngles = !els.some((e) => e.type === 'angle_arc' || e.type === 'right_angle');
-			if (hasUnlabeled || noSegLabels || noAngles) {
-				actions.unshift({ label: 'Fix diagram labels', inst: 'Fix the diagram: add vertex letter labels to all points, add measurement labels to all segments with known lengths, and add angle_arc markers for all mentioned angles. Keep the same question.' });
-			}
+		const diagramIssues = findDiagramIssues(currentQuestion);
+		if (diagramIssues.length > 0) {
+			actions.unshift({
+				label: 'Fix diagram',
+				inst: `Fix the diagram so it exactly matches the question. Problems to fix: ${diagramIssues.map((issue) => issue.message).join(' ')} Keep the same question.`
+			});
 		}
 		return actions;
 	})());
@@ -217,16 +224,23 @@
 
 			{#if currentQuestion.has_diagram && currentQuestion.diagram}
 				<div class="my-4 flex justify-center">
-					<DiagramRenderer diagram={currentQuestion.diagram} />
+					<DiagramRenderer
+						diagram={currentQuestion.diagram}
+						question={currentQuestion}
+						config={worksheet.config}
+						onQuestionRepair={handleQuestionRepair}
+					/>
 				</div>
 			{/if}
 
 			{#if currentQuestion.choices?.length}
-				<div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+				<div class="mt-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
 					{#each currentQuestion.choices as choice, i}
 						<div class="flex gap-1.5 rounded-md bg-muted/40 px-2 py-1.5">
 							<span class="font-medium text-muted-foreground">{String.fromCharCode(65 + i)}.</span>
-							<KatexBlock text={choice} />
+							<div class="min-w-0 flex-1">
+								<KatexBlock text={choice} />
+							</div>
 						</div>
 					{/each}
 				</div>
@@ -295,4 +309,3 @@
 		</div>
 	</div>
 </div>
-

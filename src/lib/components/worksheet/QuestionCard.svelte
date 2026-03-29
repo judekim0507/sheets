@@ -1,9 +1,19 @@
 <script lang="ts">
-	import type { GeneratedQuestion } from '$lib/data/types';
+	import type { BuilderConfig, GeneratedQuestion } from '$lib/data/types';
 	import KatexBlock from './KatexBlock.svelte';
 	import DiagramRenderer from './DiagramRenderer.svelte';
 
-	let { question, index }: { question: GeneratedQuestion; index: number } = $props();
+	let {
+		question,
+		index,
+		config,
+		onQuestionRepair
+	}: {
+		question: GeneratedQuestion;
+		index: number;
+		config?: BuilderConfig;
+		onQuestionRepair?: (question: GeneratedQuestion) => void;
+	} = $props();
 </script>
 
 <div class="question-card">
@@ -16,16 +26,18 @@
 
 			{#if question.has_diagram && question.diagram}
 				<div class="flex justify-center py-1">
-					<DiagramRenderer diagram={question.diagram} />
+					<DiagramRenderer diagram={question.diagram} {question} {config} {onQuestionRepair} />
 				</div>
 			{/if}
 
 			{#if question.choices && question.choices.length > 0}
-				<div class="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
+				<div class="grid grid-cols-1 gap-x-3 gap-y-1.5 text-sm sm:grid-cols-2">
 					{#each question.choices as choice, i}
-						<div class="flex items-start gap-1">
-							<span class="font-medium text-muted-foreground">{String.fromCharCode(65 + i)}.</span>
-							<KatexBlock text={choice} />
+						<div class="flex items-start gap-1.5 rounded-md border border-border/40 bg-muted/20 px-2.5 py-2">
+							<span class="mt-0.5 font-medium text-muted-foreground">{String.fromCharCode(65 + i)}.</span>
+							<div class="min-w-0 flex-1">
+								<KatexBlock text={choice} />
+							</div>
 						</div>
 					{/each}
 				</div>

@@ -5,8 +5,8 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { worksheetSchema } from '$lib/ai/schema';
 import { systemPrompt, buildUserPrompt } from '$lib/ai/prompt';
-import { fixDiagram } from '$lib/ai/fix-diagram';
 import { checkRateLimit } from '$lib/ai/rate-limit';
+import { postprocessGeneratedQuestions } from '$lib/ai/question-postprocess';
 import { logQuestions } from '$lib/db/turso';
 import type { BuilderConfig, AIProvider, Worksheet } from '$lib/data/types';
 
@@ -34,27 +34,28 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			provider === 'anthropic'
 				? createAnthropic({ apiKey })(modelId)
 				: createGoogleGenerativeAI({ apiKey })(modelId);
+		const maxRetries = provider === 'google' ? 0 : undefined;
 
 		const target = config.questionCount;
 		const numBatches = Math.ceil(target / BATCH_SIZE);
+		const results = [];
 
-		// Generate all batches in parallel
-		const batchPromises = Array.from({ length: numBatches }, (_, i) => {
+		for (let i = 0; i < numBatches; i += 1) {
 			const batchCount = Math.min(BATCH_SIZE, target - i * BATCH_SIZE);
 			const batchConfig = { ...config, questionCount: batchCount };
-			return generateObject({
+			const result = await generateObject({
 				model,
 				schema: worksheetSchema,
 				system: systemPrompt,
-				prompt: buildUserPrompt(batchConfig)
+				prompt: buildUserPrompt(batchConfig),
+				maxRetries
 			});
-		});
-
-		const results = await Promise.all(batchPromises);
+			results.push(result);
+		}
 
 		const title = results[0]?.object.title || 'Math Worksheet';
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const allQuestions = results.flatMap((r) => r.object.questions).map((q: any) => fixDiagram(q));
+		const rawQuestions = results.flatMap((r) => r.object.questions);
+		const allQuestions = await postprocessGeneratedQuestions(rawQuestions, config, model, { maxRetries });
 		const questions = allQuestions.slice(0, target);
 
 		if (questions.length === 0) {

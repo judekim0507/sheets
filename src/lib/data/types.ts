@@ -122,6 +122,8 @@ export interface DiagramSceneGraph {
 export interface DiagramElement {
 	type: string;
 	style?: 'solid' | 'dashed';
+	stroke?: string;
+	stroke_opacity?: number;
 	// point
 	id?: string;
 	x?: number;
@@ -139,6 +141,7 @@ export interface DiagramElement {
 	// polygon
 	vertices?: string[];
 	fill?: string;
+	fill_opacity?: number;
 	// circle, arc
 	center?: string;
 	radius?: number;

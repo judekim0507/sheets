@@ -101,8 +101,13 @@ function sanitizeGraph(graph: DiagramGraph | undefined): DiagramGraph | undefine
 		.map((expr, index) => ({
 			...expr,
 			id: expr.id || `expr-${index + 1}`,
+			latex: expr.latex.trim(),
 			fill_opacity: expr.fill_opacity == null ? undefined : clamp(expr.fill_opacity, 0, 1)
-		}));
+		}))
+		.filter((expr, index, arr) => {
+			const signature = normalizeExpression(expr.latex);
+			return arr.findIndex((candidate) => normalizeExpression(candidate.latex) === signature) === index;
+		});
 
 	if (expressions.length === 0) return undefined;
 
@@ -368,4 +373,8 @@ function clamp(value: number, min: number, max: number): number {
 
 function approximatelyEqual(a: number, b: number, epsilon: number = 1e-3): boolean {
 	return Math.abs(a - b) <= epsilon;
+}
+
+function normalizeExpression(value: string): string {
+	return value.replace(/\s+/g, '').replace(/\$/g, '').toLowerCase();
 }

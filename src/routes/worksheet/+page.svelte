@@ -37,6 +37,27 @@
 		libraryStore.update(ws);
 	}
 
+	function handleQuestionRepair(index: number, repairedQuestion: Worksheet['questions'][number]) {
+		if (!worksheetStore.worksheet) return;
+		const currentThreads = worksheetStore.worksheet.threads;
+		let threads = currentThreads;
+		if (threads?.[index]) {
+			const thread = threads[index];
+			const versions = [...thread.versions];
+			versions[thread.activeIndex] = repairedQuestion;
+			threads = [...threads];
+			threads[index] = { ...thread, versions };
+		}
+
+		const questions = [...worksheetStore.worksheet.questions];
+		questions[index] = repairedQuestion;
+		handleWorksheetUpdate({
+			...worksheetStore.worksheet,
+			questions,
+			threads
+		});
+	}
+
 	function updateField(field: 'title' | 'studentName', value: string) {
 		if (!worksheetStore.worksheet) return;
 		const ws = { ...worksheetStore.worksheet, [field]: value || undefined };
@@ -242,7 +263,12 @@
 								{/each}
 							</div>
 						{/if}
-						<QuestionCard {question} index={i} />
+						<QuestionCard
+							{question}
+							index={i}
+							config={worksheetStore.worksheet.config}
+							onQuestionRepair={(repaired) => handleQuestionRepair(i, repaired)}
+						/>
 					</button>
 				{/each}
 			</div>
@@ -277,7 +303,12 @@
 								{/each}
 							</div>
 						{/if}
-						<QuestionCard {question} index={idx} />
+						<QuestionCard
+							{question}
+							index={idx}
+							config={worksheetStore.worksheet.config}
+							onQuestionRepair={(repaired) => handleQuestionRepair(idx, repaired)}
+						/>
 					</button>
 				{/each}
 			</div>

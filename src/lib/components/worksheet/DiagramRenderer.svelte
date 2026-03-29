@@ -1,14 +1,24 @@
 <script lang="ts">
-	import type { DiagramSceneGraph, DiagramElement } from '$lib/data/types';
+	import type { DiagramSceneGraph, DiagramElement, BuilderConfig, GeneratedQuestion } from '$lib/data/types';
 	import GraphRenderer from './GraphRenderer.svelte';
 	import {
 		buildPointMap, resolvePoint, sortElementsByLayer,
 		extendLineToBounds, extendLineToViewBox, extendRayToBounds, extendRayToViewBox,
-		arcPath, perpOffset, bezierPath, labelOffset, angleBisector, pointCentroid,
+		arcPath, sectorPath, perpOffset, bezierPath, labelOffset, angleBisector, pointCentroid,
 		type PointMap
 	} from '$lib/diagram/renderer';
 
-	let { diagram }: { diagram: DiagramSceneGraph } = $props();
+	let {
+		diagram,
+		question,
+		config,
+		onQuestionRepair
+	}: {
+		diagram: DiagramSceneGraph;
+		question?: GeneratedQuestion;
+		config?: BuilderConfig;
+		onQuestionRepair?: (question: GeneratedQuestion) => void;
+	} = $props();
 
 	const pad = 1;
 	const sw = 0.07;
@@ -47,6 +57,23 @@
 
 	function d(el: { style?: string }): string | undefined {
 		return el.style === 'dashed' ? `${sw * 5} ${sw * 3}` : undefined;
+	}
+
+	function stroke(el: DiagramElement, fallback: string = '#1a1a1a'): string {
+		return el.stroke ?? fallback;
+	}
+
+	function strokeOpacity(el: DiagramElement): number | undefined {
+		return el.stroke_opacity != null ? Math.max(0, Math.min(1, el.stroke_opacity)) : undefined;
+	}
+
+	function fillColor(el: DiagramElement, fallback: string = 'none'): string {
+		if (!el.fill) return fallback;
+		return /^(none|transparent)$/i.test(el.fill) ? 'none' : el.fill;
+	}
+
+	function fillOpacity(el: DiagramElement, defaultValue: number = 1): number {
+		return el.fill_opacity != null ? Math.max(0, Math.min(1, el.fill_opacity)) : defaultValue;
 	}
 
 	function segMid(fId: string, tId: string) {
@@ -161,19 +188,19 @@
 {/snippet}
 
 {#if diagram?.graph}
-	<GraphRenderer graph={diagram.graph} />
+	<GraphRenderer graph={diagram.graph} {question} {config} {onQuestionRepair} />
 {:else if diagram?.elements}
 	<svg viewBox={vb} class="diagram-svg w-full max-w-[280px]" style="height: auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mathematical diagram">
 		{#each sorted as el}
 			{#if el.type === 'polygon' && el.vertices}
 				{@const pts = el.vertices.map((id) => resolvePoint(id, pm)).filter((p): p is {x:number;y:number} => p !== null).map((p) => `${p.x},${yf(p.y)}`).join(' ')}
-				<polygon points={pts} fill={el.fill ?? '#f5f5f5'} stroke="#1a1a1a" stroke-width={sw} stroke-linejoin="round" stroke-dasharray={d(el)} />
+				<polygon points={pts} fill={fillColor(el, '#f5f5f5')} fill-opacity={fillOpacity(el, 1)} stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-linejoin="round" stroke-dasharray={d(el)} />
 
 			{:else if el.type === 'segment' && el.from && el.to}
 				{@const a = resolvePoint(el.from, pm)}
 				{@const b = resolvePoint(el.to, pm)}
 				{#if a && b}
-					<line x1={a.x} y1={yf(a.y)} x2={b.x} y2={yf(b.y)} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<line x1={a.x} y1={yf(a.y)} x2={b.x} y2={yf(b.y)} stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-dasharray={d(el)} />
 					{#if el.label}
 						{@const lp = segMid(el.from, el.to)}
 						{#if lp}
@@ -187,7 +214,7 @@
 				{@const b = resolvePoint(el.through_points[1], pm)}
 				{#if a && b}
 					{@const ext = extLine(a, b)}
-					<line x1={ext.x1} y1={yf(ext.y1)} x2={ext.x2} y2={yf(ext.y2)} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} marker-start="url(#ar)" marker-end="url(#ar)" />
+					<line x1={ext.x1} y1={yf(ext.y1)} x2={ext.x2} y2={yf(ext.y2)} stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-dasharray={d(el)} marker-start="url(#ar)" marker-end="url(#ar)" />
 				{/if}
 
 			{:else if el.type === 'ray' && el.origin && el.through}
@@ -195,20 +222,30 @@
 				{@const t = resolvePoint(el.through, pm)}
 				{#if o && t}
 					{@const end = extRay(o, t)}
-					<line x1={o.x} y1={yf(o.y)} x2={end.x} y2={yf(end.y)} stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} marker-end="url(#ar)" />
+					<line x1={o.x} y1={yf(o.y)} x2={end.x} y2={yf(end.y)} stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-dasharray={d(el)} marker-end="url(#ar)" />
 				{/if}
 
 			{:else if el.type === 'circle' && el.center}
 				{@const c = resolvePoint(el.center, pm)}
 				{#if c}
 					{@const r = el.radius ?? (el.through ? (() => { const t = resolvePoint(el.through, pm); return t ? Math.hypot(t.x - c.x, t.y - c.y) : 1; })() : 1)}
-					<circle cx={c.x} cy={yf(c.y)} r={r} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<circle cx={c.x} cy={yf(c.y)} r={r} fill={fillColor(el)} fill-opacity={fillOpacity(el, fillColor(el) === 'none' ? 0 : 0.22)} stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-dasharray={d(el)} />
 				{/if}
 
 			{:else if el.type === 'arc' && el.center && el.radius != null && el.start_angle != null && el.end_angle != null}
 				{@const c = resolvePoint(el.center, pm)}
 				{#if c}
-					<path d={arcPath(c.x, yf(c.y), el.radius, el.start_angle, el.end_angle)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+					<path d={arcPath(c.x, yf(c.y), el.radius, el.start_angle, el.end_angle)} fill="none" stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-dasharray={d(el)} />
+				{/if}
+
+			{:else if el.type === 'sector' && el.center && el.radius != null && el.start_angle != null && el.end_angle != null}
+				{@const c = resolvePoint(el.center, pm)}
+				{#if c}
+					<path d={sectorPath(c.x, yf(c.y), el.radius, el.start_angle, el.end_angle)} fill={fillColor(el, '#ef4444')} fill-opacity={fillOpacity(el, 0.35)} stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-linejoin="round" stroke-dasharray={d(el)} />
+					{#if el.label}
+						{@const midAngle = (((el.start_angle + el.end_angle) / 2) * Math.PI) / 180}
+						{@render lbl(c.x + Math.cos(midAngle) * el.radius * 0.62, yf(c.y) + Math.sin(midAngle) * el.radius * 0.62, el.label, measLabelFs, '500')}
+					{/if}
 				{/if}
 
 			{:else if el.type === 'curve' && el.curve_points}
@@ -216,9 +253,9 @@
 				<!-- Clip curves to viewBox to prevent asymptotes shooting to infinity -->
 				<g clip-path={hasAxes ? 'url(#axes-clip)' : undefined}>
 					{#if el.smooth}
-						<path d={bezierPath(pts)} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+						<path d={bezierPath(pts)} fill="none" stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-dasharray={d(el)} />
 					{:else}
-						<polyline points={pts.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#1a1a1a" stroke-width={sw} stroke-dasharray={d(el)} />
+						<polyline points={pts.map((p) => `${p.x},${p.y}`).join(' ')} fill="none" stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-dasharray={d(el)} />
 					{/if}
 				</g>
 
@@ -326,7 +363,7 @@
 				{/if}
 
 			{:else if el.type === 'label' && el.x != null && el.y != null && el.text}
-				{@render lbl(el.x, yf(el.y), el.text, el.font_size ? el.font_size * 0.08 : measLabelFs, '500')}
+				<text x={el.x} y={yf(el.y)} text-anchor="middle" dominant-baseline="central" font-size={el.font_size ? el.font_size * 0.08 : measLabelFs} font-weight="500" fill={fillColor(el, '#1a1a1a')} font-family="sans-serif">{prettyText(el.text)}</text>
 
 			<!-- 3D SHAPES -->
 			{:else if el.type === 'rectangular_prism' && el.cx != null && el.cy != null && el.shape_width && el.shape_height && el.depth}

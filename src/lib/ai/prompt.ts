@@ -20,8 +20,9 @@ The diagram object uses TYPED ARRAYS — each element type gets its own array:
 - **lines**: [{ through_points: ["A","B"] }]
 - **rays**: [{ origin, through }]
 - **polygons**: [{ vertices: ["A","B","C"], fill }]
-- **circles**: [{ center, radius }] or [{ center, through }]
+- **circles**: [{ center, radius, fill, fill_opacity }] or [{ center, through, fill, fill_opacity }]
 - **arcs**: [{ center, radius, start_angle, end_angle }]
+- **sectors**: [{ center, radius, start_angle, end_angle, fill, fill_opacity, label }]
 - **angle_arcs**: [{ vertex, ray1_through, ray2_through, label }]
 - **right_angles**: [{ vertex, ray1_through, ray2_through }]
 - **axes**: [{ x_min, x_max, y_min, y_max, grid, tick_interval }]
@@ -37,6 +38,7 @@ For coordinate-plane graphing questions, use the dedicated **graph** object:
     expressions: [{ latex, line_style, point_style, fill, label, show_label }],
     degree_mode, show_grid, show_x_axis, show_y_axis, show_x_axis_numbers, show_y_axis_numbers
   }
+Every graph expression must match the actual equation(s), inequality/inequalities, and coordinate point(s) named in the question. Never reuse a generic graph from another problem.
 
 **3D shapes** (rendered as standard textbook oblique projections with dashed hidden edges):
 - **rectangular_prisms**: [{ cx, cy, shape_width, shape_height, depth, dimension_labels: { width: "5 cm", height: "3 cm", depth: "4 cm" } }]
@@ -83,6 +85,20 @@ Graph diagram object example:
       { "id": "vertex", "latex": "(0,0)", "point_style": "point", "label": "(0,0)", "show_label": true }
     ]
   }
+}
+
+### Example: Circle with a red shaded sector
+{
+  "width": 10, "height": 8,
+  "points": [
+    { "id": "O", "x": 5, "y": 4, "label": "O", "label_position": "bottom-right" }
+  ],
+  "circles": [
+    { "center": "O", "radius": 3, "stroke": "#1a1a1a" }
+  ],
+  "sectors": [
+    { "center": "O", "radius": 3, "start_angle": 20, "end_angle": 110, "fill": "#ef4444", "fill_opacity": 0.35 }
+  ]
 }
 
 When has_diagram is true, put ONE of the objects above into the "diagram" field as a JSON string.

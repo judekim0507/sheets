@@ -2,47 +2,12 @@ import type { GeneratedQuestion, BuilderConfig } from '$lib/data/types';
 import { systemPrompt } from './prompt';
 import { gradeLabel } from '$lib/data/math';
 import { DIAGRAM_RULES } from './diagram-rules';
+import { findDiagramIssues } from './diagram-validation';
 
 export { systemPrompt };
 
 function describeDiagramIssues(q: GeneratedQuestion): string {
-	if (!q.has_diagram || !q.diagram) return '';
-
-	if (q.diagram.graph) {
-		const issues: string[] = [];
-		if (q.diagram.graph.expressions.length === 0) {
-			issues.push('The graph object has no expressions to plot');
-		}
-		const { left, right, bottom, top } = q.diagram.graph.viewport;
-		if (!(left < right && bottom < top)) {
-			issues.push('The graph viewport bounds are invalid');
-		}
-		return issues.length > 0
-			? `\n\n**CURRENT DIAGRAM PROBLEMS:**\n${issues.map((i) => `- ${i}`).join('\n')}\nYou MUST fix all of these in the replacement.`
-			: '';
-	}
-
-	const elements = q.diagram.elements;
-	const points = elements.filter((e) => e.type === 'point');
-	const segments = elements.filter((e) => e.type === 'segment');
-	const angleArcs = elements.filter((e) => e.type === 'angle_arc');
-	const rightAngles = elements.filter((e) => e.type === 'right_angle');
-
-	const issues: string[] = [];
-
-	const unlabeledPoints = points.filter((p) => !p.label);
-	if (unlabeledPoints.length > 0) {
-		issues.push(`${unlabeledPoints.length} point(s) are missing the "label" field — vertex letters are NOT visible`);
-	}
-
-	const unlabeledSegments = segments.filter((s) => !s.label);
-	if (unlabeledSegments.length > 0 && unlabeledSegments.length === segments.length) {
-		issues.push('No segments have measurement labels — side lengths are NOT visible');
-	}
-
-	if (angleArcs.length === 0 && rightAngles.length === 0) {
-		issues.push('No angle_arc or right_angle elements — angle markers are NOT visible');
-	}
+	const issues = findDiagramIssues(q).map((issue) => issue.message);
 
 	return issues.length > 0
 		? `\n\n**CURRENT DIAGRAM PROBLEMS:**\n${issues.map((i) => `- ${i}`).join('\n')}\nYou MUST fix all of these in the replacement.`
@@ -75,7 +40,8 @@ IMPORTANT: The replacement MUST have a complete diagram where:
 - For geometry shapes: every point has "label" set to the vertex letter (e.g., label: "A")
 - For geometry shapes: every known side has a segment with a measurement label (e.g., label: "10 cm")
 - For geometry shapes: every referenced angle has an angle_arc with a degree label (e.g., label: "60°")
-- For coordinate-plane graphing: use the "graph" object with viewport + expressions instead of sampled curve_points
+- For coordinate-plane graphing: use the "graph" object with viewport + expressions instead of sampled curve_points, and make every expression match the exact equation/inequality/point named in the question
+- If the question mentions a shaded or colored region, encode it with fill / fill_opacity or a sector object so the shading actually renders
 - Put the final diagram into the "diagram" field as a valid JSON string
 - Use right_angle for 90° angles`;
 }
@@ -97,6 +63,7 @@ ${DIAGRAM_RULES}
 
 IMPORTANT:
 - Geometry shapes must have labeled points, labeled known sides, and angle markers where needed.
-- Coordinate-plane graphs must use the "graph" object with mathematically correct expressions and viewport bounds.
+- Coordinate-plane graphs must use the "graph" object with mathematically correct expressions and viewport bounds, and those expressions must match the question text.
+- If the question mentions a shaded or colored region, the diagram must encode that fill color explicitly.
 - Put the final diagram into the "diagram" field as a valid JSON string.`;
 }

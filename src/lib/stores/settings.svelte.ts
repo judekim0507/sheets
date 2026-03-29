@@ -3,8 +3,8 @@ import type { AIProvider } from '$lib/data/types';
 const STORAGE_KEY = 'math-worksheet-settings';
 
 export const ANTHROPIC_MODELS: { id: string; label: string }[] = [
-	{ id: 'claude-sonnet-4-6-20250415', label: 'Claude Sonnet 4.6' },
-	{ id: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5' }
+	{ id: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
+	{ id: 'claude-haiku-4-5', label: 'Claude Haiku 4.5' }
 ];
 
 export const GOOGLE_MODELS: { id: string; label: string }[] = [
