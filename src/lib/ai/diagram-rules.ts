@@ -1,60 +1,59 @@
 /**
- * These rules get appended to EVERY prompt (system, edit, regen)
- * so the LLM can never ignore them.
+ * These rules get appended to every prompt so the LLM does not improvise
+ * fragile geometry layouts that the app can compile more reliably itself.
  */
 export const DIAGRAM_RULES = `
 ## DIAGRAM REQUIREMENTS — DO NOT SKIP ANY OF THESE:
 
-1. GEOMETRY SHAPES use the point/segment/polygon arrays.
-   Every vertex of a 2D shape MUST have a point in the "points" array with BOTH "id" and "label" fields set to the vertex letter.
-   Example: { "id": "A", "x": 5, "y": 1, "label": "A", "label_position": "top" }
+1. If the question is a FUNCTION / EQUATION / INEQUALITY / COORDINATE-PLANE GRAPHING problem, use the "diagram" field with the dedicated "graph" object.
+   - Include viewport + expressions.
+   - Every graph expression MUST match the actual relation(s) or point(s) named in the question.
+   - Do NOT approximate graphs with sampled curve_points.
 
-2. Every known side length in a 2D geometry diagram MUST have a segment in the "segments" array with a "label" field showing the measurement.
-   Example: { "from": "A", "to": "B", "label": "10 cm" }
-   THIS INCLUDES RECTANGLES. If a rectangle has width 5 cm and height 3 cm, BOTH the width segment AND height segment MUST have labels.
+2. For ALL OTHER diagrams, do NOT hand-author a final point-by-point scene graph.
+   Instead, set "diagram_intent" to a valid JSON string describing the semantic diagram intent.
+   The app will compile that into a teacher-grade textbook diagram.
 
-3. Every angle mentioned in a 2D geometry diagram MUST have an entry in "angle_arcs" with a "label" field showing the degree.
-   For right angles (90°), use "right_angles" instead.
+3. Supported "diagram_intent.family" values are:
+   - "standard-position-trig"
+   - "cast-circle"
+   - "coordinate-segment"
+   - "polygon-measurement"
+   - "circle-geometry"
+   - "three-d-solid"
+   - "number-line"
+   - "parallel-lines"
 
-4. For 2D geometry diagrams, the label field on points is NOT optional. Every point MUST have label set.
+4. Geometry intent must describe facts, not layout guesses.
+   Include what the student should see: point coordinates, known side labels, angle labels, right angles, shading, which solid, which circle construction, number-line endpoints, and so on.
+   Do NOT invent screen coordinates or SVG-like placement in "diagram_intent".
 
-5. Use y-DOWN screen coordinates: top of shape = small y value, bottom = large y value.
+5. Example: standard-position trig
+   "diagram_intent": "{\\"family\\":\\"standard-position-trig\\",\\"point\\":{\\"x\\":-3,\\"y\\":4},\\"pointLabel\\":\\"P(-3,4)\\",\\"footLabel\\":\\"A\\",\\"originLabel\\":\\"O\\",\\"angleLabel\\":\\"θ\\"}"
 
-6. Width/height should be about 10x8. Keep all coordinates within bounds with at least 0.5 margin from edges.
+6. Example: CAST / reference-angle circle
+   "diagram_intent": "{\\"family\\":\\"cast-circle\\",\\"trigFunction\\":\\"tan\\",\\"sign\\":\\"negative\\",\\"referenceAngleDegrees\\":60,\\"solutionAngles\\":[120,240]}"
 
-7. RECTANGLES must have all 4 vertices as points, 4 segments with labels for width and height, and right_angle markers at corners.
-   Example rectangle ABCD (width 5, height 3):
-   - points: A(1,1), B(9,1), C(9,5), D(1,5) with labels
-   - segments: A→B "5 cm", B→C "3 cm", C→D "5 cm", D→A "3 cm"
-   - right_angles at each corner
+7. Example: polygon measurement
+   "diagram_intent": "{\\"family\\":\\"polygon-measurement\\",\\"shape\\":\\"rectangle\\",\\"vertexLabels\\":[\\"A\\",\\"B\\",\\"C\\",\\"D\\"],\\"sideLabels\\":{\\"A-B\\":\\"8 cm\\",\\"B-C\\":\\"5 cm\\"},\\"rightAngles\\":[\\"A\\",\\"B\\",\\"C\\",\\"D\\"]}"
 
-8. FUNCTION / EQUATION / COORDINATE-PLANE questions MUST use the "graph" object instead of manually sampled "axes" + "curves".
-   The graph object must include:
-   - "viewport": { left, right, bottom, top }
-   - "expressions": [{ latex, ... }]
-   Use valid Desmos-style LaTeX for each plotted relation or point.
-   Every graph expression MUST come directly from the equation, inequality, or coordinates stated in the question. Do NOT reuse placeholder graphs.
-   Examples:
-   - Parabola: { "latex": "y=x^2" }
-   - Inequality: { "latex": "y\\le 2x+1", "fill": true }
-   - Piecewise: { "latex": "y=x^2\\left\\{x\\le0\\right\\}" }
-   - Open endpoint: { "latex": "(2,3)", "point_style": "open", "show_label": true, "label": "(2,3)" }
-   Never approximate a graph by inventing curve_points for ordinary function graphs.
+8. Example: circle geometry
+   "diagram_intent": "{\\"family\\":\\"circle-geometry\\",\\"variant\\":\\"sector\\",\\"angleLabel\\":\\"110°\\",\\"fill\\":\\"#d1d5db\\",\\"fillOpacity\\":0.35}"
 
-9. ANY question about area, perimeter, surface area, or volume of a shape MUST include a diagram with ALL dimensions labeled.
+9. Example: 3D solid
+   "diagram_intent": "{\\"family\\":\\"three-d-solid\\",\\"solid\\":\\"cylinder\\",\\"dimensionLabels\\":{\\"radius\\":\\"3 cm\\",\\"height\\":\\"8 cm\\"}}"
 
-10. FOR 3D SHAPES: Use the dedicated 3D shape arrays. Do NOT fake 3D solids using points/segments/polygons.
-    Put measurements in "dimension_labels".
-    - Cones → use "cones" array: [{ cx: 5, cy: 4, radius: 3, shape_height: 5, dimension_labels: { radius: "3 cm", height: "5 cm", slant: "5.8 cm" } }]
-    - Cylinders → use "cylinders" array
-    - Spheres → use "spheres" array
-    - Rectangular prisms/boxes → use "rectangular_prisms" array
-    - Pyramids → use "pyramids" array
-    3D solids do NOT need matching entries in the 2D "points" array.
+10. Example: number line
+    "diagram_intent": "{\\"family\\":\\"number-line\\",\\"min\\":-4,\\"max\\":6,\\"tickInterval\\":1,\\"points\\":[{\\"value\\":-1,\\"label\\":\\"-1\\",\\"filled\\":true},{\\"value\\":3,\\"label\\":\\"3\\",\\"filled\\":false}]}"
 
-11. If the question mentions a shaded/colored part of a circle, use:
-    - "circles" with "fill" / "fill_opacity" for a fully shaded circle, OR
-    - "sectors": [{ center, radius, start_angle, end_angle, fill: "#ef4444", fill_opacity: 0.35 }]
-    Also include the matching circle outline in "circles" when drawing a shaded region of a circle.
+11. Example: parallel lines / transversal
+    "diagram_intent": "{\\"family\\":\\"parallel-lines\\",\\"angleLabels\\":{\\"topLeft\\":\\"120°\\",\\"lowerBottomRight\\":\\"x°\\"}}"
 
-12. Never mention a color, shaded region, or highlighted face unless the diagram data explicitly encodes it with a fill color.`;
+12. If the question mentions a shaded or colored region, the intent must explicitly encode that shading.
+    Never say a region is shaded unless "diagram_intent" includes a fill color / fill opacity or the graph object encodes the fill.
+
+13. If has_diagram is true, include ONE of:
+    - "diagram" for graph questions, OR
+    - "diagram_intent" for non-graph geometry / visual questions.
+    Do not omit both.
+`;

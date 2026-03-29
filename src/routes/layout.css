@@ -120,12 +120,11 @@
     @apply bg-background text-foreground;
     font-family: 'Geist', system-ui, sans-serif;
   }
-  @keyframes press-down {
-    from { transform: scale(1); }
-    to { transform: scale(0.97); }
+  button:not(:disabled), a, [role="button"], summary {
+    transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
   }
   button:active:not(:disabled), a:active, [role="button"]:active, summary:active {
-    animation: press-down 0.1s ease forwards;
+    transform: scale(0.97);
   }
 }
 
@@ -143,6 +142,123 @@
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Liquid glass scan-reveal for streamed questions */
+.question-scan-reveal {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  animation: q-materialize 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* Frosted glass substrate that dissolves to reveal content */
+.question-scan-reveal::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: var(--background);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  animation: q-frost 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* Prismatic scanline — chromatic dispersion through glass */
+.question-scan-reveal::after {
+  content: '';
+  position: absolute;
+  left: -15%;
+  right: -15%;
+  height: 200%;
+  top: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 45%,
+    oklch(0.92 0.06 300 / 0.08) 47.5%,
+    oklch(0.95 0.1 280 / 0.2) 49%,
+    oklch(1 0.08 260 / 0.4) 50%,
+    oklch(0.95 0.1 240 / 0.2) 51%,
+    oklch(0.92 0.06 220 / 0.08) 52.5%,
+    transparent 55%,
+    transparent 100%
+  );
+  animation: q-scanline 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes q-materialize {
+  0% {
+    opacity: 0;
+    filter: blur(16px) saturate(0.3);
+    transform: translateY(10px) scale(0.97);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(3px) scale(0.995);
+  }
+  60% {
+    filter: blur(2px) saturate(0.85);
+    transform: translateY(-1px) scale(1.003);
+  }
+  100% {
+    filter: blur(0) saturate(1);
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes q-frost {
+  0% { opacity: 0.92; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+@keyframes q-scanline {
+  0% {
+    transform: translateY(-55%);
+    opacity: 0;
+  }
+  12% { opacity: 1; }
+  75% { opacity: 0.3; }
+  100% {
+    transform: translateY(5%);
+    opacity: 0;
+  }
+}
+
+/* Draft typing card */
+.question-draft {
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+  animation: q-draft-fade-in 0.3s ease-out both;
+}
+@keyframes q-draft-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Blinking cursor */
+.typing-cursor {
+  display: inline-block;
+  width: 1.5px;
+  height: 0.9em;
+  background: var(--foreground);
+  opacity: 0.4;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 0.9s steps(2) infinite;
+}
+@keyframes cursor-blink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .question-scan-reveal,
+  .question-draft {
+    animation: none;
+  }
+  .question-scan-reveal::before,
+  .question-scan-reveal::after,
+  .typing-cursor {
+    display: none;
+  }
 }
 
 /* Two-column worksheet layout */

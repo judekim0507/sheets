@@ -21,13 +21,16 @@
 	let clinicMode = $state(false);
 	let clinicLoading = $state(false);
 	let clinicError = $state<string | null>(null);
+	let isStreamingSession = $state(false);
 
 	onMount(() => {
-		if (!worksheetStore.worksheet) navigate('/');
+		if (!worksheetStore.worksheet) { navigate('/'); return; }
+		isStreamingSession = worksheetStore.isStreaming;
 	});
 
 	const questions = $derived(worksheetStore.worksheet?.questions ?? []);
-	const mid = $derived(Math.ceil(questions.length / 2));
+	const targetCount = $derived(worksheetStore.worksheet?.config.questionCount ?? questions.length);
+	const mid = $derived(Math.ceil(targetCount / 2));
 	const leftCol = $derived(questions.slice(0, mid));
 	const rightCol = $derived(questions.slice(mid));
 
@@ -163,22 +166,24 @@
 			<ArrowLeft class="mr-2 h-4 w-4" />
 			Back
 		</Button>
-		<div class="flex items-center gap-2">
-			{#if !clinicMode}
-				<Button variant="outline" size="sm" onclick={() => { clinicMode = true; activeQuestion = null; }}>
-					<Stethoscope class="mr-1.5 h-3.5 w-3.5" />
-					Clinic
+		{#if !worksheetStore.isStreaming}
+			<div class="flex items-center gap-2">
+				{#if !clinicMode}
+					<Button variant="outline" size="sm" onclick={() => { clinicMode = true; activeQuestion = null; }}>
+						<Stethoscope class="mr-1.5 h-3.5 w-3.5" />
+						Clinic
+					</Button>
+				{/if}
+				<Button variant="outline" size="sm" onclick={() => navigate('/answer-key')}>
+					<BookOpen class="mr-1.5 h-3.5 w-3.5" />
+					Key
 				</Button>
-			{/if}
-			<Button variant="outline" size="sm" onclick={() => navigate('/answer-key')}>
-				<BookOpen class="mr-1.5 h-3.5 w-3.5" />
-				Key
-			</Button>
-			<Button size="sm" onclick={() => window.print()}>
-				<Printer class="mr-1.5 h-3.5 w-3.5" />
-				Print
-			</Button>
-		</div>
+				<Button size="sm" onclick={() => window.print()}>
+					<Printer class="mr-1.5 h-3.5 w-3.5" />
+					Print
+				</Button>
+			</div>
+		{/if}
 	</div>
 
 	<!-- Clinic mode bar -->
@@ -226,90 +231,137 @@
 	<!-- Worksheet content -->
 	<div class="worksheet-page mx-auto max-w-4xl px-6 py-4">
 		<WorksheetHeader
-			title={worksheetStore.worksheet.title}
+			title={worksheetStore.worksheet.title || (worksheetStore.isStreaming ? 'Generating...' : 'Worksheet')}
 			studentName={worksheetStore.worksheet.studentName}
-			editable={!clinicMode}
+			editable={!clinicMode && !worksheetStore.isStreaming}
 			onTitleChange={(t) => updateField('title', t)}
 			onStudentChange={(n) => updateField('studentName', n)}
 		/>
 
+		{#if worksheetStore.isStreaming}
+			<div class="mb-4 flex items-center gap-2.5 text-sm text-muted-foreground">
+				<LoadingSpinner size={14} />
+				<span>
+					{#if questions.length === 0}
+						Generating questions...
+					{:else}
+						{questions.length} of {targetCount} questions
+					{/if}
+				</span>
+			</div>
+		{/if}
+
+		{#if worksheetStore.error}
+			<div class="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+				{worksheetStore.error}
+			</div>
+		{/if}
+
 		<div class="screen-only worksheet-columns">
 			<div class="worksheet-col space-y-4">
-				{#each leftCol as question, i}
+				{#each leftCol as question, i (i)}
 					{@const isSelected = selectedForClinic.has(i)}
-					<button
-						class="question-wrapper w-full rounded-lg text-left transition-all
-							{clinicMode
-								? isSelected
-									? 'bg-primary/10 ring-2 ring-primary/40'
-									: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'
-								: activeQuestion === i
-									? 'bg-accent/40 ring-1 ring-ring/25'
-									: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'}"
-						onclick={() => handleQuestionClick(i)}
-					>
-						{#if clinicMode && isSelected}
-							<div class="flex items-center gap-1.5 px-2 pt-1.5">
-								<div class="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-									{[...selectedForClinic].sort().indexOf(i) + 1}
+					<div class={isStreamingSession ? 'question-scan-reveal' : ''}>
+						<button
+							class="question-wrapper w-full rounded-lg text-left transition-all
+								{clinicMode
+									? isSelected
+										? 'bg-primary/10 ring-2 ring-primary/40'
+										: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'
+									: activeQuestion === i
+										? 'bg-accent/40 ring-1 ring-ring/25'
+										: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'}"
+							onclick={() => handleQuestionClick(i)}
+						>
+							{#if clinicMode && isSelected}
+								<div class="flex items-center gap-1.5 px-2 pt-1.5">
+									<div class="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+										{[...selectedForClinic].sort().indexOf(i) + 1}
+									</div>
+									<span class="text-[10px] font-medium text-primary">Selected for clinic</span>
 								</div>
-								<span class="text-[10px] font-medium text-primary">Selected for clinic</span>
+							{/if}
+							{#if !clinicMode && worksheetStore.worksheet?.threads?.[i]?.versions && worksheetStore.worksheet.threads[i].versions.length > 1}
+								<div class="flex items-center gap-1 px-2 pt-1">
+									{#each worksheetStore.worksheet.threads[i].versions as _, vi}
+										<div class="h-1 rounded-full {vi === worksheetStore.worksheet.threads[i].activeIndex ? 'w-2.5 bg-foreground' : 'w-1 bg-muted-foreground/20'}"></div>
+									{/each}
+								</div>
+							{/if}
+							<QuestionCard
+								{question}
+								index={i}
+								config={worksheetStore.worksheet.config}
+								onQuestionRepair={(repaired) => handleQuestionRepair(i, repaired)}
+							/>
+						</button>
+					</div>
+				{/each}
+				<!-- Draft typing cards for positions not yet finalized in this column -->
+				{#each Array(Math.max(0, mid - leftCol.length)) as _, di}
+					{@const i = leftCol.length + di}
+					{#if worksheetStore.drafts[i]}
+						<div class="question-draft">
+							<div class="flex gap-2 p-3">
+								<span class="mt-px text-sm font-bold text-muted-foreground/40">{i + 1}.</span>
+								<p class="flex-1 text-sm leading-relaxed text-muted-foreground/60">{worksheetStore.drafts[i]}<span class="typing-cursor"></span></p>
 							</div>
-						{/if}
-						{#if !clinicMode && worksheetStore.worksheet?.threads?.[i]?.versions && worksheetStore.worksheet.threads[i].versions.length > 1}
-							<div class="flex items-center gap-1 px-2 pt-1">
-								{#each worksheetStore.worksheet.threads[i].versions as _, vi}
-									<div class="h-1 rounded-full {vi === worksheetStore.worksheet.threads[i].activeIndex ? 'w-2.5 bg-foreground' : 'w-1 bg-muted-foreground/20'}"></div>
-								{/each}
-							</div>
-						{/if}
-						<QuestionCard
-							{question}
-							index={i}
-							config={worksheetStore.worksheet.config}
-							onQuestionRepair={(repaired) => handleQuestionRepair(i, repaired)}
-						/>
-					</button>
+						</div>
+					{/if}
 				{/each}
 			</div>
 			<div class="worksheet-col-divider"></div>
 			<div class="worksheet-col space-y-4">
-				{#each rightCol as question, i}
+				{#each rightCol as question, i (i)}
 					{@const idx = mid + i}
 					{@const isSelected = selectedForClinic.has(idx)}
-					<button
-						class="question-wrapper w-full rounded-lg text-left transition-all
-							{clinicMode
-								? isSelected
-									? 'bg-primary/10 ring-2 ring-primary/40'
-									: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'
-								: activeQuestion === idx
-									? 'bg-accent/40 ring-1 ring-ring/25'
-									: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'}"
-						onclick={() => handleQuestionClick(idx)}
-					>
-						{#if clinicMode && isSelected}
-							<div class="flex items-center gap-1.5 px-2 pt-1.5">
-								<div class="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-									{[...selectedForClinic].sort().indexOf(idx) + 1}
+					<div class={isStreamingSession ? 'question-scan-reveal' : ''}>
+						<button
+							class="question-wrapper w-full rounded-lg text-left transition-all
+								{clinicMode
+									? isSelected
+										? 'bg-primary/10 ring-2 ring-primary/40'
+										: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'
+									: activeQuestion === idx
+										? 'bg-accent/40 ring-1 ring-ring/25'
+										: 'hover:bg-accent/30 hover:ring-1 hover:ring-ring/15'}"
+							onclick={() => handleQuestionClick(idx)}
+						>
+							{#if clinicMode && isSelected}
+								<div class="flex items-center gap-1.5 px-2 pt-1.5">
+									<div class="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+										{[...selectedForClinic].sort().indexOf(idx) + 1}
+									</div>
+									<span class="text-[10px] font-medium text-primary">Selected for clinic</span>
 								</div>
-								<span class="text-[10px] font-medium text-primary">Selected for clinic</span>
+							{/if}
+							{#if !clinicMode && worksheetStore.worksheet?.threads?.[idx]?.versions && worksheetStore.worksheet.threads[idx].versions.length > 1}
+								<div class="flex items-center gap-1 px-2 pt-1">
+									{#each worksheetStore.worksheet.threads[idx].versions as _, vi}
+										<div class="h-1 rounded-full {vi === worksheetStore.worksheet.threads[idx].activeIndex ? 'w-2.5 bg-foreground' : 'w-1 bg-muted-foreground/20'}"></div>
+									{/each}
+								</div>
+							{/if}
+							<QuestionCard
+								{question}
+								index={idx}
+								config={worksheetStore.worksheet.config}
+								onQuestionRepair={(repaired) => handleQuestionRepair(idx, repaired)}
+							/>
+						</button>
+					</div>
+				{/each}
+				<!-- Draft typing cards for positions not yet finalized in this column -->
+				{#each Array(Math.max(0, targetCount - mid - rightCol.length)) as _, di}
+					{@const idx = mid + rightCol.length + di}
+					{#if worksheetStore.drafts[idx]}
+						<div class="question-draft">
+							<div class="flex gap-2 p-3">
+								<span class="mt-px text-sm font-bold text-muted-foreground/40">{idx + 1}.</span>
+								<p class="flex-1 text-sm leading-relaxed text-muted-foreground/60">{worksheetStore.drafts[idx]}<span class="typing-cursor"></span></p>
 							</div>
-						{/if}
-						{#if !clinicMode && worksheetStore.worksheet?.threads?.[idx]?.versions && worksheetStore.worksheet.threads[idx].versions.length > 1}
-							<div class="flex items-center gap-1 px-2 pt-1">
-								{#each worksheetStore.worksheet.threads[idx].versions as _, vi}
-									<div class="h-1 rounded-full {vi === worksheetStore.worksheet.threads[idx].activeIndex ? 'w-2.5 bg-foreground' : 'w-1 bg-muted-foreground/20'}"></div>
-								{/each}
-							</div>
-						{/if}
-						<QuestionCard
-							{question}
-							index={idx}
-							config={worksheetStore.worksheet.config}
-							onQuestionRepair={(repaired) => handleQuestionRepair(idx, repaired)}
-						/>
-					</button>
+						</div>
+					{/if}
 				{/each}
 			</div>
 		</div>

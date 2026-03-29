@@ -7,7 +7,7 @@ import { worksheetSchema } from '$lib/ai/schema';
 import { systemPrompt } from '$lib/ai/prompt';
 import { buildClinicPrompt } from '$lib/ai/clinic-prompt';
 import { checkRateLimit } from '$lib/ai/rate-limit';
-import { postprocessGeneratedQuestions } from '$lib/ai/question-postprocess';
+import { postprocessGeneratedQuestions, ensureDistinctQuestion } from '$lib/ai/question-postprocess';
 import { logQuestions } from '$lib/db/turso';
 import type { GeneratedQuestion, BuilderConfig, AIProvider, Worksheet } from '$lib/data/types';
 
@@ -54,7 +54,11 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			maxRetries
 		});
 
-		const questions = await postprocessGeneratedQuestions(result.object.questions, config, model, { maxRetries });
+		const processedQuestions = await postprocessGeneratedQuestions(result.object.questions, config, model, { maxRetries });
+		const questions: GeneratedQuestion[] = [];
+		for (const question of processedQuestions) {
+			questions.push(await ensureDistinctQuestion(question, questions, config, model, { maxRetries }));
+		}
 
 		const worksheet: Worksheet = {
 			id: crypto.randomUUID(),

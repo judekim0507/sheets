@@ -1,4 +1,5 @@
 import type { GeneratedQuestion, DiagramElement, DiagramSceneGraph, DiagramGraph } from '$lib/data/types';
+import { buildTeacherGradeGeometryDiagram, validateGeometryDiagram } from '$lib/geometry/compiler';
 import { normalizeDiagram } from './normalize-diagram';
 
 /**
@@ -14,26 +15,39 @@ import { normalizeDiagram } from './normalize-diagram';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function fixDiagram(q: any): GeneratedQuestion {
-	if (!q.has_diagram || !q.diagram) return q as GeneratedQuestion;
+	const { diagram_intent: rawIntent, ...rest } = q as Record<string, unknown>;
+	const restQuestion = rest as unknown as GeneratedQuestion;
+	if (!rest.has_diagram) return restQuestion;
 
-	const rawValue = parseRawDiagram(q.diagram);
-	if (!rawValue || typeof rawValue !== 'object' || Array.isArray(rawValue)) {
-		return { ...q, has_diagram: false, diagram: undefined } as GeneratedQuestion;
+	const rawValue = parseRawDiagram(rest.diagram);
+	const rawDiagram = rawValue && typeof rawValue === 'object' && !Array.isArray(rawValue)
+		? rawValue as Record<string, unknown>
+		: undefined;
+	const text = typeof rest.question === 'string' ? rest.question : '';
+
+	const compiledGeometry = buildTeacherGradeGeometryDiagram(text, rawIntent, rawDiagram);
+	if (compiledGeometry) {
+		return {
+			...restQuestion,
+			diagram: compiledGeometry.diagram
+		};
 	}
 
-	const raw = rawValue as Record<string, unknown>;
-	const diagram = Array.isArray(raw.elements)
-		? sanitizeFlatDiagram(raw as unknown as DiagramSceneGraph)
-		: normalizeDiagram(raw);
+	if (!rawDiagram) {
+		return { ...restQuestion, has_diagram: false, diagram: undefined } as GeneratedQuestion;
+	}
+
+	const diagram = Array.isArray(rawDiagram.elements)
+		? sanitizeFlatDiagram(rawDiagram as unknown as DiagramSceneGraph)
+		: normalizeDiagram(rawDiagram);
 
 	if (!diagram) {
-		return { ...q, has_diagram: false, diagram: undefined } as GeneratedQuestion;
+		return { ...restQuestion, has_diagram: false, diagram: undefined } as GeneratedQuestion;
 	}
 
 	const elements = [...diagram.elements.map((e) => ({ ...e }))];
-	const text = typeof q.question === 'string' ? q.question : '';
 	const pointMap = buildPointMap(elements);
-	const isGraphDiagram = Boolean(diagram.graph) || elements.some((e) => e.type === 'axes');
+	const isGraphDiagram = Boolean(diagram.graph);
 
 	for (const el of elements) {
 		if (el.type !== 'point' || el.x == null || el.y == null) continue;
@@ -62,14 +76,23 @@ export function fixDiagram(q: any): GeneratedQuestion {
 		sanitizeLegacyGraphElements(elements);
 	}
 
-	return {
-		...q,
-		diagram: {
-			width: safeDimension(diagram.width, 10),
-			height: safeDimension(diagram.height, 8),
-			elements,
-			graph: sanitizeGraph(diagram.graph)
+	const sanitizedDiagram = {
+		width: safeDimension(diagram.width, 10),
+		height: safeDimension(diagram.height, 8),
+		elements,
+		graph: sanitizeGraph(diagram.graph)
+	};
+
+	if (!isGraphDiagram) {
+		const geometryIssues = validateGeometryDiagram(text, sanitizedDiagram).diagnostics;
+		if (geometryIssues.length > 0) {
+			return { ...restQuestion, has_diagram: false, diagram: undefined } as GeneratedQuestion;
 		}
+	}
+
+	return {
+		...restQuestion,
+		diagram: sanitizedDiagram
 	};
 }
 

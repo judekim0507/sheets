@@ -1,4 +1,5 @@
 import type { DiagramElement, DiagramGraph, GeneratedQuestion } from '$lib/data/types';
+import { inferGeometryFamily, validateGeometryDiagram } from '$lib/geometry/compiler';
 import {
 	compileGraph,
 	compileGraphExpression,
@@ -33,7 +34,7 @@ export function findDiagramIssues(question: Pick<GeneratedQuestion, 'question' |
 		issues.push(...findGraphIssues(text, diagram.graph));
 	}
 
-	issues.push(...findShapeIssues(text, diagram.elements, Boolean(diagram.graph)));
+	issues.push(...findShapeIssues(text, question.diagram.elements, Boolean(diagram.graph), question.diagram));
 	return issues;
 }
 
@@ -96,10 +97,25 @@ function findGraphIssues(text: string, graph: DiagramGraph): DiagramIssue[] {
 	return issues;
 }
 
-function findShapeIssues(text: string, elements: DiagramElement[], hasGraph: boolean): DiagramIssue[] {
+function findShapeIssues(
+	text: string,
+	elements: DiagramElement[],
+	hasGraph: boolean,
+	diagram: Pick<GeneratedQuestion, 'diagram'>['diagram']
+): DiagramIssue[] {
 	const issues: DiagramIssue[] = [];
 	const lower = text.toLowerCase();
 	const shapeTypes = new Set(elements.map((element) => element.type));
+
+	if (!hasGraph && diagram) {
+		const geometryValidation = validateGeometryDiagram(text, diagram);
+		for (const diagnostic of geometryValidation.diagnostics) {
+			issues.push({
+				code: diagnostic.code,
+				message: diagnostic.message
+			});
+		}
+	}
 
 	if (!hasGraph && /\bcircle\b/i.test(text) && !hasAny(elements, ['circle', 'sector', 'arc'])) {
 		issues.push({
@@ -159,7 +175,28 @@ function findShapeIssues(text: string, elements: DiagramElement[], hasGraph: boo
 		}
 	}
 
+	if (!hasGraph && inferGeometryFamily(text) && !diagramSupportsReasoning(text, elements)) {
+		issues.push({
+			code: 'render-readability-failure',
+			message: 'The diagram exists, but it does not provide enough instructional structure to support the question.'
+		});
+	}
+
 	return issues;
+}
+
+function diagramSupportsReasoning(text: string, elements: DiagramElement[]): boolean {
+	if (/terminal arm|standard position/i.test(text)) {
+		return elements.some((element) => element.type === 'axes')
+			&& elements.some((element) => element.type === 'right_angle')
+			&& elements.some((element) => element.type === 'ray');
+	}
+	if (/cast rule|interval\s*\[\s*0/i.test(text)) {
+		return elements.some((element) => element.type === 'circle')
+			&& elements.some((element) => element.type === 'line')
+			&& elements.some((element) => element.type === 'label' && /qii|qiv|qi|qiii/i.test(element.text ?? ''));
+	}
+	return true;
 }
 
 function hasAny(elements: DiagramElement[], types: string[]): boolean {

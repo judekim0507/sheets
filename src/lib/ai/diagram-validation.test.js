@@ -128,6 +128,24 @@ describe('diagram validation', () => {
 
 		expect(issues.some((issue) => issue.code === 'graph-mismatch')).toBe(false);
 	});
+
+	test('flags weak standard-position trig diagrams that do not include the reference construction', () => {
+		const issues = findDiagramIssues({
+			question: 'A point P lies on the terminal arm of an angle in standard position. The coordinates of P are (-3, 4). Determine the exact value of sin θ, cos θ, and tan θ.',
+			has_diagram: true,
+			diagram: {
+				width: 10,
+				height: 8,
+				elements: [
+					{ type: 'point', id: 'P', x: -3, y: 4, label: 'P(-3,4)' },
+					{ type: 'line', through_points: ['P', 'P'] }
+				],
+				graph: undefined
+			}
+		});
+
+		expect(issues.some((issue) => issue.code === 'missing-construction')).toBe(true);
+	});
 });
 
 describe('fixDiagram graph sanitizing', () => {

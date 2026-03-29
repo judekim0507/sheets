@@ -124,6 +124,7 @@ export interface DiagramElement {
 	style?: 'solid' | 'dashed';
 	stroke?: string;
 	stroke_opacity?: number;
+	hidden?: boolean;
 	// point
 	id?: string;
 	x?: number;
@@ -161,6 +162,10 @@ export interface DiagramElement {
 	y_label?: string;
 	grid?: boolean;
 	tick_interval?: number;
+	show_x_numbers?: boolean;
+	show_y_numbers?: boolean;
+	axis_number_step?: number;
+	padding?: number;
 	// number_line
 	min?: number;
 	max?: number;

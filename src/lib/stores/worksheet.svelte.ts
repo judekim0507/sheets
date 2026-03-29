@@ -28,8 +28,11 @@ class WorksheetStore {
 
 	// Generation state
 	isGenerating = $state(false);
+	isStreaming = $state(false);
 	worksheet = $state<Worksheet | null>(null);
 	error = $state<string | null>(null);
+	/** Partial question text for positions being actively generated (sparse array by global index) */
+	drafts = $state<string[]>([]);
 
 	/** True when using custom topic instead of curriculum skills */
 	get isCustom(): boolean {
@@ -83,6 +86,7 @@ class WorksheetStore {
 		this.questionType = 'auto';
 		this.worksheet = null;
 		this.error = null;
+		this.drafts = [];
 		if (typeof window !== 'undefined') {
 			sessionStorage.removeItem(SESSION_KEY);
 		}
@@ -156,6 +160,7 @@ class WorksheetStore {
 	async generate() {
 		if (this.isGenerating) return;
 		this.isGenerating = true;
+		this.isStreaming = true;
 		this.error = null;
 
 		const config: BuilderConfig = {
@@ -167,9 +172,18 @@ class WorksheetStore {
 			questionType: this.questionType
 		};
 
+		// Create partial worksheet immediately so the worksheet page can render
+		this.worksheet = {
+			id: crypto.randomUUID(),
+			title: '',
+			created_at: new Date().toISOString(),
+			config,
+			questions: []
+		};
+
 		try {
 			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), 120000);
+			const timeout = setTimeout(() => controller.abort(), 180000);
 
 			const response = await fetch('/api/generate', {
 				method: 'POST',
@@ -190,10 +204,50 @@ class WorksheetStore {
 				throw new Error(msg);
 			}
 
-			const data = await response.json();
-			this.worksheet = data.worksheet;
+			const reader = response.body!.getReader();
+			const decoder = new TextDecoder();
+			let buffer = '';
+
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				buffer += decoder.decode(value, { stream: true });
+				const lines = buffer.split('\n');
+				buffer = lines.pop()!;
+
+				for (const line of lines) {
+					if (!line.trim()) continue;
+					const data = JSON.parse(line);
+
+					if (data.type === 'title') {
+						this.worksheet = { ...this.worksheet!, title: data.title };
+					} else if (data.type === 'typing') {
+						const newDrafts = [...this.drafts];
+						while (newDrafts.length <= data.index) newDrafts.push('');
+						newDrafts[data.index] = data.text;
+						this.drafts = newDrafts;
+					} else if (data.type === 'typing_clear') {
+						this.drafts = [];
+					} else if (data.type === 'question') {
+						this.worksheet = {
+							...this.worksheet!,
+							questions: [...this.worksheet!.questions, data.question]
+						};
+					} else if (data.type === 'done') {
+						this.worksheet = { ...this.worksheet!, id: data.id };
+					} else if (data.type === 'error') {
+						throw new Error(data.error);
+					}
+				}
+			}
+
+			if (this.worksheet!.questions.length === 0) {
+				throw new Error('No questions generated — try a different model');
+			}
+
 			this.saveWorksheet();
-			libraryStore.save(data.worksheet);
+			libraryStore.save(this.worksheet!);
 			this.step = 4;
 		} catch (e) {
 			if (e instanceof DOMException && e.name === 'AbortError') {
@@ -201,8 +255,13 @@ class WorksheetStore {
 			} else {
 				this.error = e instanceof Error ? e.message : 'An unexpected error occurred';
 			}
+			if (this.worksheet && this.worksheet.questions.length === 0) {
+				this.worksheet = null;
+			}
 		} finally {
 			this.isGenerating = false;
+			this.isStreaming = false;
+			this.drafts = [];
 		}
 	}
 

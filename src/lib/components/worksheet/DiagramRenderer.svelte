@@ -20,7 +20,6 @@
 		onQuestionRepair?: (question: GeneratedQuestion) => void;
 	} = $props();
 
-	const pad = 1;
 	const sw = 0.07;
 	const pr = 0.12;
 	const ptLabelFs = 0.65;
@@ -30,6 +29,7 @@
 	// If diagram has axes, use axis range for viewBox (y-flipped for math convention)
 	const axesEl = $derived(diagram.elements.find((e) => e.type === 'axes'));
 	const hasAxes = $derived(axesEl && axesEl.x_min != null && axesEl.x_max != null && axesEl.y_min != null && axesEl.y_max != null);
+	const pad = $derived(hasAxes ? (axesEl!.padding ?? (axesEl!.grid === false ? 0.35 : 1)) : 1);
 	const viewBounds = $derived(
 		hasAxes
 			? {
@@ -156,6 +156,9 @@
 
 	function prettyText(text: string): string {
 		return text
+			.replace(/\$([^$]+)\$/g, '$1')
+			.replace(/\\text\s*\{([^{}]+)\}/g, '$1')
+			.replace(/\\mathrm\s*\{([^{}]+)\}/g, '$1')
 			.replace(/\\theta/g, 'θ')
 			.replace(/\\alpha/g, 'α')
 			.replace(/\\beta/g, 'β')
@@ -168,6 +171,8 @@
 			.replace(/\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/g, '$1/$2')
 			.replace(/\\left/g, '')
 			.replace(/\\right/g, '')
+			.replace(/\*\*([^*]+)\*\*/g, '$1')
+			.replace(/\\\\/g, ' ')
 			.replace(/[{}]/g, '')
 			.replace(/_([A-Za-z0-9]+)/g, '$1')
 			.trim();
@@ -180,6 +185,11 @@
 	function extRay(a: { x: number; y: number }, b: { x: number; y: number }) {
 		return hasAxes ? extendRayToBounds(a, b, viewBounds) : extendRayToViewBox(a, b, diagram.width, diagram.height);
 	}
+
+	function shouldShowAxisNumber(value: number, every: number): boolean {
+		if (every <= 0) return true;
+		return Math.abs(value / every - Math.round(value / every)) < 1e-6;
+	}
 </script>
 
 {#snippet lbl(x: number, y: number, text: string, size: number, weight: string = '600')}
@@ -190,9 +200,10 @@
 {#if diagram?.graph}
 	<GraphRenderer graph={diagram.graph} {question} {config} {onQuestionRepair} />
 {:else if diagram?.elements}
-	<svg viewBox={vb} class="diagram-svg w-full max-w-[280px]" style="height: auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mathematical diagram">
+	<svg viewBox={vb} class="diagram-svg w-full max-w-[250px]" style="height: auto; shape-rendering: geometricPrecision;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mathematical diagram">
 		{#each sorted as el}
-			{#if el.type === 'polygon' && el.vertices}
+			{#if !el.hidden}
+				{#if el.type === 'polygon' && el.vertices}
 				{@const pts = el.vertices.map((id) => resolvePoint(id, pm)).filter((p): p is {x:number;y:number} => p !== null).map((p) => `${p.x},${yf(p.y)}`).join(' ')}
 				<polygon points={pts} fill={fillColor(el, '#f5f5f5')} fill-opacity={fillOpacity(el, 1)} stroke={stroke(el)} stroke-opacity={strokeOpacity(el)} stroke-width={sw} stroke-linejoin="round" stroke-dasharray={d(el)} />
 
@@ -290,8 +301,11 @@
 				{@const yRange = el.y_max - el.y_min}
 				{@const rawTi = el.tick_interval ?? 1}
 				{@const ti = xRange / rawTi > 20 ? Math.ceil(xRange / 10) : rawTi}
+				{@const axisNumberStep = el.axis_number_step ?? ti}
+				{@const showXNumbers = el.show_x_numbers !== false}
+				{@const showYNumbers = el.show_y_numbers !== false}
 				{@const tickSize = Math.max(0.08, Math.min(0.15, xRange * 0.012))}
-				{@const tickFs = Math.max(0.2, Math.min(0.4, xRange * 0.035))}
+				{@const tickFs = Math.max(0.2, Math.min(el.grid === false ? 0.34 : 0.4, xRange * 0.032))}
 				{#if el.grid}
 					{#each rng(el.x_min, el.x_max, ti) as x}
 						<line x1={x} y1={yf(el.y_min)} x2={x} y2={yf(el.y_max)} stroke="#e5e5e5" stroke-width={sw * 0.4} />
@@ -307,15 +321,21 @@
 				{#each rng(el.x_min, el.x_max, ti) as x}
 					{#if x !== 0}
 						<line x1={x} y1={-tickSize} x2={x} y2={tickSize} stroke="#1a1a1a" stroke-width={sw} />
-						{@render lbl(x, tickSize + tickFs * 0.8, String(x), tickFs, '400')}
+						{#if showXNumbers && shouldShowAxisNumber(x, axisNumberStep)}
+							{@render lbl(x, tickSize + tickFs * 0.8, String(x), tickFs, '400')}
+						{/if}
 					{/if}
 				{/each}
 				{#each rng(el.y_min, el.y_max, ti) as y}
 					{#if y !== 0}
 						<line x1={-tickSize} y1={yf(y)} x2={tickSize} y2={yf(y)} stroke="#1a1a1a" stroke-width={sw} />
-						{@render lbl(-tickSize - tickFs, yf(y), String(y), tickFs, '400')}
+						{#if showYNumbers && shouldShowAxisNumber(y, axisNumberStep)}
+							{@render lbl(-tickSize - tickFs, yf(y), String(y), tickFs, '400')}
+						{/if}
 					{/if}
 				{/each}
+				{@render lbl(el.x_max - tickFs * 1.3, -tickFs * 1.5, el.x_label ?? 'x', tickFs * 1.05, '500')}
+				{@render lbl(tickFs * 1.2, yf(el.y_max) + tickFs * 1.2, el.y_label ?? 'y', tickFs * 1.05, '500')}
 
 			{:else if el.type === 'number_line' && el.min != null && el.max != null && el.tick_interval}
 				{@const nlY = diagram.height / 2}
@@ -504,6 +524,7 @@
 				{#if dimLabel(el.dimension_labels, 'base')}
 					<line x1={el.cx - bw / 2} y1={botY + 0.2} x2={el.cx + bw / 2} y2={botY + 0.2} stroke="#1a1a1a" stroke-width={sw * 0.6} />
 					{@render lbl(el.cx, botY + 0.5, dimLabel(el.dimension_labels, 'base')!, measLabelFs, '500')}
+				{/if}
 				{/if}
 			{/if}
 		{/each}

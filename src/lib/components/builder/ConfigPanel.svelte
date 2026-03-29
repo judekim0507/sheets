@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { worksheetStore } from '$lib/stores/worksheet.svelte';
 	import { settingsStore } from '$lib/stores/settings.svelte';
+	import { navigate } from '$lib/nav';
 	import { parseDifficultyNotes } from '$lib/data/math';
 	import type { QuestionType, DifficultyLevel } from '$lib/data/types';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -67,13 +68,14 @@
 			.catch(() => { costLabel = ''; });
 	});
 
-	async function handleGenerate() {
+	function handleGenerate() {
 		if (worksheetStore.isGenerating) return;
 		if (!settingsStore.isConfigured) {
 			onOpenSettings();
 			return;
 		}
-		await worksheetStore.generate();
+		worksheetStore.generate();
+		navigate('/worksheet');
 	}
 </script>
 

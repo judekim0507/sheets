@@ -60,15 +60,19 @@ function isLikelyInlineMath(text: string): boolean {
 	if (/\b(?:slope|intercept|rewrite|convert|identify|graph|equation|answer|form|find|solve|then|what|where|when)\b/i.test(trimmed)) {
 		return false;
 	}
-	if (/\\[a-zA-Z]+|[\^_=<>±÷×]|(?<!\s)[+\-*/](?!\s)|\{|\}/.test(trimmed)) {
+	if (/\\[a-zA-Z]+|[\^_=<>±÷×°′″]|(?<!\s)[+\-*/](?!\s)|\{|\}/.test(trimmed)) {
 		return true;
 	}
 	if (/^[A-Za-z]$/.test(trimmed)) return true;
-	if (/^[+-]?\d+(?:\.\d+)?%?$/.test(trimmed)) return true;
+	// Geometry labels: AB, ABC, ABCD, etc.
+	if (/^[A-Z]{2,6}$/.test(trimmed)) return true;
+	// Numbers with degree/prime: 35°, 90°, 45′
+	if (/^[+-]?\d+(?:\.\d+)?[°′″%]?$/.test(trimmed)) return true;
 	if (/^[A-Za-z0-9()., ]+$/.test(trimmed) && trimmed.split(/\s+/).length <= 3) {
 		return trimmed.split(/\s+/).every((token) =>
-			/^[+-]?\d+(?:\.\d+)?%?$/.test(token)
+			/^[+-]?\d+(?:\.\d+)?[°′″%]?$/.test(token)
 			|| /^[A-Za-z]$/.test(token)
+			|| /^[A-Z]{2,6}$/.test(token)
 			|| /^[A-Za-z]?\d+(?:\.\d+)?[A-Za-z]?$/.test(token)
 			|| /^[A-Za-z]+\([A-Za-z]+\)$/.test(token)
 			|| /^\(\s*-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?\s*\)$/.test(token)
